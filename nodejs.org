@@ -1,0 +1,20 @@
+* node 概述
+  Node is designed to be used for applications that are heavy on I/O, but light
+  on computation.
+  
+  Node 中的 I/O 都是异步的.
+
+  Node is implemented on a single thread.
+
+  Node doesn't create a new thread or process for every request. Instead, it
+  listens for specific events, and when the event happens, responds
+  accordingly. Node doesn't block any other request while waiting for the event
+  functionaility to complete, and events are handled -- firstcome, first
+  serverd -- in a relatively uncomplicated *event loop* .
+
+  对上述的总结:
+  Node.js is a server-side technology that's based on Google's V8 JavaScript
+  engine. It's a highly scalable system that uses 
+  *asynchornous, event-driven I/O* ,rather than threads or separate processes.
+  It's ideal for web applications that are 
+  *frequently accessed but computationally simple* .
