@@ -18,3 +18,11 @@
   *asynchornous, event-driven I/O* ,rather than threads or separate processes.
   It's ideal for web applications that are 
   *frequently accessed but computationally simple* .
+
+* 对 node 的理解
+** node is a platform, not a framework
+   NOde is a platform for JavaScript applications which is not to be confused
+   with a framework. It is a common misconception to think of Node as "Rails" or
+   "Django" for JavaScript when it is much lower level.
+** node is for DIRTy applications
+   即 'data-intensive real-time applications'
