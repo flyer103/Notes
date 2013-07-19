@@ -18,11 +18,16 @@
   *asynchornous, event-driven I/O* ,rather than threads or separate processes.
   It's ideal for web applications that are 
   *frequently accessed but computationally simple* .
-
 * 对 node 的理解
 ** node is a platform, not a framework
    NOde is a platform for JavaScript applications which is not to be confused
    with a framework. It is a common misconception to think of Node as "Rails" or
    "Django" for JavaScript when it is much lower level.
 ** node is for DIRTy applications
-   即 'data-intensive real-time applications'
+   即 'data-intensive real-time applications' .
+   Node provides this 'DIRTy by default' approach across multiple platforms
+   including various UNIXes and Windows. The underlying asynchronous I/O library
+   (*libuv*) was built specifically to provide a unified experience regardless
+   of the parent operating system which allows programs to be more easily ported
+   across devices and run on multiple devices if needed.
+   

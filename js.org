@@ -170,3 +170,9 @@
    它是存储于访问者的计算机中的变量，每当同一台计算机通过浏览器请求某个页面时，
    就会发送这个 cookie。可使用 Javascript 来创建和取回 cookie 的值。
 * 创建自己的对象
+* 一些关于 AJAX 的事实
+  Ajax uses *HTTP* as a transport mechanism and HTTP  wasn't designed for
+  real-time communication. When a message is sent using HTTP, a new TCP/IP
+  connection must be used. Opening and closing connections takes time and the
+  size of the data transfer is larger since HTTP headers are sent on every
+  request.
