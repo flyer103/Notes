@@ -284,11 +284,13 @@
    | hide-entry     | C-c C-c | 折叠项中内容         |
    | show-subtree   | C-c C-s | 显示子树中的所有内容 |
    | hide-sublevels | C-c C-q | 折叠展开的子树              |
-* 31、去掉 ^M
+* 31、去掉 ^M 、^L
    在 Linux 下用 Emacs 打开 Windows 下编辑的文件时, 可能会在每行末出现 ^M 符号，
    这是由于 Linux 和 Windows 换行的方式不同。除去该符号的方法:
    M-x replace-string RET C-q C-m RET
    注意 'C-q' 和 'C-m' 是表示按下这个组合键。
+
+   ^L 表示 page break. 在 Emacs 中，通过 C-q C-l 可以生成该字符.
 * 32、文件编码
    查看当前文件的解码及其它相关
    M-x describe-coding-system

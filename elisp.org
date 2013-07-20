@@ -29,9 +29,11 @@
    procedures, subroutines, programs and even oeprators in other languages.
    Functions are defined as lists of the above entities, usually as lists of
    calls to others, existing functions. 
-   All functions have return values; a function's return value is simply the
-   value of the last item in the list, usually the value returned by the last
-   function called. 
+
+   *All functions have return values; a function's return value is simply the*
+   *value of the last item in the list, usually the value returned by the last*
+   *function called.*
+
    A function call within another function is equivalent to a statement in other
    languages.
 ** 3 variable
@@ -64,7 +66,7 @@
    6) _Symbols_ are names of things in Lisp, for example, names of variables of
    functions. Sometimes it is important to refer to the name of something
    instead of its value, and this is done by preceding the name with a single
-   quote (').
+   quote (').  (类似于其它语言中的变量名)
 * (let)
   (let ((var1 value1) (var2 value2) ...)
     statement-block)
@@ -79,7 +81,7 @@
   block act on the local variable, leaving the global variable
   undisturbed. However, a *setq* on a variable that is not defined with a *let*
   affects the global envirionment. It is advisable to avoid using global
-  variable as much as possible because theis names might confilct with those of
+  variable as much as possible because this names might confilct with those of
   existing global variabls and therefore your changes might have unexpected and
   inexplicable side effects later on.
 * (save-excursion)
@@ -131,7 +133,6 @@
   表示最初输入的参数。
   也可在 *defun* 和 (interactive) 之间的一行添加注释，用双引号引着，这样可作为该
   函数的帮助信息。
-
 * lisp primitive functions
 ** Arithmetic
    +, -, *, /, %, 1+, 1-, max, min
@@ -162,12 +163,13 @@
       /statement-block/)
 
    若其中的变量没有初始值，则赋予值 *nil*.
-   (let) 语句中的变量赋值是在函数计算后再赋值的，即赋值时，后面的变量不能使用前
-   面变量的值，因为还没进行赋值。若想使定义变量时使用前面变量的值，可用 (let*)
-   函数，如
+
+   *(let) 语句中的变量赋值是在函数计算后再赋值的，即赋值时，后面的变量不能使用前*
+   *面变量的值，因为还没进行赋值.*
+
+   若想使定义变量时使用前面变量的值，可用 (let*)函数，如
    (let* ((var1 value1) (var2 (* var1 100)))
       /statement-block/)
-
 * Control Structures
 ** (if)
    (if /condition/
@@ -191,7 +193,7 @@
 ** (concat)
    连接后面的 list，返回一个 string。
 ** (cond)
-   它类似于 C 中的 if..else...if... 语句。
+   它类似于 C 中的 'switch...case...' 语句.
 
    (cond
      (/condition1/ /statement-block/)
@@ -258,7 +260,6 @@
 
    如若想匹配以 a 开头的字符串，用如下形式:
    a.*
-
 ** 在 elisp 中使用正则表达式的函数
    若想在这样的函数中取某些特殊字符的字面含义，必须用双斜杠，如 \\*，　\\.
    The reason has to do with the way Emacs Lisp reads and decodes strings. When
@@ -353,7 +354,6 @@
   set with *setq* doesn't exist, it is created.
 * 格式化输出 (format) (message)
   类似于 C 中的 printf()
-
 * (let)
   它相当于 C 中的 {}，表示一段代码块。
   语法
@@ -371,9 +371,6 @@
   时，若该变量不存在，则创建，否则，在代码块中查找最新赋给该变量的值。在 expr1、
   expr2...exprN 中定义的变量仍然全局可见。
   (varExpr1 varExpr2 ..) 在 (let) 内可见，在 (let) 外不可见。
-* (not) (equal)
-  你懂它是什么作用。
-
 * (while)
   语法:
   
@@ -381,9 +378,3 @@
   
   /test-expr/ is evaluated and if it yields a non-nil value, /expr1/ through
   /exprN/ are evaluated. It iterates until /test-expr/ yields *nil*.
-* 常用的函数
-  (reverse)
-  (not)
-  (equal)
-  (list)
-
