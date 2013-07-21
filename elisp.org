@@ -7,6 +7,17 @@
   have this form:
 
   (function expr1 expr2 ... exprN)
+* 执行 elisp 语句
+   在语句最后一个括号后后按 
+   C-x C-e
+   这样默认是在 minibuffer 中显示结果。
+   也可
+   C-j
+   这样执行的结果会在当前语句的下一行显示。
+   若在 lisp-interaction-mode 下定义了一个函数，然后在下面的语句中想要执行自定义
+   的函数，则要先在函数定义后按
+   C-x C-e
+   然后再执行自定义的函数。
 * 三种模式
 ** 1、emacs-lisp-mode
    Used for editing Emacs Lisp code (filename .emacs or suffix .el).
@@ -67,111 +78,109 @@
    functions. Sometimes it is important to refer to the name of something
    instead of its value, and this is done by preceding the name with a single
    quote (').  (类似于其它语言中的变量名)
-* (let)
-  (let ((var1 value1) (var2 value2) ...)
-    statement-block)
-  
-  The first thing *let* does is define the variable /var1, var2, etc.../ and set
-  them to the initial values /value1, value2, etc.../. Then *let* executes the
-  statement block, which is a sequence of function calls or values, just like
-  the body of a function.
-  If a *let* is used to define a variable, its value can be reset later within
-  the *let* block with *setq*. Furthmore, a variable defined with *let* can have
-  the same as a global variable; all *setqs* on that variable within the *let*
-  block act on the local variable, leaving the global variable
-  undisturbed. However, a *setq* on a variable that is not defined with a *let*
-  affects the global envirionment. It is advisable to avoid using global
-  variable as much as possible because this names might confilct with those of
-  existing global variabls and therefore your changes might have unexpected and
-  inexplicable side effects later on.
-* (save-excursion)
-  Calling *save-excursion* tells Emacs to remember the location of cursor at the
-  beginning of the function, and go back there after executing any statements in
-  its body. 
-* point
-  *point* is Emacs's internal name for the position fo the cursor.
-  常用的有:
-  (point) : 返回当前光标位置
-  (point-min) : 返回光标最开始的位置，一般为 1
-  (point-max) : 返回在当前 buffer 中，光标可能的最大位置
-* (while)
-  (while /condition/ /statement-block/)
-
-* (message)
-  它有很多函数用来显示信息，可在 minibuffer 中显示，也可用弹出框显示。显示信息的
-  格式与 C 中 printf 函数的格式一样，常用的有 %s、%c、%d、%e、%f、%g，意义和 C
-  中的相同。控制浮点数的小数位数的方法和 C 中 printf 的方法相同。
-  例:
-  (message "\"%s\" is a string, %d is a number, and %c is a character"
-           "hi there" 142 ?q)
-* 注册自定义函数
-  对于自定义的函数，向 Emacs 注册后，可以通过 M-x 来调用。格式是:
-  
-  (interactive "prompt-string")
-  
-  This statement should be the first in a function, that is, right after the
-  line containing the *defun* and the documentation string. Using *interactive*
-  causes Emacs to register the function as a command and to prompt the user for
-  the arguments declared in the *defun* statement. The prompt string is
-  optional.
-  The prompt string has a special format: for each argument you want to prompt
-  the user for, you provide a section of prompt string. the sections are
-  separated by newlines (\n). The first letter of each section is a code for the
-  type of argument you want, for example, 'n' for integer, 'b' for 'name of an
-  existing buffer', 's' for string.
-  
-  例:
-  
-  (defun replace-string (from to)
-    (interactive "sReplace string: \nsReplace string %s with: ")
-    ...)
-
-  要向这个函数传入两个参数，通过 M-x 效用这个函数时，首先会在 minibuffer 提示
-  "Replace string: "，函数中的 'sReplace' 表示传入的参数是 string 类型的，输入一
-  个字符串按回车后(如输入 flyer)，则在 minibuffer 中继续提示 "Replace string
-  flyer with: ",输入要替换为的字符串后，就把两个参数传入给了该函数。在函数中 %s
-  表示最初输入的参数。
-  也可在 *defun* 和 (interactive) 之间的一行添加注释，用双引号引着，这样可作为该
-  函数的帮助信息。
-* lisp primitive functions
-** Arithmetic
-   +, -, *, /, %, 1+, 1-, max, min
-** Comparison
-   >, <, >=, <=, 
-   /= (not equal), 
-   = (for numbers and characters), 
-   equal (for strings and other complex objects)
-** Logic
-   and, or, not
-* Statement Blocks
-** (progn)
-   (progn
-      /statement-block/)
-   The value returned by *progn* is the value returned by the last statement in
-   the block.
-   它更常用在 (if) 语句中，因为 (if) 默认的是判断语句后只有一条陈述句。
-** (let) and (let*)
-   它有多种形式，常见的有:
-
+* 一些函数和变量   
+** (let)
    (let ((var1 value1) (var2 value2) ...)
-      /statement-block/)
+   statement-block)
    
-   (let (var1 var2 ...)
-      /statement-block/)
+   The first thing *let* does is define the variable /var1, var2, etc.../ and set
+   them to the initial values /value1, value2, etc.../. Then *let* executes the
+   statement block, which is a sequence of function calls or values, just like
+   the body of a function.
+   If a *let* is used to define a variable, its value can be reset later within
+   the *let* block with *setq*. Furthmore, a variable defined with *let* can have
+   the same as a global variable; all *setqs* on that variable within the *let*
+   block act on the local variable, leaving the global variable
+   undisturbed. However, a *setq* on a variable that is not defined with a *let*
+   affects the global envirionment. It is advisable to avoid using global
+   variable as much as possible because this names might confilct with those of
+   existing global variabls and therefore your changes might have unexpected and
+   inexplicable side effects later on.
+** (save-excursion)
+   Calling *save-excursion* tells Emacs to remember the location of cursor at the
+   beginning of the function, and go back there after executing any statements in
+   its body. 
+** point
+   *point* is Emacs's internal name for the position fo the cursor.
+   常用的有:
+   (point) : 返回当前光标位置
+   (point-min) : 返回光标最开始的位置，一般为 1
+   (point-max) : 返回在当前 buffer 中，光标可能的最大位置
+** (message)
+   它有很多函数用来显示信息，可在 minibuffer 中显示，也可用弹出框显示。显示信息的
+   格式与 C 中 printf 函数的格式一样，常用的有 %s、%c、%d、%e、%f、%g，意义和 C
+   中的相同。控制浮点数的小数位数的方法和 C 中 printf 的方法相同。
+   例:
+   (message "\"%s\" is a string, %d is a number, and %c is a character"
+   "hi there" 142 ?q)
+** 注册自定义函数
+   对于自定义的函数，向 Emacs 注册后，可以通过 M-x 来调用。格式是:
+   
+   (interactive "prompt-string")
+   
+   This statement should be the first in a function, that is, right after the
+   line containing the *defun* and the documentation string. Using *interactive*
+   causes Emacs to register the function as a command and to prompt the user for
+   the arguments declared in the *defun* statement. The prompt string is
+   optional.
+   The prompt string has a special format: for each argument you want to prompt
+   the user for, you provide a section of prompt string. the sections are
+   separated by newlines (\n). The first letter of each section is a code for the
+   type of argument you want, for example, 'n' for integer, 'b' for 'name of an
+   existing buffer', 's' for string.
+   
+   例:
+   
+   (defun replace-string (from to)
+   (interactive "sReplace string: \nsReplace string %s with: ")
+   ...)
 
-   (let (var1 (var2 value) var3 ...)
-      /statement-block/)
+   要向这个函数传入两个参数，通过 M-x 效用这个函数时，首先会在 minibuffer 提示
+   "Replace string: "，函数中的 'sReplace' 表示传入的参数是 string 类型的，输入一
+   个字符串按回车后(如输入 flyer)，则在 minibuffer 中继续提示 "Replace string
+   flyer with: ",输入要替换为的字符串后，就把两个参数传入给了该函数。在函数中 %s
+   表示最初输入的参数。
+   也可在 *defun* 和 (interactive) 之间的一行添加注释，用双引号引着，这样可作为该
+   函数的帮助信息。
+** lisp primitive functions
+*** Arithmetic
+	+, -, *, /, %, 1+, 1-, max, min
+*** Comparison
+	>, <, >=, <=, 
+	/= (not equal), 
+	= (for numbers and characters), 
+	equal (for strings and other complex objects)
+*** Logic
+   and, or, not
+** Statement Blocks
+*** (progn)
+	(progn
+    /statement-block/)
+	The value returned by *progn* is the value returned by the last statement in
+	the block.
+	它更常用在 (if) 语句中，因为 (if) 默认的是判断语句后只有一条陈述句。
+*** (let) and (let*)
+	它有多种形式，常见的有:
 
-   若其中的变量没有初始值，则赋予值 *nil*.
+	(let ((var1 value1) (var2 value2) ...)
+    /statement-block/)
+	
+	(let (var1 var2 ...)
+    /statement-block/)
 
-   *(let) 语句中的变量赋值是在函数计算后再赋值的，即赋值时，后面的变量不能使用前*
-   *面变量的值，因为还没进行赋值.*
+	(let (var1 (var2 value) var3 ...)
+    /statement-block/)
 
-   若想使定义变量时使用前面变量的值，可用 (let*)函数，如
-   (let* ((var1 value1) (var2 (* var1 100)))
-      /statement-block/)
-* Control Structures
-** (if)
+	若其中的变量没有初始值，则赋予值 *nil*.
+
+	*(let) 语句中的变量赋值是在函数计算后再赋值的，即赋值时，后面的变量不能使用前*
+	*面变量的值，因为还没进行赋值.*
+
+	若想使定义变量时使用前面变量的值，可用 (let*)函数，如
+	(let* ((var1 value1) (var2 (* var1 100)))
+    /statement-block/)
+** Control Structures
+*** (if)
    (if /condition/
       /true-case/
       /false-case/)
@@ -190,9 +199,9 @@
    选的，如下调用该函数:
    (pluralize "flyer" 1)
    (pluralize "mouse" 3 "mice")
-** (concat)
+*** (concat)
    连接后面的 list，返回一个 string。
-** (cond)
+*** (cond)
    它类似于 C 中的 'switch...case...' 语句.
 
    (cond
@@ -208,11 +217,10 @@
        ((= count 1) "one")
        ((= count 2) "two")
        (t "many")))
-** (zerop)
+*** (zerop)
    It's pronounced "zero-pee" and is short for "zero predicate".
    In the realm of mathematical logic from which Lisp evolved, a predicate is a
    function that returns true or flase based on some attribute of its argument.
-* Basic Functions
 ** (point)
    character position of point
 ** (mark)
@@ -244,6 +252,73 @@
    strings; take an integer argument and returns the character as an integer,
    using the ASCII code (on most machines).
 
+** (car) (cdr)
+  (car) 打印列表的第一个元素
+  (cdr) 打印列表除第一个元素外的其余元素
+  cdr 念作 "could-er"
+  ‘list’ 由两部分组成，即 head 和 tail，head 即是 list 的第一个元素，tail 是
+  list 除第一个元素外的其它所有元素。
+  
+  Footnote: The names "car" and "cdr" are said to have originated with the
+  initial Lisp implementation, on an IBM 7090. "CAR" stands for "Contents of
+  Address part of Register" and "CDR" stands for "Contents of Decrement part of
+  Register" .
+
+** (cons)
+  The *cons* function creates a list from a head and a tail.
+  If the second argument of *cons* is not a list, a /dotted/ pair is created. 这
+  个标点只是表示分隔 head 和 tail.
+** (defun)
+  The special form *defun* is used to define functions. The general form is
+  this:
+  
+  (defun /name/ /arguments/ /documentation/ /expr1 expr2 ... exprN/)
+
+  The result of /exprN/ is the return value of the function.
+  A function is to calculate the area of a circle.
+  *defun* is called a special form because it doesn't evaluate all of its
+  arguments.
+  The documentation for a function can be accessed with /describe-function/,
+  e.g.:
+  
+  (describe-function 'cdr)
+** (load-file)
+  载入文件
+
+** (booleanp)
+   e.g. (booleanp object)
+   Return *non-nil* if /object/ is one of the two canonical boolean values: *t*
+   or *nil*
+** 格式化输出 (format) (message)
+  类似于 C 中的 printf()
+** (let)
+  它相当于 C 中的 {}，表示一段代码块。
+  语法
+  
+  (let (varExpr1 varExpr2 ...) expr1 expr2 ... exprN)
+
+  Each /varExpr/ is either a variable or a list containing a variable and an
+  initializing expression.
+  The special form *let* creates variable bindings that have a limited lifetime.
+  the specified variables are created and initialized, possbily hiding existing
+  variable bindings. /expr1/ through /exprN/ is evaluated. The value of the
+  *let* is the value of /exprN/. When the *let* is complete, the variable
+  bindings are erased, making any previous bindings visible again.
+  可以理解为，(varExpr1 varExpr2 ...) 中定义的变量只在 (let) 代码块中生存，计算
+  时，若该变量不存在，则创建，否则，在代码块中查找最新赋给该变量的值。在 expr1、
+  expr2...exprN 中定义的变量仍然全局可见。
+  (varExpr1 varExpr2 ..) 在 (let) 内可见，在 (let) 外不可见。
+** (while)
+  语法:
+  
+  (while /test-expr/ /expr1 ... exprN/)
+  
+  /test-expr/ is evaluated and if it yields a non-nil value, /expr1/ through
+  /exprN/ are evaluated. It iterates until /test-expr/ yields *nil*.
+** 变量范围
+  Elisp uses dynamic scoping. When a variable is referenced, it looks for the
+  most recently created instance of the variable and use it. If a variable being
+  set with *setq* doesn't exist, it is created.
 * Regular Expressions
 ** basic
    .               matches any character
@@ -312,69 +387,20 @@
 * ' 的作用
   Quoting a list suppresses evaluation, e.g.
   (setq x '(1 2 3 4))
-* (car) (cdr)
-  (car) 打印列表的第一个元素
-  (cdr) 打印列表除第一个元素外的其余元素
-  cdr 念作 "could-er"
-  ‘list’ 由两部分组成，即 head 和 tail，head 即是 list 的第一个元素，tail 是
-  list 除第一个元素外的其它所有元素。
-  
-  Footnote: The names "car" and "cdr" are said to have originated with the
-  initial Lisp implementation, on an IBM 7090. "CAR" stands for "Contents of
-  Address part of Register" and "CDR" stands for "Contents of Decrement part of
-  Register" .
-
-* (cons)
-  The *cons* function creates a list from a head and a tail.
-  If the second argument of *cons* is not a list, a /dotted/ pair is created. 这
-  个标点只是表示分隔 head 和 tail.
 * 空列表
   In Lisp, the empty list is called *nil* and can be named with /()/ or /nil/.
+* /nil/ and /t/
+  In Emacs Lisp, *nil* and *t* are special symbols that always evaluate to
+  themselves. This is so that you do not need to quote them to use them as
+  constants in a program. An attempt to change their values results in a
+  /setting-constant/ error.
 
-* (defun)
-  The special form *defun* is used to define functions. The general form is
-  this:
-  
-  (defun /name/ /arguments/ /documentation/ /expr1 expr2 ... exprN/)
+* form
+  A Lisp expression that you can evaluate is called a _form_ . Evaluating a form
+  always produces a result, which is a _Lisp object_ .
+  从这句话可以理解为何 (car (1 2 3)) 是错误的，因为 Lisp 先计算 (1 2 3)，返回一
+  个 Lisp object，然后 (car) 作用于这个 object 上，故报错.
 
-  The result of /exprN/ is the return value of the function.
-  A function is to calculate the area of a circle.
-  *defun* is called a special form because it doesn't evaluate all of its
-  arguments.
-  The documentation for a function can be accessed with /describe-function/,
-  e.g.:
-  
-  (describe-function 'cdr)
-* (load-file)
-  载入文件
-
-* 变量范围
-  Elisp uses dynamic scoping. When a variable is referenced, it looks for the
-  most recently created instance of the variable and use it. If a variable being
-  set with *setq* doesn't exist, it is created.
-* 格式化输出 (format) (message)
-  类似于 C 中的 printf()
-* (let)
-  它相当于 C 中的 {}，表示一段代码块。
-  语法
-  
-  (let (varExpr1 varExpr2 ...) expr1 expr2 ... exprN)
-
-  Each /varExpr/ is either a variable or a list containing a variable and an
-  initializing expression.
-  The special form *let* creates variable bindings that have a limited lifetime.
-  the specified variables are created and initialized, possbily hiding existing
-  variable bindings. /expr1/ through /exprN/ is evaluated. The value of the
-  *let* is the value of /exprN/. When the *let* is complete, the variable
-  bindings are erased, making any previous bindings visible again.
-  可以理解为，(varExpr1 varExpr2 ...) 中定义的变量只在 (let) 代码块中生存，计算
-  时，若该变量不存在，则创建，否则，在代码块中查找最新赋给该变量的值。在 expr1、
-  expr2...exprN 中定义的变量仍然全局可见。
-  (varExpr1 varExpr2 ..) 在 (let) 内可见，在 (let) 外不可见。
-* (while)
-  语法:
-  
-  (while /test-expr/ /expr1 ... exprN/)
-  
-  /test-expr/ is evaluated and if it yields a non-nil value, /expr1/ through
-  /exprN/ are evaluated. It iterates until /test-expr/ yields *nil*.
+  When a _form_ is a _macro call_ , it expands into a new form for Lisp to
+  evaluate.
+  即对于 macro 来说，先展开后计算.
