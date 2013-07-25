@@ -1037,3 +1037,11 @@
    $ ls -l -t
    # 按时间由前往最近排
    $ ls -l -t -v
+* linux 下的 md5sum 值与 PHP 等计算的不同
+  如 
+  $ php -r "echo md5('flyer') . '\n'"
+  与
+  $ echo 'flyer' | md5sum
+  的结果不同。
+  这是因为 md5sum 计算时，其实计算的是 'flyer\n'，故需要按如下方式计算:
+  $ echo -n 'flyer' | md5sum

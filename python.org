@@ -1700,6 +1700,10 @@
 ** itertools.groupby()
    它仅把连续相邻的 key 相同的项组合成 group，若 key 相同的项之间有其它不同 key
    的项，则只能把连续的项组成 group.
+* 命令行运行 python
+  通过
+  $ python -c "python 语句"
+  即可.
 * 常用的扩展
 ** 数据库相关(第三方)
    MySQLdb
@@ -1933,7 +1937,6 @@ XS
    $ python -mtimeit -s '要测试的语句'
 ** tuple 的 constructor
    ',' 是 tuple 的 construtor,而不是 '()'
-
 
 * BEST PRACTICE
 ** 字符串处理
