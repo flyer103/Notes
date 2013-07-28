@@ -13,6 +13,8 @@
 ** 表格
 *** 添加表头
 	在用 '|||' 这样的形式添加一行数据后,在行尾执行 'C-c RET' 即可生成表头.
+** 链接
+   修改链接：当光标置于一个链接上时，通过 'C-c C-l' 可编辑该链接.
 * 4、编程相关
 ** 1、编译程序
    先 M-x compile 
@@ -292,14 +294,49 @@
 
    ^L 表示 page break. 在 Emacs 中，通过 C-q C-l 可以生成该字符.
 * 32、文件编码
-   查看当前文件的解码及其它相关
-   M-x describe-coding-system
-   
-   在 ~/.emacs 中设置默认编码
-   (setq default-buffer-file-coding-system 'utf-8)
+** 设置编码
+   一般可在 ~/.emacs 中添加如下形式的语句:
 
-   调整当前文件的编码
-   M-x revert-buffer-with-coding-system
+   (prefer-coding-system 'utf-8)
+   (setq coding-system-for-reaD 'utf-8)
+   (setq coding-system-for-write 'utf-8)
+
+   然后通过 "M-x load-file ~/.emacs" 来使得当前对编码的设置生效.
+** 转换编码
+   在以下描述中，'<RET>' 代表回车，'coding' 代表选择的编码
+   + C-x <RET> f coding <RET>
+	 对应 (set-buffer-file-coding-system)
+	 Use coding system coding to save or revisit the file in the current
+     buffer.
+   + C-x <RET> c coding <RET>
+	 对应 (universal-coding-system-argument)
+	 Specify coding system coding for the immediately following command.
+   + C-x <RET> r coding <RET>
+	 对应 (revert-buffer-with-coding-system)
+	 Revisit the current file using the coding system coding.
+   + M-x recode-region <RET> right <RET> wrong <RET>
+	 Convert a region that was decoded using coding system wrong, decoding it
+     using coding system right instead.
+
+   Ref.:
+   [[http://www.gnu.org/software/emacs/manual/html_node/emacs/Text-Coding.html][gnu
+   官网中讲解]]
+** emacs 提供的各种编码的解释
+   emacs 提供的各种编码最后部分，有的指示的是 EOF 采用的字符，有的指示对此编码添
+   加了些额外的功能，如:
+   + -mac: *CR* , the standard line delimiter with MacOS (until OS X)
+   + -unix: *LF* , the standard delimiter for unix systems (so the BSD-based Mac
+     OS X)
+   + -dos: *CR+LF* , tehe delimiter for DOS/Windows.
+   + -emacs: support for the encoding all Emacs characters (including non
+     Unicode)
+   + -with-signature: force the usage of the BOM
+   + -auto: autodetect the BOM
+
+   Ref.: [[http://stackoverflow.com/questions/17862846/whats-the-difference-among-various-types-of-utf-8-in-emacs][参考我在 stackoverflow 上的这个问题]]
+** best practice
+   + 通过 hexl-mode 查看文件的 16 进制形式
+	 若怀疑文件编码的问题，可通过 hexl-mode 查看文件的 16 进制形式判断.
 * 33、ffap 在文件中直接定位文件
    在 ~/.emacs 中编辑
    
