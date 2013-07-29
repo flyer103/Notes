@@ -298,8 +298,6 @@
    一般可在 ~/.emacs 中添加如下形式的语句:
 
    (prefer-coding-system 'utf-8)
-   (setq coding-system-for-reaD 'utf-8)
-   (setq coding-system-for-write 'utf-8)
 
    然后通过 "M-x load-file ~/.emacs" 来使得当前对编码的设置生效.
 ** 转换编码
@@ -318,9 +316,13 @@
 	 Convert a region that was decoded using coding system wrong, decoding it
      using coding system right instead.
 
+   Note:
+   + 不要在 ~/.emacs 中添加 *(setq coding-system-for-write 'utf-8)* 这样的语句，
+     不然通过 *C-x <RET> f coding <RET>* 时会失效，编码会继续使用 utf-8 保存当前
+     文件.
+
    Ref.:
-   [[http://www.gnu.org/software/emacs/manual/html_node/emacs/Text-Coding.html][gnu
-   官网中讲解]]
+   [[http://www.gnu.org/software/emacs/manual/html_node/emacs/Text-Coding.html][gnu 官网中讲解]]
 ** emacs 提供的各种编码的解释
    emacs 提供的各种编码最后部分，有的指示的是 EOF 采用的字符，有的指示对此编码添
    加了些额外的功能，如:

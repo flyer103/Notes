@@ -404,3 +404,31 @@
   When a _form_ is a _macro call_ , it expands into a new form for Lisp to
   evaluate.
   即对于 macro 来说，先展开后计算.
+
+* Function
+** function description
+   In a function description, the name of the function being described appears
+   first. It is followed on the same line by a list of argument names. These
+   names are also used in the body of the description, to stand for the values
+   of the arguments.
+
+   The appearance of the keyword *&optional* in the argument list indicates that
+   the subsequent arguments may be omitted (omitted arguments default to
+   _nil_). Do not write *&optional* when you call the function.
+
+   The keyword *&rest* (which must be followed by a single argument name)
+   indicates that any number of arguments can follow. The single argument name
+   following *&rest* will receive, as its value, a list of all the remaining
+   arguments passed to the function. Do not write *&rest* when you call the
+   function.
+   
+   Any argument whose name contains the name of a type (e.g. /integer/ ,
+   /integer1/ or /buffer/) is expected to be of that type.
+   A plural of a type (such as /buffers/) often means a list of objects of that
+   type.
+   Arguments named /object/ may be of any type.
+   Arugments with other sorts of names (e..g. /new-file/) are discussed
+   specifically in the description of the function.
+   In some sections, features common to the arguments of several functions are
+   described at the beginning.
+   
