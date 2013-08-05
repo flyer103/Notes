@@ -126,3 +126,20 @@
 ** 函数
    C++ 中的 struct 和 class 很像，可以继承类，也可以定义函数。区别在于，struct
    中的变量或函数默认都是 public.
+* FAQ
+** '\n' 与 std::endl 的区别
+   二者的作用都是换行，但 std::endl 会在换行时把数据进行 flush，而 '\n' 不会。
+
+   Ref:
+   + [[http://stackoverflow.com/questions/213907/c-stdendl-vs-n][stackoverflow]]
+   + [[http://cppkid.wordpress.com/2008/08/27/why-i-prefer-n-to-stdendl/][一篇博客]]
+
+   Note:
+   + Anything to be output is first queued into an output buffer and written to
+     the device (hard disk, monitor, etc.)  when the queue is full.
+	 This is to ensure speed of execution as the access to the external device
+     is less frequent.
+   + If you are in a situaton where you have to avoid buffering, you can use
+     std::endl instead of '\n'. An example of the above situation is when you
+     are using old style debugging using multiple count statements between code
+     lines to see exactly a crash occurs.

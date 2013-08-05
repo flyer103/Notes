@@ -1045,3 +1045,17 @@
   的结果不同。
   这是因为 md5sum 计算时，其实计算的是 'flyer\n'，故需要按如下方式计算:
   $ echo -n 'flyer' | md5sum
+* terminal 中向 stdout 中写入数据是否占用空间?
+  不占用。
+
+  + *stdout* 不是具体的文件或设备，它只是一个概念，即支持 write、flush 等的像文
+    件一样的对象.
+  + 除非是写入 *stdout* 中的数据进行重定向，否则向 *stdout* 中写入数据不会占用空
+    间，因为 "Output to a console (or terminal emulator) is slow as it is,
+    passing it through the file system would make it even slower, and may not
+    allow the disks to spin down if there's a lot of output".
+	重定向过程中，若是 OS 把该程序换出，则写入到 *stdout* 中需要重定向的数据会终
+    止于 swap 空间.
+
+  Ref:
+  + [[http://stackoverflow.com/questions/18053647/does-writing-data-to-stdout-in-linux-occupy-disk-space][stackoverflow]]
