@@ -186,3 +186,10 @@
   $ python setup.py install --record files.txt
   删除时通过记录的路径进行删除(可能需要 root 权限删除):
   $ cat files.txt | xargs rm -rf
+* 查看包的路径
+  以 django 为例:
+  $ python -c"
+    import sys
+	sys.path = sys.path[1:]
+	import django
+	print(django.__path__)"

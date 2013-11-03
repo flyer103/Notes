@@ -1059,3 +1059,9 @@
 
   Ref:
   + [[http://stackoverflow.com/questions/18053647/does-writing-data-to-stdout-in-linux-occupy-disk-space][stackoverflow]]
+* 禁止 beep 声
+  有时通过 alsamixer 静音 Beep 没用，可在 ~/.profile 或 ~/.bashrc 中写入:
+  
+  xset -b
+
+  然后 source 下这个文件即可.

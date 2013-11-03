@@ -1,6 +1,12 @@
+* 创建相关
+  创建一个项目
+  $ django-admin.py startproject 项目名
+
+  在一个项目中创建一个 app
+  $ python manage.py startapp 应用名
 * 修改 ip:port
   $ python manage.py runserver [ip:port]
-
+  $ python manage.py runserver [port]
 * 数据库相关
   更新数据库
   $ python manage.py syncdb
@@ -16,4 +22,4 @@
   $ python manage.py sqlindexes app名
 
   查看某个 app 数据库所有相关的
-  $ python manage.py sqlall app名
+  $ python manage.py sqlall app
