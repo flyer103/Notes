@@ -1,0 +1,55 @@
+* 操作说明
+  以下有些命令若与操作系统相关，均以 Arch Linux 为例.
+* 参考文档
+  https://wiki.archlinux.org/index.php/Postgresql
+* 安装好 postgresql 后的一些配置
+** 环境
+   # mkdir /var/lib/postgres/data/
+   # chown -c -R postgres:postgres /var/lib/postgres
+   # sudo su - postgres -c "initdb --locale en_US.UTf-8 -E UTF8 -D 
+     '/var/lib/postgres/data/'"
+	 
+   启动 postgresql 进程 (Arch 下):
+   # systemctl start postgresql
+   Arch 下设置该守护进程随机启动:
+   # systemctl enable postgresql
+** 文件配置
+   + 允许远程访问
+	 修改 /var/lib/postgres/data/postgresql.conf
+	 把 'listen_addresses' 那行改为:
+
+	 listen_addresses = '*'
+* 创建一个 '特殊用户'
+  创建一个这样的用户，可以在不使用 'postgresql' 用户的前提下使用设置的用户访问
+  postgresql.
+  $ createuser -s -U postgres --interactive
+  然后输入一个自己使用的用户.
+  
+  *Note:*
+  以下若无特殊说明，均以设置的该 '特殊用户' 为例.
+* 创建数据库
+  $ createdb 数据库名
+* 连接数据库
+  $ psql -d 数据库名
+* psql 有用的命令
+  + 帮助信息
+    - \help 
+  + 连接到某个数据库
+	- \c 数据库名
+  + 显示用户及其权限
+	- \du
+  + 显示表信息
+	- \dt
+  + 退出 psql 命令行
+	- \q 或 C-d
+* postgresql 日志
+  在 /var/log/postgresql.log 中
+* 可视化管理工具
+  + pgadmin3
+* BSET PRACTICE
+** 小事务运行慢时关闭 synchronous_commit
+   修改 /var/lib/postgres/data/postgresql.conf:
+   synchronous_commit = off
+** 禁止空闲时写磁盘
+   修改 /var/lib/postgres/data/postgresql.conf:
+   stats_temp_directory = '/run/postgresql'
