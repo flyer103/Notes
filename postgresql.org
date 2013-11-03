@@ -13,6 +13,21 @@
    # systemctl start postgresql
    Arch 下设置该守护进程随机启动:
    # systemctl enable postgresql
+** 修改 postgresql 默认的密码
+   Postgresql 默认会创建一个 'postgres' 的数据库用户作为数据库管理员，密码随机，
+   若不改密码，每次登录时可使用任何密码.
+   
+   修改登录密码:
+   $ sudo -u postgres psql
+   postgres=# ALTER USER postgres WITH PASSWORD '设定的密码';
+
+   修改 linux 中 postgres 用户密码:
+   $ sudo passwd -d postgres
+   $ sudo -u postgres passwd (设置和前面相同的密码)
+** 建立用户
+   $ psql -U postgres -h 127.0.0.1
+   postgres=# CREATE USER "用户名" WITH PASSWORD '密码' nocreatedb;
+   postgers=# CREATE DATABASE "数据库名" WITH OWNER="用户";
 ** 文件配置
    + 允许远程访问
 	 修改 /var/lib/postgres/data/postgresql.conf
@@ -32,16 +47,17 @@
 * 连接数据库
   $ psql -d 数据库名
 * psql 有用的命令
-  + 帮助信息
-    - \help 
-  + 连接到某个数据库
-	- \c 数据库名
-  + 显示用户及其权限
-	- \du
-  + 显示表信息
-	- \dt
-  + 退出 psql 命令行
-	- \q 或 C-d
+  帮助信息:    \help
+  连接到某个数据库:    \c 数据库名
+  显示用户及其权限:    \du
+  显示表信息:    \dt
+  退出 psql 命令行:    \q 或 C-d
+  查看系统中现存的数据库:    \l
+  查看表结构:    \d
+  查看索引:    \di
+  查看某个表状况:    \d 表名
+  重命名一个表:    ALTER TABLE 原表名 RENAME TO 新表名;
+  删除一个表:    DROP TABLE 表名;
 * postgresql 日志
   在 /var/log/postgresql.log 中
 * 可视化管理工具
