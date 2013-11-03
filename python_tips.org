@@ -181,3 +181,8 @@
   $ python -c 要执行的python语句
   如
   $ python -c "print 'test'"
+* 删除通过 setup.py 安装的包
+  安装时记录安装的文件(可能需要 root 权限安装包):
+  $ python setup.py install --record files.txt
+  删除时通过记录的路径进行删除(可能需要 root 权限删除):
+  $ cat files.txt | xargs rm -rf
