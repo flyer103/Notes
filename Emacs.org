@@ -3,8 +3,16 @@
    还可 M-x load-file ~/.emacs
    M-x eval-buffer
 * 2、不能使用 fcitx
-   可能是系统字体环境的设置问题，可把 /etc/X11/xorg.conf-vesa 中多余的字体
-   路径注释掉。
+  有以下几种原因:
+  + 可能是系统字体环境的设置问题
+    可把 /etc/X11/xorg.conf-vesa 中多余的字体路径注释掉。
+  + fcitx 配置问题
+	通过 fcitx-diagnose 查看打印的信息，若提示只有一种输入法时，通过
+    fcitx-configtool 加入中文。
+	参考: http://blog.chinaunix.net/uid-10498763-id-3840176.html
+  + locale 设置问题
+	参考 fcitx-diagnose 的打印信息，可知道若要在 Emacs 中使用 fcitx，需要设置
+    locale 为 zh_CN.UTF-8 之类的.
 * 3、org-mode 
 ** 使用技巧
    字体加粗 *bold*
