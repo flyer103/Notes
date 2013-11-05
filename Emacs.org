@@ -12,7 +12,8 @@
 	参考: http://blog.chinaunix.net/uid-10498763-id-3840176.html
   + locale 设置问题
 	参考 fcitx-diagnose 的打印信息，可知道若要在 Emacs 中使用 fcitx，需要设置
-    locale 为 zh_CN.UTF-8 之类的.
+    locale 为 zh_CN.UTF-8 之类的.或者通过如下方法使用 Emacs:
+	$ LC_CTPYE='zh_CN.UTF-8' emacs
 * 3、org-mode 
 ** 使用技巧
    字体加粗 *bold*
@@ -387,3 +388,18 @@
   C-c @		    	outline-mark-subtree
   C-c C-<			outline-promote
   C-c C->			outline-demote
+* 字体大小设置
+  可在菜单栏中 "Options->Set Default Font" 中设置喜欢的字体和大小，然后通过
+
+  M-x describe-font
+
+  查看当前使用的字体名和大小，假设是
+  "-unknown-文泉驿等宽微米黑-normal-normal-normal-*-13-*-*-*-*-0-iso10646-1"
+  然后在 ~/.emacs 中添加
+
+  (set-default-font "-unknown-文泉驿等宽微米
+  黑-normal-normal-normal-*-13-*-*-*-*-0-iso10646-1")
+
+  重新打开 Emacs 或执行
+
+  M-x eval-buffer
