@@ -23,3 +23,100 @@
 
   查看某个 app 数据库所有相关的
   $ python manage.py sqlall app
+* 部署
+** nginx+uwsgi
+*** 安装 uwsgi
+	$ sudo pip install uwsgi
+	
+	Note:
+	+ 通过 pip 安装，最好不要直接通过系统的包管理器安装，可能会有问题.
+*** 测试 uwsgi
+	编写 test.py
+	
+	# test.py
+	def application(env, start_response):
+	    start_response('200 OK', [('Content-Type', 'text/html')])
+		return 'Hello World'
+
+	执行:
+	$ uwsgi --http :8001 --wsgi-file test.py
+	通过 http://127.0.0.1:8001 访问网页是否有 'Hello World'
+*** 仅通过 uwsgi 部署 django
+	$ django_admin.py startproject 项目名
+
+	在该项目根目录下添加 django_wsgi.py 文件，
+
+	# django_wsgi.py
+	#!/usr/bin/python2.7
+	# coding:utf-8
+
+	import os
+	import sys
+	
+	os.environ.setdefault("DJANGO_SETTINGS_MODULE", "项目名.settings")
+	
+	from django.core.handlers.wsgi import WSGIHandler
+	
+	application = WSGIHandler()
+
+	部署项目:
+	$ uwsgi --http :8000 --chdir /PATH/TO/项目 --module django_wsgi
+	把 '/PATH/TO/项目' 改为项目地址，如 '/home/flyer/Practice/项目名'
+	通过 http://127.0.0.1:8000 访问项目.
+*** 通过 nginx+uwsgi 部署 django
+	nginx 处理静态文件，动态文件由 nginx 交给 uwsgi 处理，二者通过 socket 通信.
+	假设项目地址 '/home/flyer/Practice/项目名'，nginx 通过 8077 端口与 uwsgi 通信,
+	在 '/home/flyer/Practice/项目名/' 根目录下创建 django_wsgi.py(内容同上) 和
+	django_socket.xml 文件:
+
+	# django_socket.xml
+	<uwsgi>
+	    <socket>:8077</socket>
+		<chdir>/home/flyer/Practice/项目名/</chdir>
+		<module>django_wsgi</module>
+		<processes>django_wsgi</processes>
+		<daemonize>uwsgi.log</daemonize>
+	</uwsgi>
+
+	假设 access.log 和 error.log 放在 '/home/flyer/logs/nginx/' 中，项目中的静态
+	文件在 '/home/flyer/Practice/项目/static/' 和 
+	'/home/flyer/Practice/项目名/media/' 中，域名端口是 8060.
+	修改 nginx.conf (不同的系统该文件地址不一样，搜一下):
+
+	server {
+	    listen 8060;
+		server_name 域名(本机上可设置为 localhost);
+
+		access_log /home/flyer/logs/nginx/access.log;
+		error_log /home/flyer/logs/nginx/error.log;
+
+		location / {
+		    include uwsgi_params;
+			uwsgi_pass 127.0.0.1:8077;
+		}
+
+		error_page 500 502 503 504 /50x.html;
+		location = /50x.html {
+		    root html;
+		}
+
+		location /static/ {
+		    alias /home/flyer/Practice/项目/static/;
+			index index.html index.htm;
+		}
+
+		location /media/ {
+		    alias /home/flyer/Practice/项目/media/;
+		}
+	}
+
+	先通过 
+	# nginx -t
+	检查下 nginx 配置的语法是否正确，若正确，重启下 nginx.
+	启动 uwsgi 服务器:
+	$ cd /home/flyer/Practice/项目/
+	$ uwsgi -x django_socket.xml
+	查看 uwsgi.log 文件是否异常，若无异常，通过 http://域名:8060 访问项目
+*** Refer
+   http://django-china.cn/topic/101/
+   http://django-china.cn/topic/124/

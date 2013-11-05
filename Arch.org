@@ -1,0 +1,8 @@
+* 无线配置
+  可在命令行中通过 wifi-menu 连无线网.
+* amarok 无法播放音乐
+  下载 gstreamer*-plugins 那一堆插件.
+* Emacs 中无法使用 fcitx
+  需要在 zh_CN.* 环境中使用，可修改 /etc/locale.conf 为:
+
+  LANG=zh_CN.UTF-8
