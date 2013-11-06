@@ -176,3 +176,227 @@
   connection must be used. Opening and closing connections takes time and the
   size of the data transfer is larger since HTTP headers are sent on every
   request.
+* typeof() 返回的 6 种类型
+  "object"、"boolean"、"function"、"number"、"string"、"undefined"
+* 大小写
+  JavaScript 对大小写敏感
+* 特殊的值
+  | null      | it means 'no value' |
+  | undefined | like null           |
+
+* object and array 简单用法
+  An *object* is a collection of name/value pairs, or a string to value map.它的
+  key 不需要加引号.
+  
+  例子:
+  
+  var book = {
+      topic: "JavaScript",
+	  fat: true,
+  }
+
+  book.topic
+  book["fat"]					// 访问 object 的元素有两种方法
+  book.author = "flyer":		// 可向 object 动态添加元素
+  book.contents = {};
+
+  var primes = [2, 3, 5, 7,];
+  primes[0]
+  primes.length
+  primes[4] = 9;				// array 也可动态添加元素
+  
+  var points = [
+      {x: 0, y: 0},
+	  {x: 1, y: 1},
+  ]
+
+  var data = {
+      trival1: [ [1, 2], [3, 4]],
+	  trival2: [ [2, 3], [4, 5]],
+  }
+* 数据类型
+  number, string, boolean, null, undefined, object
+  
+  array 和 function 是 object 的一种特殊形式.
+* functions
+** summary
+   它是 object 的一种特殊形式.
+
+   The most important thing about functions in JavaScript is that they are true
+   values and that JavaScript programs can treat them like regular objects.
+
+   Functions that are written to be used (with the *new* operator) to initialize
+   a newly created object are known as *constructor* . Each constructor defines
+   a /class/ of objects -- the set of obejcts initialized by that constructor.
+* JavaScript 定义的三种类
+  Date, RegExp, Error
+
+* 没有 method 的类型
+  *null* and *undefined* are the only values that methods cannot be invoked on.
+* garbage collection
+  The JavaScript interpreter performs automatic /garbage collection/ for memory
+  management.
+
+* 变量的作用域
+  Variables declared outside of a function are *global variables* and are
+  visible everywhere in a JavaScript program.
+
+  Variables declared inside a function have *function scope* and are visible
+  only to code that appears inside that function.
+* number
+** 综述
+   All numbers in JavaScript are represented as *floating-point*
+   values. JavaScript represents numbers using the 64-bit floating-point format
+   defined by the IEEE 754 standard.
+   
+   Certain operations in JavaScript (such as array indexing and the bitwise
+   operators) are performed with 32-bit integers.
+** 八进制数使用注意
+   Since some implementations support octal literals and some do not, you should
+   never write an integre literal with a leading zero; you cannot know in this
+   case whether an implementation will interpret it as an octal or decimal
+   value. In the strict mode of ECMASript5, octal literals are explicitly
+   forbidden.
+
+** overflow and underflow
+   当操作 number 时出现 overflow 或 underflow 时，会返回 *Infinity* 或
+   *-Infinity* .
+** 除以 0
+   Division by zero is not an error in JavaScript: it simply returns *Infinity*
+   or *-Infinity* . There is one exception, however: zero divided by zero does
+   not have a well-defined value, and the result of this operation is the
+   special not-a-number value, printed as *NaN* .
+
+   *NaN* also arises if you attempt to 
+   + divide infinity by infinity
+   + take the square root of a negative number 
+   + use arithmetic operators with non-numeric operands that cannot be converted
+     to numbers
+     non-numeric operands that 
+
+** 比较 NaN
+   The *NaN* value has one unusual feature in JavaScript: it does not compare
+   equal to any other value, including itself. This means that you can't write 
+   /x == NaN/ to determine whether the value of a variable /x/ is /NaN/
+   . Instead, you should write /x != x/ . That expression will be true if, and
+   only if, /x/ is /NaN/ .
+
+   The function *isNaN()* is similar. It returns *true* if its argument is *NaN*
+   , or if that argument is a non-numeric value such as a string or an
+   object. The related function *isFinite()* returns *true* if its arguments is
+   a number other than /Nan/, /Infinity/ , or /-Infinity/.
+** 比较 0 和 -0
+   The negative zero value is also somewhat unusual. It compares equal (even
+   using JavaScript's strict equality test) to positive zero, which means that
+   the two values are almost indistinguishable, except when used as a divisor.
+
+* text/string
+** 综述
+   A *string* is an immutable ordered sequence of 16-bit values, each of which
+   typically represents a Unicode character --- strings are JavaScript's type
+   for representing text. The *length* of a string is the number of 16-bit
+   values it contains. JavaScript's strings (and its arrays) use zero-based
+   indexing: the first 16-bit value is at position 0, the second at position 1
+   and so on. The /empty string/ is the string of length 0. JavaScript does not
+   have a special type that represents a single element of a string.
+* boolean
+  以下几个被认为是 false:
+  + undefined
+  + null
+  + 0
+  + -0
+  + NaN
+  + ""  						// the empty string
+
+* null 和 undefined
+  若通过 '==' 来比较，返回 true，若通过 '===' 来比较，返回 false.
+
+* object 之间的比较
+  Two object values are the same if and only if they refer to the same
+  underlying object.
+
+  即:
+
+  var o = {x: 1};
+  var p = {x: 1};
+  o === p 返回 false
+  
+  var a = [], b = [];
+  a === b 返回 false
+
+  var a = [];
+  var b = a;
+  b[0] = 1;
+  a[0] 返回 1
+  a === b 返回 true
+* JSON
+** 简介
+   JSON: JavaScript Object Notation, JavaScript 对象表示法。
+   JSON 是存储和交换文本信息的语法，类似 XML。
+   JSON 比 XML 更小、更快、更易解析。
+   JSON 是轻量级的文本数据交换格式。
+   JSON 独立于语言，虽然使用 JavaScript 语法来描述数据对象，但 JSON 仍独立于语言
+   和平台，JSON 解析器和 JSON 库支持许多不同的编程语言。
+** JSON 语法
+*** 语法规则
+	JSON 语法是 JavaScript 对象表示法语法的子集。
+	1)数据在 名称/值 对中。
+	2)数据由逗号分隔。
+	3)花括号保存对象。
+	4)方括号保存数组。
+*** JSON 名称/值 对
+	JSON 数据的书写格式是: 名称/值 对. 如 
+	"firstname": "John"
+*** JSON 值
+	JSON 值可以是:
+	1)数字(整数或浮点数)
+	2)字符串(在双引号中)
+	3)逻辑值(true 或 false)
+	4)数组(在方括号中)
+	5)对象(在花括号中)
+	6)null
+*** JSON 对象
+	JSON 对象在花括号中书写，如:
+	{"firstname":"John", "lastname":"Doe"}
+*** JSON 数组
+	JSON 数组在方括号中书写，数组可包含多个对象.如:
+	{
+	"employee": [
+	{"firstname":"John", "lastname":"Doe"},
+	{"firstname":"Anna", "lastname":"Smith"},
+	{"firstname":"Peter", "lastname":"Jones"}
+	]
+	}
+*** JSON 使用 JavaScript 语法
+	因为 JSON 使用 JavaScript 语法，故无需额外的软件就能处理 JavaScript 中的
+	JSON.
+*** JSON 文件
+	JSON 文件的文件类型是 ".json";
+	JSON 文本的 MIME 类型是 "application/json".
+*** JSON 使用
+	JSON 最常见的用法之一，是从 web 服务器上读取 JSON 数据(作为文件或作为
+	HttpRequest), 将 JSON 数据转换为 JavaScript 对象，然后在网页中使用该数据。
+	eval() 函数使用的是 JavaScript 编辑器，可解析 JSON 文本，然后生成 JavaScript
+	对象。必须把文本包围在括号中，这样才能避免语法错误.
+	如下例子:
+	
+	<html>
+	<body>
+	<h2>通过 JSON 字符串来创建对象</h3>
+	<p>
+	First Name: <span id="fname"></span><br /> 
+	Last Name: <span id="lname"></span><br /> 
+	</p> 
+	<script type="text/javascript">
+	var txt = '{"employees":[' +
+	'{"firstName":"Bill","lastName":"Gates" },' +
+	'{"firstName":"George","lastName":"Bush" },' +
+	'{"firstName":"Thomas","lastName":"Carter" }]}';
+	
+	var obj = eval ("(" + txt + ")");
+	
+	document.getElementById("fname").innerHTML=obj.employees[1].firstName 
+	document.getElementById("lname").innerHTML=obj.employees[1].lastName 
+	</script>
+	</body>
+	</html>

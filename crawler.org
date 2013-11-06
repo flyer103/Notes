@@ -1,6 +1,0 @@
-* 网页中的 mainFrame 和 currentFrame
-  我觉得，网页中可以嵌入网页，因此造成这两个概念，在 QtWebKit 和 PhantomJS 中可
-  以看到。最初的 '主网页' 是 mainFrame，若当前置于嵌入的网页位置时，就处于
-  currentFrame 下。
-
-  在 html 文件中，通过 <frameset> 标签来控制。

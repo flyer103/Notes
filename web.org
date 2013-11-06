@@ -17,3 +17,9 @@
    header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
    header("Cache-Control: no-cache,must-revalidate");
    header("Pragma: no-cache");
+* chrome developer tools
+** Elements 查看标签的问题
+   通过实践，我觉得通过 Elements 查看网页的标签数据时，这个工具会自动添加些标签，
+   而通过 html 源文件查看不到这些标签。
+   这在使用这个工具时要注意这点儿，尤其是要通过标签路径来提取网页元素时要格外注
+   意，解决 Elements 和 html 源文件来确定元素路径。

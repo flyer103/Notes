@@ -316,3 +316,84 @@
 ** 管理 web 项目
 *** 变更生效
 	只有在 commit 后变更才能生效.
+* git-svn
+** Can't locate SVN/Core.pm
+   使用 git svn 时，可能会提示这种错误，是因为缺少 libsvn-perl。按照 LFS 官网上
+   安装 subversion 的帮助文档来安装，可以解决这个问题。
+   我是通过重新编译 subversion 源码来解决的，具体的参考
+   http://www.linuxfromscratch.org/blfs/view/svn/general/subversion.html
+   以下是简要的介绍(以下操作是在解压后的目录中进行, $ 表示普通用户下进行, # 表示
+   root 用户下进行):
+  + 若要在 Apache-2.4.1 中使用 mod_dav_svn.so，需要修改下 subversion 的源码:
+	
+	$ sed -i 's#save_errno#aprerr#' subversion/mod_dav_svn/util.c
+	
+	(Apache-2.2 不需做这种修改)
+  + 接着输入 
+	
+	$ ./configure --prefix=/usr --disable-static && make
+	$ make swig-pl && make swig-py
+	
+	编译 swig-pl 是解决问题的关键。
+  + (Optional)检测
+	
+	$ make check-swig-pl && make check-swig-py
+	
+  + 接着
+	
+	# make install && install -v -m755 -d /usr/share/doc/subversion-1.7.2/ && 
+    cp -v -R doc/* /usr/share/doc/subversion-1.7.2/
+	(注意其中的版本号因系统而异，根据自己当前系统的目录名来改)
+	# make install-swig-pl && make install-swig-py
+** git 和 svn 的主要区别
+   svn 是一种集中式的版本控制工具，即用 svn 作为版本控制时，必须有个中心服务器，
+   所有同一项目必须提交到服务器指定的目录下，在没连接到中心服务器时，不能做提交。
+   而 git 是一种分布式的版本控制工具，即可在本地用 git 做版本控制，随时提交到本地，
+   而且只要安装好 git 即可以使用。也可以把内容提交到服务器端，如很受欢迎的
+   github.com 网站。有了 git,可以随时做版本控制，在能够连接到服务器时，再把内容提
+   交到服务器上。
+   两个简单的对比:
+   http://www.aqee.net/5-fundamental-differences-between-git-svn/
+   http://hi.baidu.com/yuhongchun027/blog/item/442c467e9ec335350cd7daf5.html
+** git 和 svn 迁移的主要思路
+   用 svn 作为版本控制的主体，最终所有的代码都提交到 svn 服务器上。git-svn 工具作
+   为连接 svn 和 git 的桥梁。每个人都可以在本地的目录中使用 git 做版本控制工具，
+   只有在和 svn 服务器进行交互时才使用 git-svn 工具。
+** 基本流程
+   如在 svn 服务器上有个名为 test 的项目，那么现在本地建立个名为 test 的目录，转
+   到 test 目录下，输入
+   $ git svn init svn服务器上test项目地址
+   以本地 svn 服务器为例
+   $ git svn init svn://127.0.0.1/test
+   
+   取出 svn 服务器上 test 项目某个版本的文件,如取出所有 Version3 的文件
+   $ git svn fetch -r3
+   
+   与 svn 服务器端同步,用
+   $ git svn rebase
+   
+   在本地使用 git 的命令做版本控制，在 git commit 后，把所有的内容提交到 svn 服务
+   器端，使用
+   $ git svn dcommit
+   
+   参考:
+   http://flavio.castelli.name/howto_use_git_with_svn
+** svn 常用用法
+   启动 svn 服务器:
+   # svnserve -d -r svn根目录地址
+   
+   将文件 checkout 到本地目录，例
+   $ svn co svn://127.0.0.1/project
+   
+   添加新文件,例
+   $ svn add test.c
+   
+   将改动提交到版本库
+   $ svn commit -m "add test.c" test.c
+   
+   更新
+   $ svn update               # 更新到最新的版本
+* 搭建 git 服务器
+  参见 
+  http://www.rosoo.net/a/201102/10956.html
+  http://blog.csdn.net/wirror800/article/details/5189564
