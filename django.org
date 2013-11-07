@@ -28,6 +28,81 @@
 * Model
 ** sync 数据库后又修改了 model
    此时需要先删除修改的表，然后再 manage.py sync.
+** 设置 primary key
+   可在 model 的 field 中加参数 "primary_key=True".
+* View
+** 功能.
+   A view is a callable which takes a request and returns a response.
+** function-based views
+** class-based views
+*** 概述
+	Allow you to structure your views and reuse code by harnessing inheritance
+	and mixins.
+
+	All views inherit from the *View* class, which handles 
+	  + linking the view in the URLs
+      + HTTP method dispatching
+      + other simple features.
+
+	重要的 method:
+	+ class.as_view(*initkwargs*)
+	  Returns a callable view that takes a request and returns a response.
+
+	  Any arguments passed to *as_view* will override attributes set on the
+      class.
+
+	  It servers as the callable entry point to your class. The *as_view()*
+      entry point creates an instance of your class and calls its *dispatch()*
+      method. *dispatch()* looks at the request to determine whether it is a
+      GET, POST, etc, and relays the request to a matching method if one is
+      defined, or raises *HttpResponseNotAllowed* if not.
+
+	  返回的是 HttpResponse object.
+*** 与 function-based views 对比优势
+	Class-based views do not replace function-based views, but have advantages:
+	+ Organization of code related to specific HTTP methods (GET, POST, etc.)
+      can be addressed by separate methods instead of conditional branching.
+	+ Object oriented techniques such as mixins (multiple inheritance) can be
+      used to factor code into reusable components.
+*** 两种使用方法
+	+ simple usage in your URLconf
+	  直接在 url 配置文件中使用三个基本的 view class.
+	+ subclassing generic views
+	  在 view 文件中写个继承自 view class 的 class，然后在 url 配置中使用该
+      class.
+*** 三个基础 View Class
+	+ *View*
+	  class django.views.generic.base.View
+	  
+	  The master class-based base view. All other class-based views inherit
+      from this base class.
+	+ *TemplateView*
+	  class django.views.generic.base.TemplateView
+	  
+	  Renders a given template, with the context containing parameters captured
+      in the URL.
+    + *RedirectView*
+	  class django.views.generic.base.RedirectView
+	  
+	  Redirects to a given URL.
+*** Note
+	+ You can only inherit from one generic view -- that is, only on parent
+      clss may inherit from *View* and the rest (if any) should be
+      mixins. Trying to inherit from more than one class that inherits
+      from *View* won't work as expected.
+** generic views
+*** 概述
+	本质上也是 class-based views，只是把 web 开发过程中使用 class-based views 时
+	的一些共性抽象出来，形成可以完成一类任务的 class-based views.
+
+	如果使用 generic views 过程中发现逻辑上处理越来越困难，可重新选择
+	function-based views 或 class-based views.
+*** class attributes
+	+ model
+	  指示使用的 model
+	+ context_object_name
+	  定义模板中使用的与 model 数据相关的名称，修改 generic views 默认的名称，使
+      可读性更强
 * Form
 ** 包含 4 种概念
    + Widget
@@ -148,3 +223,42 @@
 *** Refer
    http://django-china.cn/topic/101/
    http://django-china.cn/topic/124/
+* Tips & Best Practice
+** views 中通过 render 向模板中传入 dict 类型数据
+   views 中通过 model 获得的是一个 object，可通过如下类似方法把它转化为模板能正
+   确处理的 dict 类型:
+
+   # views.py 的某个 view 函数中
+   profile		= SomeModel.object.get(some_condition).__dict__
+   res			= {'profiles': profile}
+   return render(request, 模板, res)
+
+   模板中直接使用 dict 类型的 'profiles' 变量.
+** 展示静态页面时用 TemplateView
+   如在 urls.py 中配置
+
+   from django.conf.urls import patterns, url
+   from django.views.generic import TemplateView
+
+   urlpatterns = patterns('',
+       url(r'^about/', TemplateView.as_view(template_name="about.html"))
+   )
+** url 命名
+   这样做是为了避免在 view 或 template 中 hardcode url 路径，这样对 url 的修改仅
+   用在 url 的配置文件中进行.
+
+   在主项目的 urls.py 中进行如下类似操作：
+
+   urlpatterns = patterns('',
+       url(r'url路径', include(app名.url, name='url名')),
+   )
+
+   然后在 app 的 urls.py 中进行如下类似操作：
+
+   urlpatterns = patterns('',
+       url(r'url路径', 相应的 view, name='app中url名')
+   )
+
+   在 template 中需要使用路径时，进行如下类似操作:
+
+   <a href="{% url 'url名:app中url名' [传给app中url的参数] %}"></a>

@@ -431,4 +431,6 @@
 * 代码变量自动对齐
   选中后, M-x align 即可。
 
-  Refer: [[http://stackoverflow.com/questions/915985/in-emacs-how-to-line-up-equals-signs-in-a-series-of-initialization-statements][stackoverflow]]
+  Refer: 
+  + [[http://stackoverflow.com/questions/915985/in-emacs-how-to-line-up-equals-signs-in-a-series-of-initialization-statements][ref1]]
+  + [[http://stackoverflow.com/questions/3633120/emacs-hotkey-to-align-equal-signs][ref2]]
