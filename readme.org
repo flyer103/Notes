@@ -5,3 +5,7 @@
   这些笔记都是在 Emacs org-mode 下记录的,使用 Emacs 可以有最好的体验.且 Emacs 下
   的 org-mode 不用配置,主要有 Emacs 就可以轻松阅读这些文件.
   其它文本编辑器也可以打开这些文件,但效果没有 Emacs 好.
+* Note:
+  + 'emacs' 是我使用的 Emacs 配置文件，目前没有很好整理，暂时把该配置通过
+    github 管理。使用时，提示缺哪个 extension 就下哪个 extension，可通过 el-get
+    方便下载和管理包.

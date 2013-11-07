@@ -1,8 +1,8 @@
-* 1、不重启更新emacs设置
+* 不重启更新emacs设置
    在 .emacs 中， C-x C-e 执行光标前面的一条语句
    还可 M-x load-file ~/.emacs
    M-x eval-buffer
-* 2、不能使用 fcitx
+* 不能使用 fcitx
   有以下几种原因:
   + 可能是系统字体环境的设置问题
     可把 /etc/X11/xorg.conf-vesa 中多余的字体路径注释掉。
@@ -14,7 +14,7 @@
 	参考 fcitx-diagnose 的打印信息，可知道若要在 Emacs 中使用 fcitx，需要设置
     locale 为 zh_CN.UTF-8 之类的.或者通过如下方法使用 Emacs:
 	$ LC_CTPYE='zh_CN.UTF-8' emacs
-* 3、org-mode 
+* org-mode 
 ** 使用技巧
    字体加粗 *bold*
    斜字体 /italics/
@@ -24,7 +24,10 @@
 	在用 '|||' 这样的形式添加一行数据后,在行尾执行 'C-c RET' 即可生成表头.
 ** 链接
    修改链接：当光标置于一个链接上时，通过 'C-c C-l' 可编辑该链接.
-* 4、编程相关
+   添加链接: [ [link][link名]]
+       + 注意上面的格式中 '[ [' 之间没有空白符，先编辑 'link名'，再编辑 'link'
+   自动跳转到 link: 光标移动到 link 上，然后 C-c C-o
+* 编程相关
 ** 1、编译程序
    先 M-x compile 
    在出现的提示中输入编译命令，然后会出现一个 *compilation* buffer。
@@ -86,36 +89,36 @@
     C-c C-u : 转到目前预定义条件开头
     C-c C-p : 转到前一个预定义条件
     C-c C-n : 转到下一个预定义条件
-* 5、kill 命令
+* kill 命令
    可通过 M-x kill- 然后 TAB 补全看看可能的命令，我觉得一个比较有用的
    是
    M-x kill-buffer 
    可以结束一个 buffer，然后通过 C-x 0 来关闭。
-* 6、执行 shell 命令
+* 执行 shell 命令
    可通过三种方法：
    M-x shell
    M-x eshell
    M-!
    其中前两种方法都是在 Emacs 中打开一个 shell，第三种方法是一次只执行
    一条 shell 命令。
-* 7、终止命令
+* 终止命令
    C-g
-* 8、添加 man 帮助
+* 添加 man 帮助
    可通过 M-x man 来调用 man 帮助。也可在 ~/.emacs 中添加一个快捷键，
    如
    (global-set-key [(f8)] 'man)
-* 9、搜索帮助
+* 搜索帮助
    C-h i
    这个很有用，各种帮助信息.
    C-c C-h
    可显示当前模式下可用的命令及其绑定键。
-* 10、显示 C 函数原型
+* 显示 C 函数原型
    可用 c-eldoc.el ，只能用于 C 函数，显示函数原型的首要条件
    是 #include 中包含这个函数，每次都会在 minibuffer 中自动显示。
-* 11、Tab 补全获得帮助
+* Tab 补全获得帮助
    可以经常在 M-x 输入命令时通过 Tab 补全查看下可用的命令，这个很有帮
    助。
-* 12、cedet 
+* cedet 
 *** 1、简介
     The Cedet package is a collection of serveral libraries,
     implementing differen commands, but used for one task —— provide
@@ -162,29 +165,29 @@
      M-x semantic-ia-fast-jump
      这就会自动跳转到函数的定义处，若想返回，则执行
      C-x B
-* 13、ecb
+* ecb
    启动时用 M-x ecb-activate 或 M-x ecb-minor-mode 或 M-x
    ecb-byte-compile 或 M-x ecb-show-help
    很有帮助.
-* 14、显示当前所有 buffer
+* 显示当前所有 buffer
    C-x C-b
    若想关闭某个 buffer，则通过 M-x kill-buffer 然后在出现的提示中，输
    入如下格式的 buffer 名
    *buffer_name*
-* 15、放大、缩小字体
+* 放大、缩小字体
    放大字体:C-x C-+ 或 C-x C-=
    缩小字体:C-x C--
    重置字体:C-x C-0
    若要连续放大或缩小字体，第二次直接按 +、-、0 即可。
-* 16、中文输入法
+* 中文输入法
    可用 Emacs 自动的中文输入法，通过 C-x RET C-\ SPC 来选择，可直接通
    过 C-\ 来调用。
    也可用eim 输入法，具体配置参见 Google 搜索。
-* 17、搜索
+* 搜索
    可通过 C-s 继续查看下一个搜索结果。
    通过 C-r 继续查看上一个搜索结果。
    正则搜索：C-M-s 或 C-M-r
-* 18、设置 Emacs 初始窗口大小和位置
+* 设置 Emacs 初始窗口大小和位置
    可在 ~/.Xdefaults 或 ~/.emacs 中修改，前者的优先级高于后者。
    在 ~/.Xdefaults 中修改方法：
    Emacs.geometry: WIDTHxHEIGHT+XOFF+YOFF
@@ -194,16 +197,16 @@
        (width . 100) (menu-bar-lines . 20) 
        (tool-bar-lines . 0)))
        建议第一种方法。
-* 19、下载包的工具
+* 下载包的工具
    ELPA
    按下 M-x,输入 package-list-packages 即可看到提供的包。
-* 20、查找替换字符串
+* 查找替换字符串
    M-x replace-string 这时替换是替换完全匹配的。
    M-x replace-regexp 这时可以用正则表达式匹配替换。
    Alt+%  交互式查找替换。
-* 21、另存为
+* 另存为
    C-x C-w
-* 22、安装 pymacs
+* 安装 pymacs
    进入 pymacs 的安装包，执行
    $ python pppp -C ppppconfig.py *.in Pymacs contrib tests
    $ python setup.py install
@@ -218,19 +221,19 @@
    (autoload 'pymacs-eval "pymacs" nil t)
    (autoload 'pymacs-exec "pymacs" nil t)
    (autoload 'pymacs-load "pymacs" nil t)
-* 23、大小写转换
+* 大小写转换
    M-u
    光标所在处的字符所在的单词转化为大写
    M-l
    光标所在处的字符所在的单词转化为小写
    M-c
    光标所在处的字符所在的单词首字母大写
-* 24、不插网线时启动慢
+* 不插网线时启动慢
    因为 Emacs 采用的是 C/S 模型，在启动时需要访问 /etc/hosts 文件，在该文件中添
    加 
    127.0.0.1 自己的hostname
    就行.
-* 25、编译成字节码加快启动速度
+* 编译成字节码加快启动速度
    可把 Emacs 的 .el 文件编译成字节码来加快启动速度，方法是先打开 .el 文件，然后
    M-x emacs-lisp-byte-compile
    会生成 .elc 文件，再把这些 .elc 文件的属性加上 x 就可。
@@ -241,7 +244,7 @@
    $ emacs -batch -f byte-compile-file
    可以使用如下命令进行批处理:
    C-u 0 M-x byte-recompile-directory
-* 26、多行注释
+* 多行注释
    选中一块儿区域，然后
    M-x comment-region
    或 
@@ -250,7 +253,7 @@
    M-;
    在通过 M-x comment- 然后 TAB 键补全后可以发现其余的几种注释方法，尤其是
    comment-box 很有用。
-* 27、比较不同
+* 比较不同
 *** 1、ediff 功能
     ediff 可以比较两个或三个文件间的不同，也可以比较两个或三个 emacs-buffer 的不同。
     同时，它还可以把正比较的文件合并成新的文件。
@@ -271,7 +274,7 @@
     M-x ediff
     后再按 Tab 键，可发现它有很多其它功能可以用，但我常用的是这两个，其它的功能用
     的不多。
-* 28、执行 elisp 语句
+* 执行 elisp 语句
    在语句最后一个括号后后按 
    C-x C-e
    这样默认是在 minibuffer 中显示结果。
@@ -282,11 +285,11 @@
    的函数，则要先在函数定义后按
    C-x C-e
    然后再执行自定义的函数。
-* 29、格式化代码
+* 格式化代码
    C-M-\
    或
    M-x indent-region
-* 30、隐藏显示代码
+* 隐藏显示代码
    配置好 outline-minor-mode 后，有如下快捷键：
    | show-all       | C-c C-a | 显示所有折叠的代码   |
    | hide-subtree   | C-c C-d | 折叠子树             |
@@ -295,14 +298,14 @@
    | hide-entry     | C-c C-c | 折叠项中内容         |
    | show-subtree   | C-c C-s | 显示子树中的所有内容 |
    | hide-sublevels | C-c C-q | 折叠展开的子树              |
-* 31、去掉 ^M 、^L
+* 去掉 ^M 、^L
    在 Linux 下用 Emacs 打开 Windows 下编辑的文件时, 可能会在每行末出现 ^M 符号，
    这是由于 Linux 和 Windows 换行的方式不同。除去该符号的方法:
    M-x replace-string RET C-q C-m RET
    注意 'C-q' 和 'C-m' 是表示按下这个组合键。
 
    ^L 表示 page break. 在 Emacs 中，通过 C-q C-l 可以生成该字符.
-* 32、文件编码
+* 文件编码
 ** 设置编码
    一般可在 ~/.emacs 中添加如下形式的语句:
 
@@ -348,18 +351,18 @@
 ** best practice
    + 通过 hexl-mode 查看文件的 16 进制形式
 	 若怀疑文件编码的问题，可通过 hexl-mode 查看文件的 16 进制形式判断.
-* 33、ffap 在文件中直接定位文件
+* ffap 在文件中直接定位文件
    在 ~/.emacs 中编辑
    
    (require 'ffap)
    (global-set-key (kbd "C-4") 'ffap)
    
    之后在程序中，出现文件名的地方按下 C-4，则会显示出该文件的路径。
-* 34、查看当前 Emacs 版本 
+* 查看当前 Emacs 版本 
    M-x emacs-version
-* 35、方便使用 Elisp 的方法
+* 方便使用 Elisp 的方法
   M-x ielm
-* 36、删除文件中所有空行
+* 删除文件中所有空行
   M-x flush-lines
   匹配时可用如下的正则表达式:
   ^[ ]*$
@@ -403,3 +406,25 @@
   重新打开 Emacs 或执行
 
   M-x eval-buffer
+* 包管理器 el-get
+** 项目地址
+   [[https://github.com/dimitri/el-get][github地址]]
+** 常用操作
+*** adding and removing packages
+	+ M-x el-get-install
+    + M-x el-get-remove
+    + M-x el-get-reinstall
+*** keeping to update
+	+ M-x el-get-self-update
+	  更新指定的包
+	+ M-x el-get-update
+	+ M-x el-get-update-all
+	+ M-x el-get-reload
+*** viewing available recipes
+	+ M-x el-get-list-packages
+	+ M-x el-get-describe
+	+ M-x el-get-find-recipe-file
+* 自动缩进
+  默认是通过 C-j 来执行的，也可在 ~/.emacs 中添加如下语句来通过回车键来自动缩进:
+
+  (define-key global-map (kbd "RET") 'newline-and-indent)
