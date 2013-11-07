@@ -1,3 +1,5 @@
+* 说明
+  该文档针对 django1.5
 * 创建相关
   创建一个项目
   $ django-admin.py startproject 项目名
@@ -23,6 +25,22 @@
 
   查看某个 app 数据库所有相关的
   $ python manage.py sqlall app
+* Model
+** sync 数据库后又修改了 model
+   此时需要先删除修改的表，然后再 manage.py sync.
+* Form
+** 包含 4 种概念
+   + Widget
+	 A class that corresponds to an HTML form widget, e.g. <input type='text'>
+     or <textarea>. This handles rendering of the widgets as HTML.
+   + Field
+	 A class that is responsible for doing validation, e.g. an 'EmailField'
+     that makes sure its data is a valid email address.
+   + Form
+	 A collection of fields that knowns how to validate itself and display
+     itself as HTML.
+   + Form Media
+	 The CSS and JavaScript resources that are required to render a form.
 * 测试
 ** TDD (Test Driven Development)
    先写测试后写代码，思维过程是 "描述问题-->解决问题".
