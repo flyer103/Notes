@@ -87,10 +87,10 @@
 	  Redirects to a given URL.
 *** Note
 	+ You can only inherit from one generic view -- that is, only on parent
-      clss may inherit from *View* and the rest (if any) should be
+      class may inherit from *View* and the rest (if any) should be
       mixins. Trying to inherit from more than one class that inherits
       from *View* won't work as expected.
-** generic views
+** generic class-based views
 *** 概述
 	本质上也是 class-based views，只是把 web 开发过程中使用 class-based views 时
 	的一些共性抽象出来，形成可以完成一类任务的 class-based views.
@@ -100,9 +100,169 @@
 *** class attributes
 	+ model
 	  指示使用的 model
+	+ queryset
+	  作用和 *model* 参数一样，指明该 view 处理的 data objects.但它可提供
+      比 *model* 参数灵活的方法，如只获取指定的 data objects.
+
+	  e.g.
+
+	  from django.views.generic import DetailView, ListView
+	  from books.models import Publisher, Book
+
+	  class PublisherDetail(DetailView):
+	      queryset				= Publisher.objects.all()
+	      context_object_name	= 'publisher'
+
+	  class BookList(ListView):
+	      queryset				= Book.objects.order_by('-publication_date')
+	      context_object_name	= 'book_list'
+
+	  class AcmeBookList(ListView):
+	      queryset				= Book.objects.filter(publisher__name='Acme Publishing')
+	      context_object_name	= 'book_list'
+	      template_name			= 'books/acme_list.html'
 	+ context_object_name
-	  定义模板中使用的与 model 数据相关的名称，修改 generic views 默认的名称，使
-      可读性更强
+	  定义模板中使用的与 model 数据相关的名称，修改 generic views 默认的名称 (如
+      *ListView* 的派生类会默认使用 *object_list* 或 *model名的小写_list* 作为传
+      给 template 的参数)，使可读性更强.
+	+ template_name
+	  指定使用的 template 名称，虽然 generic class-based views 可以根据一个
+      model 来猜测使用的 template 名称，但最好显示指出.
+*** object methods
+	+ get_context_data(self, **kwargs)
+	  - e.g.
+		
+	    class PublisherDetail(DetailView):
+	        model = Publisher
+
+            def get_context_data(self, **kwargs):
+	            # call the base implementaion first to get a context
+	            context = super(PublisherDetail, self).get_context_data(**kwargs)
+	            # Add in a QuerySet of all the books
+                context['book_list'] = Book.objects.all()
+
+	            return context
+	  - Note
+		Generally, *get_context_data* will merge the context data of all parent
+        classes with those of the current class. To preserve this behavior in
+        your own classes where you want to alter the *context* , you sould be
+        sure to call *get_context_data* on the super class. When no two classes
+        try to define the same key, this will give the expected
+        results. However, if any class attempts to override a key after parent
+        classes have set it (after the call to *super*), any children of that
+        class will also need to explictly set it after *super* if they want to
+        be sure to override all parents.
+    + get_queryset()
+	  - 作用
+		类似 *model* 和 *queryset* 参数，获取该 view class 要处理的 data
+        objects.
+	  - e.g.
+		# urls.py
+		from books.views import PublisherBookList
+
+		urlpatterns = patterns('',
+		  (r'^books/([\w-]+/$)', PublisherBookList.as_view())
+	    )
+
+		# views.py
+		from django.shortcuts import get_object_or_404
+		from django.views.generic import ListView
+		from books.models import Book, Publisher
+
+		class PublisherBookList(ListView):
+		    template_name = "books/books_by_publisher.html"
+		
+		    def get_queryset(self):
+		        self.publisher = get_object_or_404(Publisher, name=self.args[0])
+		        
+		        return Book.objects.filter(publisher=self.publisher)
+    + get_object()
+	  - 作用
+	    It will do some extra work before calling the generic view.
+	  - e.g.
+		# models.py
+		class Author(models.Model):
+		    salutation			= models.CharField(max_length=10)
+		    name				= models.CharField(max_length=200)
+		    email				= models.EmailField()
+		    headshot			= models.ImageField(upload_to='autho_headshots')
+		    last_accessed		= models.DateTimeField()
+
+		# urls.py
+		from books.views import AuthorDetailView
+
+		urlpatterns = patterns('',
+		    url(r'^authors/(?P<pk>\d+)/$', AuthorDetailView.as_view()),
+	    )
+
+		# views.py
+		from django.views.generic import DetailView
+		from django.shortcuts import get_object_or_404
+		from django.utils import timezone
+		from books.models import Author
+
+		class AuthorDetailView(DetailView):
+		    queryset = Author.objects.all()
+		
+		    def get_object(self):
+		        # call the superclass
+		        object = super(AuthorDetailView, self).get_object()
+		        # Record the last accessed date
+		        object.last_accessed = timezone.now()
+		        object.save()
+
+		        return object
+*** generic display views
+**** DetailView (working with a single Django object)
+	 class django.views.generic.detail.DetailView
+
+	 While this view is executing, *self.object* will contain the object that
+	 the view is operating upon.
+
+	 To show the detail of an object, we basically need to do two things:
+	   1) look up the object and then,
+	   2) make a *TemplateResponse* with a suitable template, and that object
+          as context
+		  
+     To get the object, *DetailView* relies on *SingleObjectMixin*, which
+     provides a *get_object* method that figures out the object based on the
+     URL of the request (it looks for *pk* and *slug* keyword arguments as
+     declared in the URLConf, and looks the object up either from *model*
+     attribute on the view, or the *queryset* attribute if that's
+     provided). *SingleObjectMixin* also overrides *get_context_data()* , which
+     is used across all Django's built in class-based views to supply context
+     data for template renders.
+**** ListView (working with many Django objects)
+	 class django.views.generic.list.ListView
+
+	 While this view is executing, *self.object_list* will contain the list of
+	 obejcts (usually, but not necessarily a queryset) that the view is
+	 operating upon.
+
+	 The rough work flowchart of *ListView* is:
+	   1) we need a (possibly paginated) list of objects, typically
+          a *QuerySet*, then
+	   2) we need to make a *TemplateResponse* with a suitable template using
+          that list of objects.
+
+	 To get the objects, *ListView* uses *MultipleObjectMixin*, which provides
+	 both *get_queryset()* and *paginate_queryset()*. Unlike
+	 with *SingleObjectMixin*, there's no need to key off parts of the URL to
+	 figure out the queryset to work with, so the default just uses
+	 the *queryset* or *model* attribute on the view class. A common reason to
+	 override *get_queryset()* here would be dynamically vary the objects, such
+	 as depending on the current user or to exclude posts in the future for a
+	 blog.
+
+	 *MultipleObjectMixin* also overrides *get_context_data()* to include
+	 appropriate context variables for pagination (providing dummies if
+	 pagination is disabled). It relies on *object_list* being passed in as a
+	 keyword argument, which *ListView* arranges for it.
+**** Ref
+	 + [[https://docs.djangoproject.com/en/1.5/ref/class-based-views/generic-display/][django1.5文档]] 不太理解
+     + [[https://docs.djangoproject.com/en/1.5/topics/class-based-views/mixins/][Using mixins with class-based views]]
+*** Ref
+	+ [[https://docs.djangoproject.com/en/1.5/topics/class-based-views/mixins/][Using mixins with class-based views]]
 * Form
 ** 包含 4 种概念
    + Widget
@@ -116,6 +276,100 @@
      itself as HTML.
    + Form Media
 	 The CSS and JavaScript resources that are required to render a form.
+** 常规需要处理的 3 种类型
+   + Initial GET (blank or prepolulated form)
+   + POST with invalid data (typically redisplay form with errors)
+   + POST with valid data (process the data and typically redirect)
+** 可通过 class-based views 实现
+*** Basic Usage
+	# forms.py
+	from django import forms
+	
+	class ContactForm(forms.Form):
+	    name	= forms.CharField()
+		message = forms.CharField(widget=forms.Textarea)
+
+		def send_email(self):
+		    # send email using the *self.cleaned_data* dict
+		    pass
+
+	# views.py
+	from myapp.forms import ContactForm
+	from django.views.generic.edit import FormView
+
+	class ContactView(FormView):
+	    template_name	= 'contact.html'
+		form_class		= ContactForm
+		successful_url	= '/thanks/'
+
+		def form_valid(self, form):
+		    # This method is called when valid form data has been POSTed
+		    # The default implementation for *form_valid()* simply redirects
+		    # to the *successful_url*
+		    # It should return an *HttpResponse*
+		    form.send_email()
+			return super(ContactForm, self).form_valid(form)
+*** Model Forms
+	+ 概述
+	  The following generic views will automatically create a *ModelForm*, so
+      long as they can work out which model class to use:
+	  1) If the *model* attribute is given, that model class will be used
+	  2) if *get_object()* returns an object, the class of that object will be
+         used.
+      3) If a *queryset* is given, the model for that queryset will be used.
+
+	  Model form views provide a *form_valid()* implementation that saves the
+      model automatically.
+
+	  You don't need to provide a *successful_url* for *CreateView*
+      or *UpdateView* -- they will use *get_absolute_url()* on the model object
+      if available.
+
+	  If you want to use a custom *ModelForm* (for instance to add extra
+      validation), simply set *form_class* attribute on your view. At the same
+      time, you must specify the model.
+	+ e.g.
+	  # models.py
+	  from django.core.urlresolvers import reverse
+	  form django.db import models
+
+	  class Author(models.Model):
+	      name = models.CharField(max_length=200)
+
+	      def get_absolute_url(self):
+	          return reverse('author-detail', kwargs={'pk': self.pk,})
+
+	  # views.py
+	  from django.views.generic.edit import CreateView, UpdateView, DeleteView
+	  from django.core.urlresolves import reverse_lazy
+	  from myapp.models import Author
+
+	  class AuthorCreate(CreateView):
+	      model			= Author
+	      template_name = 'some_template'
+
+	  class AuthorUpdate(UpdateView):
+	      model			= Author
+	      template_name = 'some_template'
+
+	  class AuthorDelete(DeleteView):
+	      model					= Author
+	      successful_url		= reverse_lazy('autho-list')
+	      template_name			= 'some_template'
+
+	  # urls.py
+	  from django.conf.urls import patterns, url
+	  from myapp.views import AuthorCreate, AuthorUpdate, AuthorDelete
+
+	  urlpatterns = patterns('',
+	      url(r'author/add/$', AuthorCreate.as_view(), name='author_add'),
+	      url(r'author/(?P<pk>\d+)/$', AuthorUpdate.as_view(),
+              name='author_update'),
+	      url(r'author/(?P<pk>\d+)/delete/$', AuthorDelete.as_view(), 
+	          name='author_delete'),
+	  )
+*** Ref
+	+ [[https://docs.djangoproject.com/en/1.5/topics/class-based-views/generic-editing/][Form handling with class-based views]]
 * 测试
 ** TDD (Test Driven Development)
    先写测试后写代码，思维过程是 "描述问题-->解决问题".
