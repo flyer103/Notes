@@ -26,10 +26,367 @@
   查看某个 app 数据库所有相关的
   $ python manage.py sqlall app
 * Model
+** Basics
+   A model is the single, definitive soure of the information about your data.
+
+   Includings three basic things:
+   + Each model is a Python class that subclass *django.db.models.Model*
+   + Each attribute of the model represents a databases field
+   + With all of this, Django gives you an automatically-generated
+     database-access API.
 ** sync 数据库后又修改了 model
    此时需要先删除修改的表，然后再 manage.py sync.
-** 设置 primary key
-   可在 model 的 field 中加参数 "primary_key=True".
+** table name
+   Django automatically derives the name of the database table from the name of
+   your model class and the app that contains it. A model's database table name
+   is constructed by joining the model's "app label" -- the name you used
+   in *django-admin.py startapp* -- to the model's class name (converted to
+   lower-case), with an underscore between them.
+
+   To override the database table name, use the *db_table* parameter in
+   class *Meta*.
+
+   Note:
+   + If your database table name is an SQL reserved word, or contains
+     characters that aren't allowed in Python variable names -- notably, the
+     hyphen -- that's OK. Django quotes column and table names behind the
+     scenes.
+** Using models
+   Do this by editing your settings file and changing the *INSTALLED_APPS*
+   setting to add the name of the module that contains your *models.py*.
+
+   Note:
+   + When adding new apps to *INSTALLED_APPS*, be sure to run *python manage.py
+     syncdb*
+** Field
+*** 概述
+	Each field in your model should be an instance of the appropriate *Field*
+	class. Django uses the field class types to determine a few things:
+	  + The database column type (e.g. *INTEGER*， *VARCHAR*)
+	  + The default HTML widget to use when rendering a form field 
+	    (e.g. *<input type="text">*, *<select>*)
+	  + The minimal validation requirements, used in Django's admin and in
+        automatically-generated forms
+*** types used commonly
+	提醒：
+	+ 笔记中仅包含了我认为我会常用到的，没有列出全部的 field types.
+
+	Bool:
+	+ BooleanField(**options)
+	  A true/false field.
+
+	  The default form widget for this field is a *CheckboxInput*
+
+	Text:
+	+ CharField(max_length=None[, **options])
+	  A string field, for small- to large-sized strings.
+
+	  The default form widget for this field is a *TextInput*.
+	  
+	  The maximum length (in characters) is enforced at the database level and
+      in Django's validation.
+	+ TextField([**options])
+	  A large text field.
+
+	  The default form widget for this field is a *Textarea*.
+	+ SlugField([max_length=50, **options])
+	  Implies setting *Field.db_index* to *True.*
+
+	Time:
+	+ DateField([auto_now=False, auto_now_add=False, **options])
+	  A date, represented in Python by a *datetime.date* instances.
+
+	  The default form widget for this field is *TextInput*.
+	  The admin adds a JavaScript calendar, and a shortcut
+      for *Today*. Includes an additional *invalid_date* error message key.
+
+	  The two useful options:
+	  - DateField.auto_now
+		Automatically set the field to now _every time the object is saved._
+		Useful for "last-modified" timestamps.
+	  - DateField.auto_now_add
+		Automatically set the field to now _when the object is first created_
+		Useful for creation of timestamps.
+
+	  Note:
+	  - In Django1.5, setting *auot_now* or *auot_now_add* to *True* will cause
+        the field to have *editable=False* and *blank=True* set.
+    + DateTimeField([auto_now=False, auto_now_add=False, **options])
+	  A date and time, represented in Python by a *datetime.datetime* instance.
+
+	  The default form widget for this field is a single *TextInput*.
+	  The admin uses two separate *TextInput* widgets with JavaScript shortcuts.
+	+ TimeField([auto_now=False, auto_now_add=False, **options])
+	  A time, represented in Python by a *datetime.time* instance.
+
+	  The default form widget for this field is a *TextInput*.
+	  The admin adds some JavaScript shortcuts.
+
+    Number:
+	+ DecimalField(max_digits=None, decimal_places=None[, **options])
+	  A fixed-precision decimal number, represented in Python by a *Decimal*
+      instance.
+
+	  The default form widget for this field is a *TextInput*.
+
+	  The two required arguments:
+	  - DecimalField.max_digits
+		The maximum number of digits allowed in the number. Note that this
+        number must be greater than or equal to *decimal_places*
+	  - DecimalField.decimal_places
+		The number of decimal places to store with the number.
+    + FloatField([**options])
+	  A floating-point number represented in Python by a *float* instance.
+
+	  The default form widget for this is a *TextInput*.
+    + IntegerField([**options])
+	  An integer.
+
+	  The default form widget for this field is a *TextInput*.
+	+ PositiveIntegerField([**options])
+	  Like an *IntegerField*, but must be either positive or zero.
+	+ PositiveSmallIntegerField([**options])
+	  Like a *PositiveIntegerField*, but only allows values under a certain
+      (database-dependent) point. Values up to 32767 are safe in all databases
+      supported by Django.
+	+ BigIntegerField([**options])
+	  A 64 bit integer.
+
+	  The default form widget for this field is a *TextInput*
+	+ SmallIntegerField([**options])
+	  Like an *IntegerField*, but only allows values under a certain
+      (database-dependent) point. Values from -32768 to 32768 are safe in all
+      databases supported by Django.
+
+	Email:
+    + EmailField([max_length=75, **options])
+	  A *CharField* that checks that the value is a valid email address.
+
+	IP:
+	+ IPAddressField([**options])
+	  An IP address, in string format (e.g. "192.168.0.1").
+
+	  The default form widget for this field is a *TextInput*.
+	+ GenericIPAddressField([protocol=both, unpack_ipv4=False, **options])
+	  An IPv4 or IPv6 address, in string format. All characters are converted
+      to lowercase.
+
+	  The default form widget for this field is a *TextInput*.
+
+	  The two useful options:
+	  - GenericIPAddressField.protocol
+		Limits valid inputs to the speicific protocol. Accepted values
+        are *both* (default), *IPv4* or *IPv6*. Matching is case insensitive.
+	  - GenericIPAddressField.unpack_ipv4
+		Unpacks IPv4 mapped address like *:ffff:192.0.2.1*. If this option is
+        enabled that address would be unpacked to *192.0.2.1*. Can only be used
+        when *protocol* is set to *both*.
+
+    URL:
+	+ URLField([max_length=200, **options])
+	  A *CharField* for a URL.
+
+	  The default form widget for this field is a *TextInput*.
+
+	  The current value of the field will be displayed as a clickable link
+      above the input widget.
+*** common options
+	+ null
+	  If *True*, Django will store empty values as *NULL* in the databases.
+	  Default is *False*.
+	+ blank
+	  If *True*, the field is allowed to be blank.
+	  
+	  Default is *False*.
+
+	  This is different than *null*. *null* is purely _database-related_,
+      whereas *blank*  is _validation-realted_. If a field has *blank=True*,
+      form validation will allow entry of an empty value. If a field
+      has *blank=False*, the field will be required.
+	+ choices
+	  An iterable of 2-tuples to use as choices for this filed. If this is
+      given, the default form widget will be a select box instead of the
+      standard text field and will limit choices to the choices given.
+
+	  The first element in each tuple is the value that will be stored in the
+      database.
+	  The second element will be displayed by the default form widget or in
+      a *ModelChoieField*.
+	  Given an instance of a model object value for a choices field can be
+      accessed using the *get_FOO_display* method.
+
+	  - e.g.
+		from django.db import models
+
+		class Person(models.Model):
+		    SHIRT_SIZES = (
+		        ('S', 'Small'),
+		        ('M', 'Medium'),
+                ('L', 'Large'),
+	        )
+		    name = models.CharField(max_length=50)
+		    shirt_size = models.CharField(max_length=1, choices=SHIRT_SIZES)
+
+		>>> p = Person(name='Fred Flinstone', shirt_size='L')
+		>>> p.save()
+		>>> p.shirt_size()    # return 'L'
+        >>> p.get_shirt_size_display()    # return 'Large'
+    + default
+	  The default value for the field. This can be a value or a callable
+      object. If callable, it will be called every time a new object is created.
+	+ help_text
+	  Extra "help" text to be displayed with the form widget.
+	  It's useful for documentation even if your field isn't used on a form.
+	+ primary_key
+	  If *True*, this field is the primary key for the model.
+	  If you don't specify *primary_key=True* for any field in your model,
+      Django will automatically add an *IntegerField* to hold the primary key.
+
+	  - Note:
+		If Django sees you've explicitly set *Field.primary_key*, it won't add
+        the automatic *id* column.
+    + unique
+	  If *True*, this field must be unique throughout the table.
+*** verbose field names
+	可在定义 field object 时附加一个注释性的字符串.
+
+	Each filed type, except for *ForeignKey*, *ManyToManyField*
+	and *OneToOneField*, takes an optional _first positional argument_
+	-- a verbose name. If the verboes name isn't given, Django will
+	automatically create it using the field's attribute name, converting
+	underscores spaces.
+	*ForeignKey*, *ManyToManyField* and *OneToOneField* require the first
+	argument to be a model class, so use the *verbose_name* keyword argument.
+
+	+ e.g.
+	  first_name = models.CharField("person's first name", max_length=30)
+	  poll = models.ForeignKey(Poll, verbose_name="the related poll")
+*** Field name restrictions
+	There're only two restrictions:
+	  + A field name cannot be a Python reserved word, because that would
+        result in a Python syntax error.
+	  + A field name cannot contain more than one underscore in a row, due to
+        the way Django's query lookup syntax works.
+
+    Note:
+	  + SQL reserved words, such as *join*, *where* or *select*, are allowed as
+        model field names, because Django escapes all database table names and
+        column names in every underlying SQL query. It uses the quoting syntax
+        of your particular database engine.
+** Relationships
+*** 概述
+	The power of relational databases lies in relating tables to each other.
+*** Many-to-one relationships
+	To define a many-to-one relationship, use *django.db.models.ForeignKey*.
+	You use it just like any other *Field* type: by including it as a class
+	attribute of your model.
+
+	+ e.g.:
+	  Manufacturer 有很多 Car，而 Car 仅对应一个 Manufacturer，即 many-to-one 关
+      系，故可在 Car 中使用 models.ForeignKey 表明这种关系.
+*** Many-to-many relationships
+	To define a many-to-many relationship, use *ManyToManyField*.
+	You use it just like any other *Field* type: by including it as a class
+	attribute of your model.
+
+	+ e.g.
+	  如 "煲仔饭" 里有很多不同的 "配料"，"配料" 又可以对应不同的 "煲仔饭"，即
+      many-to-many 关系。一般会在 "配料" class 中使用 *models.ManyToManyField*
+      来标明和 "煲仔饭" 的关系.
+*** One-to-one relationships
+	To define a one-to-one relationship, ues *OneToOneField*.
+	You use it just like any other *Field* type: by including it as a class
+	attribute of your model.
+	
+	This is most userful on the primary key of an object when that object
+	"entends" another object in some way.
+
+	+ e.g.:
+	  Places 有很多属性，如地址等，Restaurant *is a* Place，故 Restaurant 和
+      Places 是 one-to-one 关系，可在 Restaurant 中使用 *models.OneToOneField*
+      或让 Restaurant 继承 Places 类.
+*** 跨 app 关系
+	可在一个 app 的 models 中关联另一个 app 的 models，只要正确 import 另一个
+	app 的 models 就行.
+** Meta options
+   Model metadata is "anything but not a field", such as ordering options,
+   database table name and so on. None are required, and adding *class Meta* to
+   a model is completely optional.
+
+   可用它来控制 *建表* 和 *查表* 时的某些行为.
+
+   + 常用的 attributes 和 methods:
+     - app_label
+	   If a model exists outside of the standard *models.py* (for instance, if
+       the app's models are in submodules of *myapp.models*), the model must
+       define which app it is part of:
+
+	   e.g.
+	     app_label = 'myapp'
+	 - get_latest_by
+	   The name of an orderable field in the model, typically
+       a *DateField*, *DateTimeField* or *IntegerField*.
+	   This specifies the default field to use in your model
+       Manager's *latest()* method.
+
+	   e.g.:
+
+	   get_latest_by = "order_date"
+	 - ordering
+	   The default ordering for the object, for use when obtaining lists of
+       objects.
+	   This is a tuple or list of strings. Each string is a field name with an
+       optional *-* prefix, which indicates descending order. Fields without a
+       leading *-* will be ordered ascending. Use the string *?* to order
+       randomly.
+
+	   e.g.:
+	   
+	   ordering = ['-order_date']
+	   ordering = ['pub_date']
+	   ordering = ['-pub_date', 'author']
+	 - unique_together
+	   Sets field names that, taken together, must be unique:
+	   
+	   e.g.:
+	       unique_together = (("driver", "restaurant"), )
+
+	   This is a tuple of tuples that must be unique when considered together.
+	   It's used in the Django admin and is enforced at the database level
+       (i.e., the appropriate *UNIQUE* statements are included in the *CREATE
+       TABLE* statement).
+
+	   For convenience, *unique_together* can be a single tuple when dealing
+       with a single set of fields:
+
+	   e.g.:
+	       unique_together = ("driver", "restaurant")
+
+	   Note:
+	   + A *ManyToManyField* cannot be included in *unique_together* (it's not
+         clear what that would even mean).
+		 If you need to validate uniqueness related to a *ManyToManyField*,
+         try using a signal or an explicit *through* model.
+	 - index_together
+	   Sets of field names that, taken together, are indexed.
+	   This list of fields will be indexed together (i.e. the
+       appropriate *CREATE INDEX* statement will be issued.)
+
+	   e.g.:
+
+	   index_together = [
+	       ['pub_date', 'deadline'],
+       ]
+	 - verbose_name
+	   A human-readable name for the object, singular.
+	   If this isn't given, Django will use a munged version of the class name:
+       *CamelCase* becomes *camel case*.
+
+	   e.g.:
+	   verbose_name = "pizza"
+	 - verbose_name_plural
+	   The plural name for the object.
+	   If this isn't given, Django will use *verbose_name* + "s".
 * View
 ** 功能.
    A view is a callable which takes a request and returns a response.
@@ -477,6 +834,11 @@
 *** Refer
    http://django-china.cn/topic/101/
    http://django-china.cn/topic/124/
+* 一些名词
+** slug
+   *Slug* is a newspaper term. 
+   A slug is short label for something, containing only letters, numbers,
+   underscores or hyphens. They're generally used in URLs.
 * Tips & Best Practice
 ** views 中通过 render 向模板中传入 dict 类型数据
    views 中通过 model 获得的是一个 object，可通过如下类似方法把它转化为模板能正
