@@ -387,6 +387,33 @@
 	 - verbose_name_plural
 	   The plural name for the object.
 	   If this isn't given, Django will use *verbose_name* + "s".
+** Model methods
+*** 与 models.Manager 的区分
+	+ Model methods are *row-level* functionality to your objects and they
+      should act on a particular model instance.
+	  This a valuable technique for keeping business logic in one place -- the
+      model.
+	+ models.Manager methods are intended to do *table-wide*
+      things. A *Manager* is the interface through which database query
+      operations are provided to Django models.
+
+	Ref:
+	  + [[Managers][Managers]]
+	  + [[https://docs.djangoproject.com/en/1.5/ref/models/instances/#model-instance-methods][model-instance-methods]]
+*** 常用的 method
+	+ __unicode__(self)
+	  A Python "magic method" that returns a unicode "representation" of any
+      object. This is what Python and Django will use whenever a model instance
+      needs to be coerced and displayed as a plain string. Most notably, this
+      happens when you display an object in an interactive console or in the
+      admin.
+	+ get_absoulute_url()
+	  This tells Django how to calculate the URL for an object. Django uses
+      this in its admin interface, and any time it needs to figure out a URL
+      for an object.
+
+	  Any object that has a URL that uniquely identifies it should define this
+      method.
 * View
 ** 功能.
    A view is a callable which takes a request and returns a response.
@@ -619,7 +646,8 @@
 	 + [[https://docs.djangoproject.com/en/1.5/ref/class-based-views/generic-display/][django1.5文档]] 不太理解
      + [[https://docs.djangoproject.com/en/1.5/topics/class-based-views/mixins/][Using mixins with class-based views]]
 *** Ref
-	+ [[https://docs.djangoproject.com/en/1.5/topics/class-based-views/mixins/][Using mixins with class-based views]]
+	+
+      [[https://docs.djangoproject.com/en/1.5/topics/class-based-views/mixins/][Using mixins with class-based views]]
 * Form
 ** 包含 4 种概念
    + Widget

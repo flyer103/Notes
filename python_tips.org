@@ -193,3 +193,50 @@
 	sys.path = sys.path[1:]
 	import django
 	print(django.__path__)"
+* property()
+  class 中的变量在逻辑上有以下几种类型:
+    1) 随意读，随意写
+	2) 只读，或每次访问时需要动态生成 (如依赖其它变量或与时间相关的)
+	3) 可读可写,但需要按照规定的方式来写,即在修改变量前需要有验证功能
+	
+   对于 1)，无需用到 property()。对于 2)、3)，需要通过 property() 来实现.
+   
+   Best Practice:
+     + 涉及 2)、3) 情况时，通常在 __init__() 中设置以一个下划线开头的变量，逻辑
+       上表示 "类的私有变量", getter、setter、deleter 对该 "私有变量" 进行操作.
+	   或定义一个下划线开头的函数，作为类的 *似有变量* 的 getter 函数，该函数通
+       过类的其它变量来生成值.
+	 + 对 "私有变量" 只定义 getter 时，表示它是个 *只读* 变量
+	 + 对 "私有变量" 定义 getter、setter 时，表示它是个 *可读、可写* 的变量，但
+       写之前需要先验证是否 "合法" 再写.
+
+	e.g.:
+	
+	class C(object):
+	
+	    def __init__(self, age=0):
+		    self._age = age
+
+		@property
+		def age(self):
+		    return self._age
+
+		@age.setter
+		def age(self, value):
+		    assert value >= 0    # 还可以用更友好的方式进行验证
+			self._age = value    # 验证通过后再写
+
+	class B(object):
+	
+	    def __init__(self, firstname='fei', lastname='zhang'):
+		    self.firstname = firstname
+			self.lastname = lastname
+
+		def _get_full_name(self):
+		    return '%s %s' % (self.firstname, self.lastname)
+
+		full_name = property(_get_full_name)
+
+	Ref:
+	+ [[http://stackoverflow.com/questions/3781834/properties-in-python][Properties in Python]]
+	+ [[http://stackoverflow.com/questions/6618002/python-property-versus-getters-and-setters][Python @property versus getters and setters]]
