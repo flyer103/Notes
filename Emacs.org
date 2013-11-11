@@ -434,3 +434,11 @@
   Refer: 
   + [[http://stackoverflow.com/questions/915985/in-emacs-how-to-line-up-equals-signs-in-a-series-of-initialization-statements][ref1]]
   + [[http://stackoverflow.com/questions/3633120/emacs-hotkey-to-align-equal-signs][ref2]]
+* 行数多时编辑速度变慢
+  若是通过 linum.el 显示行号，那么是该扩展造成速度变慢。可用 nlinum.el 替代该扩
+  展。在你的 emacs 扩展所在的文件中添加 nlinum.el 文件，然后在 ~/.emacs 添加
+
+  (require 'nlinum)
+  (nlinum-mode 1)
+
+  即可.
