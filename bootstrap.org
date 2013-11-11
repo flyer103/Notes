@@ -1,0 +1,293 @@
+* readme
+  以下笔记是针对 bootstrap3.
+* mobile first
+  Add the viewprot meta tag to the *<head>*:
+  
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+  If you want to disable zooming capabilities on mobile devies, add 
+  *user-scalable=no* to the viewport meta tag.
+
+  <meta name="viewport"
+        content="width=device-width,initial-scale=1.0,
+		maximum-scale=1.0,user-scalable=no">
+* responsive images
+  e.g.:
+
+  <img src="..." class="img-responsive" alt="Responsive image">
+
+  Note:
+  + alt 属性
+	它是一个必需的属性，规定在图像无法显示时的替代文本。
+* containers
+  Easily center a page's contents by wrapping its contents in
+  a *.container*. Containers set *max-width* at various media query breakpoints
+  to match our grid system.
+  
+  e.g.:
+
+  <div class="container">
+  ...
+  </div>
+
+  Note:
+  + <div>
+	它可定义文档中的分区或节 (division/section).
+	<div> 标签可把文档分割为独立的、不同的部分。它可以用作严格的组织工具。
+	它是一个块级元素，意味着它的内容自动地开始一个新行。
+* Grid system
+** 概述
+   Bootstrap includes a responsive, mobile first fluid grid system that
+   appropriately scales up to 12 columns as the device or viewport size
+   increases.
+
+   Grid systems are used for creating page layouts through a series of rows and
+   columns that house your content.
+   Here's how the Bootstrap grid system works:
+   + Rows must be placed within a *.container* for proper alignment and padding.
+   + Use rows to create horizontal groups of columns.
+   + Content should be placed within columns, and only columns may be immediate
+     children of rows.
+   + Predefined grid classes like *.row* and *.col-xs-4* are available for
+     quickly making grid layouts. LESS mixins can also be used for more
+     semantic layouts.
+   + Columns create gutters (gaps between column content) via *padding*. That
+     padding is offset in rows for the first and last column via negative
+     margin on *.row* s.
+   + Grid columns are created by specifing the number of twelve available
+     columns you wish to span. For example, three equal columns would use
+     thress *.col-xs-4*.
+
+   If you want to create fully fluid layouts (meaning your site stretches the
+   entire width of the viewpoint), you must wrap their grid content in a
+   containing element with *padding:0 15px;* to offset the *margin:0-15px;*
+   used on *.row* s.
+** basic example
+	<div class="container">
+	  <div class="row">
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+		<div class="col-md-1">.col-md-1</div>
+	  </div> <!-- row -->
+
+	  <div class="row">
+		<div class="col-md-8">.col-md-8</div>
+		<div class="col-md-4">.col-md-4</div>
+	  </div> <!-- row -->
+
+	  <div class="row">
+		<div class="col-md-4">.col-md-4</div>
+		<div class="col-md-4">.col-md-4</div>
+		<div class="col-md-4">.col-md-4</div>
+	  </div> <!-- row -->
+
+	  <div class="row">
+		<div class="col-md-6">.col-md-6</div>
+		<div class="col-md-6">.col-md-6</div>
+	  </div> <!-- row -->
+	</div> <!-- container -->
+** nesting columns
+   To nest your content with the default grid, add a new *.row* and set
+   of *.col-md-** columns within an existing *.col-md-* column.
+   Nested rows should include a set of columns that up to 12.
+
+   e.g.:
+
+	<div class="container">
+	  <div class="row">
+		<div class="col-md-9">
+		  Level 1: .col-md-9
+		  <div class="row">
+			<div class="col-md-6">
+			  Level 2: .col-md-6
+			</div>
+			<div class="col-md-6">
+			  Level 2: .col-md-6
+			</div>
+		  </div> <!-- inside row -->
+		</div> <!-- col-md-9 -->
+	  </div> <!-- row -->
+	</div> <!-- container -->
+
+* Typography
+** Headings
+   All HTML headings, *<h1>* through *<h6>*, are available. *.h1* through *.h6*
+   classes are also available, for when you want to match the font styling of a
+   heading but still want your text to be displayed inline.
+
+   Create lighter, secondary text in any heading with a generic *<small>* tag
+   or the *.small* class.
+** Body copy
+   Bootstrap's global default *font-size* is *14px*, with a *line-height*
+   of *1.428*. This is applied to the *<body>* and all paragraphs.
+
+   Make a paragraph stand out by adding *.lead*.
+
+   If you want to realign text, use:
+   + *.text-left*
+	 e.g.:
+	 <p class="text-left">Left aligned text.<p>
+   + *.text-center*
+	 e.g.:
+	 <p class="text-center">Center aligned text.</p>
+   + *.text-right*
+	 e.g.:
+	 <p class="text-right">Right aligned text.</p>
+** Emphasis classes
+   classes:
+   + *.text-muted*
+   + *.text-primary*
+   + *.text-success*
+   + *.text-info*
+   + *.text-warning*
+   + *.text-danger*
+
+   Note:
+   + Sometimes emphasis classes cannot be applied due to the specifity another
+     selector. In most cases, a sufficient workaround is to wrap your text in
+     a *<span>* with the class.
+** Abbreviations
+   Stylized implementation of HTML's *<abbr>* element for abbreviations and
+   acronyms to show the expanded version on hover.
+   Abbreviations with a *title* attribute have a light dotted bottom border and
+   a help cursor on hover, providing additional context on hover.
+   Adding *.initialism* to an abbreviation for a slightly smaller font-size.
+
+   e.g.:
+   An example: <abbr title="This is a text">attr</abbr>
+   An example: <abbr title="This is a text" class="initialism">attr</abbr>
+** Blockquotes
+   For quoting blocks of content from another source within your document.
+   Wrap *<blockquote>* around any HTML as the quote. For straight quotes,
+   a *<p>* is recommended.
+
+   e.g.:
+   <blockquote>
+     <p>This is a quote.</p>
+   </blockquote>
+** Lists
+*** 常见形式
+	常见的是如下两种形式:
+	<ul>
+      <li></li>
+	<ul>
+
+    <ol>
+      <li></li>
+    </ol>
+*** Inline
+	You can use *inline* style. Place all list items on a single line with 
+	*display:inline-block;* and some light padding.
+	e.g.:
+	<ul class="list-inline">
+      <li>...</li>
+	</ul>
+*** Description
+	A list of terms with their associated descriptions.
+
+	e.g.:
+	<dl>
+	  <dt>...</dt>
+	  <dd>...</dd>
+	  <dt>...</dt>
+	  <dd>...</dd>
+	</dl>
+
+	If you want horizontal description, add *.dl-horizontal*.
+	
+	e.g.:
+	<dl class="dl-horizontal">
+	  <dt>...</dt>
+	  <dd>...</dd>
+	  <dt>...</dt>
+	  <dd>...</dd>
+	</dl>
+* Code
+  对于 *<*、*>* 等特殊符号，需要手动转义.
+  默认是不分行，若分行，在 *<code>...</code>* 的代码用 *<pre>...</pre>* 包围.
+  
+  e.g.:
+  For example, <code>&lt;section&gt;</code> should be wrapped as inline.
+  
+  Code:
+  <code>
+    <pre>
+	#!/usr/bin/python2.7
+  
+	from django.db import models
+	from django.shortcut import render
+	</pre>
+  </code>  
+* Tables
+  基本形式:
+  <table class="table">
+    <thead>
+	  <tr>
+	    <td>...</td>
+		<td>...</td>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr>
+	    <td>...</td>
+		<td>...</td>
+	  </tr>
+	  <tr>
+	    <td>...</td>
+		<td>...</td>
+	  </tr>
+	</tbody>
+  </table>
+
+  常用的 class:
+  + *.table-stripped*
+  + *.table-bordered*
+  + *.table-hover*
+  + *.table-condensed*
+
+  Use contextual classes to color table rows or individual cells:
+  + *.active*
+	Applies the hover color to a particular row or cell.
+  + *.success*
+	Indicates a successful or positive action.
+  + *.warning*
+	Indicates a warning that might need attention.
+  + *.danger*
+	Indicates a dangeous or potentially negative action
+	
+  e.g.:
+  <!-- On rows -->
+  <tr class="active">...</tr>
+  <tr class="success">...</tr>
+  <tr class="warning">...</tr>
+  <tr class="danger">...</tr>
+
+  <!-- On cells ('td' or 'th')>
+  <tr>
+    <td class="active">...</td>
+	<td class="success">...</td>
+	<td class="warning">...</td>
+	<td class="danger">...</td>
+  </tr>
+
+  Create responsive tables by wrapping any *.table* in *.table-responsive* to
+  make them scroll horizontally to small devices (under 768px). When viewing
+  on anything larger than 768px wide, you will not see any difference in these
+  tables.
+
+  基本形式:
+  <div class="table-responsive">
+    <table class="table">
+	  ...
+	</table>
+  </div>
+* Forms
