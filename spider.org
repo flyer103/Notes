@@ -11,3 +11,25 @@
   currentFrame 下。
 
   在 html 文件中，通过 <frameset> 标签来控制。
+* 模拟登陆 '知乎'
+  分析 http://www.zhihu.com/#signin 的登陆 form 可知，post 的数据提交给了
+  http://www.zhihu.com/login ，这样就清楚向那个 url post 数据了.
+  以下是 python 代码:
+
+  import requests
+
+  s = requests.session()
+  login_data = {'email': '你的邮箱', 'password': '你的密码', }
+
+  # post 数据
+  s.post('http://www.zhihu.com/login', login_data)
+
+  # 验证是否登陆成功，抓取 知乎 首页看看内容
+  response = s.get('http://www.zhihu.com')
+
+  
+  若要用在实际的爬虫中，需要在上述的代码做如下两方面处理:
+  + 模拟浏览器的 http request header，在用 requests 请求数据时添加些类似的
+    header 数据
+  + 通过代理实现抓取，这样可以提高抓取频率 (可以拿一个独立 IP 尝试下知乎所能允许
+    的最大抓取频率)

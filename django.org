@@ -121,7 +121,7 @@
 
 	  The default form widget for this field is a *TextInput*.
 	  The admin adds some JavaScript shortcuts.
-
+	  
     Number:
 	+ DecimalField(max_digits=None, decimal_places=None[, **options])
 	  A fixed-precision decimal number, represented in Python by a *Decimal*

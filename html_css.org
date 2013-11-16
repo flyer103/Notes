@@ -4,3 +4,19 @@
   a:visited {
       color: 颜色;
   }
+* <span>
+  *<span>* 标签被用来组合文档中的行内元素。
+* <label>
+  它为 input 元素定义标记，label 元素不会向用户呈现任何特殊效果。当用户选择该标
+  签时，浏览器就会自动将焦点转到和标签相关的表单控件上。
+  <label> 标签的 *for* 属性应当与相关元素的 id 属性相同。
+
+  e.g.:
+  <form>
+    <label for="male">Male</label>
+	<input type="radio" name="sex" id="male">
+	<br>
+
+	<label for="female">Female</label>
+	<input type="radio" name="sex" id="female">
+  </form>

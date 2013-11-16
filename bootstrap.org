@@ -1,4 +1,4 @@
-* readme
+* README
   以下笔记是针对 bootstrap3.
 * mobile first
   Add the viewprot meta tag to the *<head>*:
@@ -290,4 +290,9 @@
 	  ...
 	</table>
   </div>
-* Forms
+* Forms, Buttons, Images, etc.
+  请参考:
+  + [[http://getbootstrap.com/css/][bootstrap css 文档]]
+* Glyphicons
+  参考 [[http://getbootstrap.com/components/#glyphicons][glyphicons]] 中的图标及使用方法。
+* Dropdowns
