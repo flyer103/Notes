@@ -76,7 +76,7 @@
 	  A true/false field.
 
 	  The default form widget for this field is a *CheckboxInput*
-
+	  
 	Text:
 	+ CharField(max_length=None[, **options])
 	  A string field, for small- to large-sized strings.
@@ -1299,6 +1299,11 @@
    e.g.:
    {% load comments i18n%}
 * Form
+** 功能:
+   + Display an HTML form with automatically generated form widgets.
+   + Check submitted data against a set of validation rules.
+   + Redisplay a form in the case of validation errors.
+   + Convert submitted form data to the relevant Python data types.
 ** 包含 4 种概念
    + Widget
 	 A class that corresponds to an HTML form widget, e.g. <input type='text'>
@@ -1307,14 +1312,26 @@
 	 A class that is responsible for doing validation, e.g. an 'EmailField'
      that makes sure its data is a valid email address.
    + Form
-	 A collection of fields that knowns how to validate itself and display
+	 A collection of fields that knows how to validate itself and display
      itself as HTML.
    + Form Media
 	 The CSS and JavaScript resources that are required to render a form.
-** 常规需要处理的 3 种类型
+** 常规需要处理的几种类型
    + Initial GET (blank or prepolulated form)
+   + POST with no data
    + POST with invalid data (typically redisplay form with errors)
    + POST with valid data (process the data and typically redirect)
+** Processing the data from a form
+   Once *is_valid()* returns *True*, the successfully validated form data will
+   be in the *form.cleaned_data* dictionary.
+   This data will have been converted nicely into Python types for you.
+   You can still access the unvalidated data directly from *request.POST*, but
+   the validated data is better.
+
+   Read-only fields are not available in *form.cleaned_data* (and setting a
+   value in a custom *clean()* method won't have any effect). These fields are
+   displayed as text than as input elements, and thus are not posted back to
+   the server.
 ** 可通过 class-based views 实现
 *** Basic Usage
 	# forms.py
@@ -1405,6 +1422,9 @@
 	  )
 *** Ref
 	+ [[https://docs.djangoproject.com/en/1.5/topics/class-based-views/generic-editing/][Form handling with class-based views]]
+** 与 twitter bootstrap 结合
+   参考 [[http://stackoverflow.com/questions/8474409/django-forms-and-bootstrap-css-classes-and-divs][Django Forms and Bootstrap]] ,通过 [[https://github.com/tzangms/django-bootstrap-form][django-bootstrap-form]] 尝试了，可以满足
+   需求。
 * 测试
 ** TDD (Test Driven Development)
    先写测试后写代码，思维过程是 "描述问题-->解决问题".
