@@ -6,3 +6,11 @@
   需要在 zh_CN.* 环境中使用，可修改 /etc/locale.conf 为:
 
   LANG=zh_CN.UTF-8
+* pacman 无法下载某些包
+  可尝试通过如下命令解决:
+  # pacman -Syy
+
+  然后重新下载。
+
+  Ref:
+  + [[https://bbs.archlinux.org/viewtopic.php?id=151271][pacman - The requested URL returned error: 404 Not Found]]

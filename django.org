@@ -1304,7 +1304,7 @@
    + Check submitted data against a set of validation rules.
    + Redisplay a form in the case of validation errors.
    + Convert submitted form data to the relevant Python data types.
-** 包含 4 种概念
+** 4 种概念
    + Widget
 	 A class that corresponds to an HTML form widget, e.g. <input type='text'>
      or <textarea>. This handles rendering of the widgets as HTML.
@@ -1316,6 +1316,13 @@
      itself as HTML.
    + Form Media
 	 The CSS and JavaScript resources that are required to render a form.
+
+   Comparison between *widget* and *filed*:
+   *Form fields* deal with the logic of input validation and are used directly
+   in templates.
+   *Widgets* deal with rendering of HTML form input elements on the web page
+   and extraction of raw submitted data. 
+   However, widgets do need to be assigned to form fields.
 ** 常规需要处理的几种类型
    + Initial GET (blank or prepolulated form)
    + POST with no data
@@ -1332,6 +1339,333 @@
    value in a custom *clean()* method won't have any effect). These fields are
    displayed as text than as input elements, and thus are not posted back to
    the server.
+** 三种输出
+   + form.as_p
+	 输出 form
+   + form.as_table
+	 输出 table
+   + form.as_ul
+	 输出 list items
+** validation
+   每个 field 的验证都是通过 Field.clean(value) 方法实现的。
+   Each *Field* instance has a *clean()* method, which takes a single argument
+   and either raise a *django.forms.ValidationError* exception or returns the
+   clean value.
+** Built-in Field classes
+   提醒：
+   + 笔记中仅包含了我认为我会常用到的，没有列出全部的 field classes.
+
+   Bool 相关
+   + BooleanField
+	 - Default widget: *CheckboxInput*
+	 - Empty value: *False*
+	 - Normalizes to: A Python *True* or *False* value
+	 - Validates that the value is *True* (e.g. the checkbox is checked) if the
+       field has *required=True*
+	 - Error message keys: *required*
+
+   文本相关:
+   + CharField
+	 - Default widget: *TextInput*
+	 - Empty value: '' (an empty string)
+	 - Normalizes to: A Unicode object
+	 - Validates *max_length* or *min_length*, if they are provided. Otherwise,
+       all inputs are valid.
+	 - Error message keys: *required*, *max_length*, *min_length*
+
+	 Two optional arguments:
+	 - max_length
+	 - min_length
+	 If provided, these arguments ensure that the string is at most or at least
+     the given length.
+   + ChoiceField
+	 - Default widget: *Select*
+	 - Empty value: '' (an empty string)
+	 - Normalizes to: A Unicode object
+	 - Validates that the given value exists in the list of choices.
+	 - Error message keys: *required*, *invalid_choice*
+	   
+	 One required argument:
+	 - choices
+	   An iterable (e.g., a list or tuple) of 2-tuples to use as choices for
+       this field. This argument accepts the same formats as the *choices*
+       argument to a model field.
+   + MultipleChoiceField
+	 - Default widget: *SelectMultiple*
+	 - Empty value: *[]* (an empty list)
+	 - Normalizes to: A list of Unicode objects
+	 - Validates that every value in the given list of values exists in the
+       list of objects.
+	 - Error message keys: *required*, *invalid_choice*, *invalid_list*
+
+	 One required argument:
+	 - choices
+	   as for *ChoiceField*
+   + RegexField
+	 - Default widget: *TextInput*
+	 - Empty value: '' (an empty string)
+	 - Normalizes to: A Unicode object
+	 - Validates that the given value matches against a certain regular
+       expression.
+	 - Error message keys: *required*, *invalid*
+
+	 One required argument:
+	 - A regular expression specified either as a string or a compiled regular
+       expression object.
+
+	 Two optional arguments:
+	 - max_length
+	 - min_length
+   + SlugField
+	 - Default widget: *TextInput*
+	 - Empty value: '' (an empty string)
+	 - Normalizes to: A Unicode object
+	 - Validates that the given value contains only letters, numbers
+       underscores, and hyphens.
+	 - Error messages: *required*, *invalid*
+
+	 This field is intened for use in representing a model *SlugField* in
+     forms.
+
+   时间相关:
+   + DateField
+	 - Default widget: *DateInput*
+	 - Empty value: *None*
+	 - Normalizes to: A Python *datetime.date* object
+	 - Validates that the given value is either a *datetime.date,
+       datetime.datetime* or string formatted in a particular date formate.
+	 - Error message keys: *required*, *invalid*
+	   
+	 One optional argument:
+	 - input_formats
+	   A list of formats used to attempt to convert a string to a
+       valid *datetime.date* object.
+	 If no *input_formats* argument is provided, the default input formats are:
+	 - '%Y-%m-%d'    # '2006-10-25'
+	 - '%m/%d/%Y'    # '10/25/2006'
+	 - '%m/%d/%y'    # '10/25/06'
+   + DateTimeField
+	 - Default widget: *DateTimeInput*
+	 - Empty value: *None*
+	 - Normalizes to: A Python *datetime.datetime* object.
+	 - Validates that the given value is either a *datetime.datetime,
+       datetime.date* or string formatted in a particular datetime format.
+	 - Error message keys: *required*, *invalid*
+
+	 One optional argument:
+	 - input_formats
+	   A list of formats used to attempt to convert a string to a
+       valid *datetime.datetime* object.
+	 If no *input_formats* argument is provided, the default input formats are:
+	 - '%Y-%m-%d %H:%M:%S'    # '2006-10-25 14:30:59'
+	 - '%Y-%m-%d %H:%M'       # '2006-10-25 14:30'
+	 - '%Y-%m-%d'             # '2006-10-25'
+	 - '%m/%d/%Y %H:%M:%S'    # '10/25/2006 14:30:59'
+	 - '%m/%d/%Y'             # '10/25/2006'
+	 - '%m/%d/%y %H:%M:%s'    # '10/25/06 14:30:59'
+	 - '%m/%d/%y %H:%M'       # '10/25/06 14:30'
+	 - '%m/%d/%y'             # '10/25/06'
+   + TimeField
+	 - Default widget: *TextInput*
+	 - Empty value: *None*
+	 - Normalizes to: A Python *datetime.time* object
+	 - Validates that the given value is either a *datetime.time* or string
+       formatted in a particular time format.
+	 - Error message keys: *required*, *invalid*
+
+	 One optional argument:
+	 - input_formats
+	   A list of fomrats used to attempt to convert a string to a
+       valid *datetime.time* object.
+	 If no *input_formats* argument is provided, the default input formats are:
+	 - '%H:%M:%S'    # '14:30:59'
+	 - '%H:%M'       # '14:30'
+
+   数字相关:
+   + DecimalField
+	 - Default widget: *TextInput*
+	 - Empty value: *None*
+	 - Normalizes to: A Python *decimal*
+	 - Validates that the given value is a decimal. Leading and trailing
+       whitespace is ignored.
+	 - Error messages keys: *required*, *invalid*, *max_value*, 
+       *min_value*, *max_digits*, *max_decimal_places*, *max_whole_digits*
+     
+	 There're four optional arugments:
+	 - max_value
+	 - min_value
+	   The two above control the range of values permitted in the field, and
+       should be given as *decimal.Decimal* values.
+	 - max_digits
+	   The maximum number of digits (those before the decimal point plus those
+       after the decimal point, with leading zeros stripped) permitted in the
+       value.
+	 - decimal_places
+	   The maximum number of decimal places permitted.
+   + FloatField
+	 - Default widget: *TextInput*
+	 - Empty value: *None*
+	 - Normalizes to: A Python float
+	 - Validatas that the given value is an float. Leading and trailing
+       whitespace is allowed, as in Python's *float()* function
+	 - Error message keys: *required*, *invalid*, *max_value*, *min_value*
+
+	 Two optional arguments:
+	 - max_value
+	 - min_value
+	   The two above control the range of values permitted in the field.
+   + IntegerField
+	 - Default widget: *TextInput*
+	 - Empty value: *None*
+	 - Normalizes to: A Python integer or long integer
+	 - Validates that the given values is an integer. Leading and trailing
+       whitespace is allowed, as in Python's *int()* function.
+	 - Error message keys: *required*, *invalid*, *max_value*, *min_value*
+	   
+	 Two optional arguments:
+	 - max_value
+	 - min_value
+	   The two above control the range of values permitted in the filed.
+
+   IP 相关:
+   + IPAddressField
+	 - Default widget: *TextInput*
+	 - Empty value: '' (an empty string)
+	 - Normalizes to: A Unicode object
+	 - Validates that the given value is a valid IPv4 address, using a regular
+       expression.
+	 - Error message keys: *required*, *invalid*
+   + GenericIPAddressField
+	 - Default widget: *TextInput*
+	 - Empty value: '' (an empty string)
+	 - Normalizes to: A Unicode object.
+	 - Validates that the given value is a valid IP address.
+	 - Error message keys: *required*, *invalid*
+
+	 Two optional arguments:
+	 - protocol
+	   Limits valid inputs to the specified protocol. Accepted values
+       are *both* (default), *IPv4* or *IPv6*. Matching is case insensitive.
+	 - unpack_ipv4
+	   Unpacks IPv4 mapped addresses like *::ffff:192.0.2.1*. If this option is
+       enabled that address would be unpacked to *192.0.2.1*. Default is
+       disabled. Can only be used when *protocol* is set to *both*.
+
+   邮件相关:
+   + EmailField
+	 - Default widget: *TextInput*
+	 - Empty value: '' (an empty string)
+	 - Normalizes to: A Unicode object
+	 - Validates that the given value is a valid email address, using a
+       moderately complex regular expression
+	 - Error message keys: *required*, *invalid*
+
+	 Two optional arguments:
+	 - max_length
+	 - min_length
+	   If the two above are provided, they ensure that the string is at most or
+       at least the given length.
+
+   URL 相关:
+   + URLField
+	 - Default widget: *TextInput*
+	 - Empty value: '' (an empty string)
+	 - Normalizes to: A Unicode object
+	 - Validates that the given value is a valid URL
+	 - Error message keys: *required*, *invalid*
+
+	 Two optional arguments:
+	 - max_length
+	 - min_length
+** Built-in widgets
+*** handling input of text
+	- TextInput
+	  <input type="text" ...>
+	- PasswordInput
+	  <input type='password' ...>
+	- HiddenInput
+	  <input type='hidden' ...>
+	- DateInput
+	  <input type='text' ...>
+	- DateTimeInput
+	  <input type='text' ...>
+	- TimeInput
+	  <input type='text' ...>
+	- Textarea
+	  <textarea>...</textarea>
+*** Selector and checkbox widgets
+	- CheckboxInput
+	  <input type='checkbox' ...>
+	- Select
+	  <select><option ...>...</select>
+	- SelectMultiple
+	  <select multiple='multiple'>...</select>
+	- RadioSelect
+	  Similar to *Select*, but rendered as a list of radio buttons
+      within *<li>* tags.
+	- CheckboxSelectMultiple
+	  Similar to *SelectMultiple*, but rendered as a list of check buttons.
+*** File upload widgets
+	- FileInput
+	  <input type='file' ...>
+	- ClearableFileInput
+	  File upload input: <input type='file' ...>, with an additional checkbox
+      input to clear the filed's value, if the field is not required and has
+      initial data.
+** Core filed arguments
+   + reuqired
+	 By default, each *Field* class assumes the value is required, so if you
+     pass an empty value -- either *None* or the empty string ("") --
+     then *clean()* will raise a *ValidationError* exception.
+	 To specify that a field is not required, pass *required=False* to
+     the *Field* constructor.
+   + label
+	 个性化展示表项.
+	 The *label* argument lets you specify the "human-friendly" label for this
+     field. This is used when the *Field* is displayed in a *Form*.
+	 The default label for a *Field* is generated from the field name by
+	 - converting all underscores to spaces
+	 - upper-casing the first letter
+	 Specify *label* if that default behavior doesn't result in an adequate
+     label.
+   + initial
+	 指定 html 标签中 value 值.
+	 The *initial* argument lets you specify the initial value to use when
+     rendering this *Field* in an unbound *Form*.
+	 The use-case for this is when you want to display an "empty" form in which
+     a field is initialized to a particular value.
+	 *initial* values are only displayed for unbound forms. For bound forms,
+     the HTML output will use the bound data.
+	 The *initial* values are not used as "fallback" data in validation if a
+     particular field's value  is not given. *initial* values are only intended
+     for initial form display.
+   + widget
+	 The *widget* argument lets you specify a *Widget* class to use when
+     rendering this *Field*.
+   + help_text
+	 The *help_text* argument lets you specify descriptive text for
+     this *Field*. 
+	 If you provide *help_text*, it will be displayed next to the *Field* when
+     the *Field* is rendered by one of the convenience *Form* methods
+     (e.g. *as_ul*)
+   + validators
+	 The *validators* argument lets you provide a list of validation functions
+     for this field.
+   + localize
+	 The *loalize* argument enables the localization of form data, input as
+     well as the rendered output.
+** 美化 Widget
+   通过 Form Media，参考 [[https://docs.djangoproject.com/en/1.5/topics/forms/media/][Form Media]]
+** Creating forms from models
+   Ref:
+   + [[https://docs.djangoproject.com/en/1.5/topics/forms/modelforms/][creating
+     forms from models]]
+** Formsets
+*** 概述
+	A formset is a layer of abstraction to work with multiple forms on the same
+	page.
+*** Ref
+	+ [[https://docs.djangoproject.com/en/1.5/topics/forms/formsets/][Formsets]]
 ** 可通过 class-based views 实现
 *** Basic Usage
 	# forms.py
@@ -1424,7 +1758,118 @@
 	+ [[https://docs.djangoproject.com/en/1.5/topics/class-based-views/generic-editing/][Form handling with class-based views]]
 ** 与 twitter bootstrap 结合
    参考 [[http://stackoverflow.com/questions/8474409/django-forms-and-bootstrap-css-classes-and-divs][Django Forms and Bootstrap]] ,通过 [[https://github.com/tzangms/django-bootstrap-form][django-bootstrap-form]] 尝试了，可以满足
-   需求。
+   需求，它的文档在 [[https://django-bootstrap-form.readthedocs.org/en/latest/][Django bootstrap form]]
+
+   以下是对用法的总结，便于查阅。
+
+   $ sudo pip install django-bootstrap-form
+   在 INSTALLED_APPS 中添加 'bootstrapform'.
+   在模板中使用:
+
+   {% load bootstrap %}
+   {{form | bootstrap}}
+   
+   # or use with individual field
+   {{form.<field name> | bootstrap}} 
+
+   # For horizontal forms
+   {{form | bootstrap_horizontal}}
+
+   # Or with custom size (default is 'col-lg-2 col-sm-2')
+   {{form | bootstrap_horizontal:'col-lg-4'}}
+* Admin
+** ModelAdmin options
+   + 总体原则
+	 If neither *fieldsets* nor *fields* options are present, Django will
+     default to displaying each field that isn't an *AutoField* and
+     has *editable=True*, in a single fieldset, in the same order as the fields
+     are defined in the model.
+   + actions
+   + actions_on_top/actions_on_bottom
+	 Controls where on the page the actions bar appears. By default, the admin
+     changelist displays actions at the top of the page, namely, the default is:
+	 
+	 actions_on_top    = True
+	 actions_on_bottom = False
+   + actions_selection_counter
+	 Controls whether a selection counter is displayed next to the action
+     dropdown. By default, the admin changelist will display it (
+     *actions_selection_counter=True*)
+   + date_hierarchy
+	 Set *date_hierarchy* to the name of a *DateField* or *DateTimeField* in
+     your model, and the change list page will include a date-based drilldown
+     navigation by that field.
+   + exclude
+	 This attribute, if given, should be a list of field names to exclude from
+     the form.
+   + fields
+	 If you need to achieve simple changes in the layout of fields in the forms
+     of the "add" and "change" pages like only showing a subset of the
+     available fields, modifying their order or grouping them in rows, you can
+     use the *fields* option.
+	 *fields* can contain values defined in *ModelAdmin.readonly_fields* to be
+     displayed as read-only.
+	 
+	 To display multiple fields on the same line, wrap those fields in their
+     own tuple. In this example, the *url* and *title* fields will display on
+     the same line and the *content* field will be displayed below them in its
+     own line:
+
+	 class FlatPageAdmin(admin.ModelAdmin):
+	     fields = (('url', 'title'), 'content')
+   + fieldsets
+	 Set *fieldsets* to control the layout of admin "add" and "change" pages.
+	 *fieldsets* is a list of two-tuples, in which each two-tuple represents
+     a *<fieldset>* on the admin form page. (A *<fieldset>* is a "section" of
+     the form.)
+	 The two-tuples are in the formage *(name, field_options)*, where *name* is
+     a string representing the title of the fieldset and *field_options* is a
+     dictionary of information about the fieldset, including a list of fields
+     to be displayed in it.
+
+	 e.g.:
+
+	 class FlatPageAdmin(admin.ModelAdmin):
+	     fieldsets = (
+	       (None, {
+	          'fields': ('url', 'title', 'content', 'sites'),
+           }),
+	       ('Advanced options', {
+              'classes': ('collapse',),
+              'fields': ('enable_comments', 'registration_required', 'template_name'),
+           }),
+         )
+
+	 Three options in *field_options*:
+	 - fields (required)
+	   A tuple of field names to display in this fieldset.
+	   As with the *fields* option, to display multiple fields on the same
+       line, wrap those fileds in their own tuple.
+	   *fileds* can contain values defined in *readonly_fields* to be displayed
+       as read-only.
+	   If you add the name of a callable to *fields*, the same rule applies as
+       with the *fields* options: the callable must be listed
+       in *readonly_fields*.
+	 - classes
+	   A list containing extra CSS classes to apply to the fieldset.
+	   Two useful classes defined by the default admin site stylesheet
+       are *collapse* and *wide*.
+	   - Fieldsets with the *collapse* style will be initially collapsed in the
+         admin and replaced with a small "click to expand" link.
+	   - Fieldsets with the *wide* style will be given extra horizontal space.
+	 - description
+	   A string of optional extra text to be displayed at the top of each
+       filedset, under the heading of the fieldset.
+	   This value is not HTML-escaped when it's displayed in the admin
+       interface. This lets you include HTML if you so desire. Alternatively
+       you can use plain text and *django.utils.html.escape()* to escape any
+       HTML special characters.
+   + filter_horizontal
+   + filter_vertical
+   + form
+   + list_display
+	 Set *list_display* to control which fields are displayed on the change
+     list page of the admin.
 * 测试
 ** TDD (Test Driven Development)
    先写测试后写代码，思维过程是 "描述问题-->解决问题".

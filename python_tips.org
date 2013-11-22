@@ -31,11 +31,6 @@
 * enumerate(fp)
   若 enumerate() 的参数是文件描述符，则返回的是
   [行号，对应行的内容]
-* 生成器表达式
-  类似于 *列表推导* ,只是把 *列表推导* 的方括号换成了圆括号。 *列表推导* 生成的
-  是 list 类型的数据， *生成器表达式* 生成的是 iterator object。因此在使用时，
-  *生成器表达式* 比 *列表推导* 更省内存。
-
 * sorted() 用法
   它的排序不是 'IN PLACE', 原型:
 
@@ -71,27 +66,6 @@
   句被执行的时候)。
   这句话的意思是，若多次引用同一个函数，则这些操作中，函数的默认值是同一个，可通
   过 id() 函数来验证。可通过 decorator 来修改这种行为。
-* descriptor
-  它提供了访问 "私有变量" 的方法，为 get、set、delete 这些变量提供了控制方法，使
-  之在 get、set、delete 时能够提供其它的操作，如检查变量的正确性、改变变量的大小
-  写等操作。
-  descriptor 仅是个 object.
-  常见的有 property()
-
-  使用 descriptor 时需要满足的条件:
-
-  + You have a new-style class
-  + It has some object as a class attribute
-  + That object's class has the appropriate special descriptor method.
-
-  A descriptor will not work if it's assigned to an object instead of a class,
-  and an object is not a descriptor if you assign the object a function named
-  /__get__/. 
-  Descriptors are all about modifying behavior for classes, not individual
-  objects.
-
-  A descriptor simply implements /__get__/ , /__set__/ ,etc. and is then added
-  to another class in its definition.
 * decorator
   它提供了修改函数行为的方法。
 * self、cls
@@ -193,6 +167,8 @@
 	sys.path = sys.path[1:]
 	import django
 	print(django.__path__)"
+
+
 * property()
   class 中的变量在逻辑上有以下几种类型:
     1) 随意读，随意写
@@ -228,9 +204,9 @@
 
 	class B(object):
 	
-	    def __init__(self, firstname='fei', lastname='zhang'):
+	    def __init__(self, firstname ='fei', lastname='zhang'):
 		    self.firstname = firstname
-			self.lastname = lastname
+			self.lastname  = lastname
 
 		def _get_full_name(self):
 		    return '%s %s' % (self.firstname, self.lastname)
@@ -240,3 +216,1029 @@
 	Ref:
 	+ [[http://stackoverflow.com/questions/3781834/properties-in-python][Properties in Python]]
 	+ [[http://stackoverflow.com/questions/6618002/python-property-versus-getters-and-setters][Python @property versus getters and setters]]
+* function
+** Default argument values
+   The default value is evaluated only once. This makes a difference when the
+   default is a mutable object such as a list, dictionary, or instances of most
+   classes.
+
+   e.g.
+   >>> def f(a, L						=[]):
+   ...  L.append(a)
+   ...  return L
+   >>> print f(1)
+   >>> [1]
+   >>> print f(2)
+   >>> [1, 2]
+   >>> print f(3)
+   >>> [1, 2, 3]
+
+   If you don't want the default to be shared between subsequent calls, you can
+   write the function like this instead:
+
+   def f(a, L							=None):
+       if L is None:
+	       L							= []
+	   L.append(a)
+	   return L
+* module/package
+** 概述
+   区别:
+   + module 是 variables、functions、classes 等的集合
+	 The use of modules saves the authors of different modules from having to
+     worry about each other's global variable names.
+   + package 是 module 的集合，通过在相关的各个目录内建立 __init__.py 文件来标
+     志(初始化该 package)
+	 Packages are a way of structuring Python's module namespace by using
+     "dotted module names".
+	 The use of dotted module names saves the authors of multi-module packages
+     from having to worry about each other's module names.
+	 
+	 The *__init__.py* files are required to make Python treat the directories
+     as containing packages; this is done to prevent directories with a common
+     name, such as *string*, from unintentionally hiding valid modules that
+     occur later on the module search path. In the simplest case, *__init__.py*
+     can just be an empty file, but it can also execute initialization code for
+     the package or set the *__all__* variable.
+** import
+   如
+     import os
+   是把 *os* 载入到当前的 symbol table 中。
+   
+   如
+     from os import chdir, chmod
+
+   是把 *chdir*、*chmod* 载入到当前的 symbol table 中。
+** import *
+   In general the practice of importing * from a module or package is frowned
+   upon, since it often causes poorly readable code. However, it is okay to use
+   it to save typing in interactive sessions.
+
+   The *import ** statement uses the following convention:
+
+   If a package's *__init__.py* code defines a list named *__all__*, it is
+   taken to be the list module names that should be imported when
+   *from package import ** is encountered. It is up to the package author to
+   keep this list up-to-date when a new version of the package is
+   released. Package authors may also decide not to support it, if they don't
+   see a use for importing * from their package.
+
+   If *__all__* is not defined, the statement *from sound.effects import **
+   does not import all submodules from the package *sound.effects* into the
+   current namespace; it only ensures that the package *sound.effects* has been
+   imported (possibly running any initialization code in *__init__.py*) and
+   then imports whatever names are defined in the package. This includes any
+   names defined (and submodules explicitly loaded) by *__init__.py*. It also
+   includes any submodules of the package that were explicitly loaded by
+   previous *import* statement.
+** Notes on import
+   When using *from package import item*, the *item* can be either a submodule
+   (or subpackage) of the package, or some other name defined in the pacakge,
+   like a function, class or variable. The *import* statement tests *item* in
+   the following sequence:
+   1) whether the item is defined in the package, if not, then
+   2) it assumes it is a module and attempts to load it. If it fails, then
+   3) an *ImportError* exception is raised
+
+   When using syntax like *import item.subitem.subsubitem*, each item except
+   for the last must be a package; the last item can be a module or a package
+   but can't be a class or function or variable defined in the previous item.
+** 执行一次
+   For efficiency reasons, each module is only imported once per interpreter
+   session. Therefore, if you change your modules, you must restart the
+   interpreter -- or, if it's just one module you want to test interactively,
+   use *reload()*.
+** search path
+   Say there's a module named *spam* is imported, the interpreter first
+   searches for a built-in module with that name. If not found, it then
+   searches for a file named *spam.py* in a list of directories given by the
+   variable *sys.path*. *sys.path* is initialized from these locations:
+   + the directory containing the input script (or the current directory)
+   + *PYTHONPATH* (a list of directory names, with the same syntax as the shell
+     variable *PATH*)
+   + the installation-dependent default
+
+   After initialization, Python programs can modify *sys.path*. The directory
+   containing the script being run is placed at the beginning of the search
+   path, ahead of the standard path. This means that scripts in that directory
+   will be loaded instead of modules of the same name in the library
+   directory. This is an error unless the replacement is intended.
+
+   我的理解:
+   载入 module/package 时，搜索顺序为:
+   + build-in module
+   + sys.path
+	 - PYTHONPATH (当前目录或执行脚本的目录最先被搜索)
+** Compiled Python files
+   As an import speed-up of the start-up time for short programs that use a lot
+   of standard modules, if a file called *spam.pyc* exists in the directory 
+   where *spam.py* if found, this is assumed to contain an
+   already-"byte-compiled" version of the module *spam*. The modification time
+   of the version of *spam.py* used to create *spam.pyc* is recorded
+   in *spam.pyc*, and the *.pyc* file  is ignored if these don't match.
+
+   Normally, you don't need to do anything to create the *spam.pyc*
+   file. Whenever *spam.py* is successfully compiled, an attempt is made to
+   write the compiled version to *spam.pyc*. It is not an error if this attempt
+   fails; if for any reason the file is not written completely, the
+   resulting *spam.pyc* file will be recognized as invalid and thus ignored
+   later. The contents of the *spam.pyc* file are platform independent, so a
+   Python module can be shared by machines of different architectures.
+
+   Some tips for experts (Python2.7):
+   + When the Python interpreter is invoked with the *-O* flag, optimized code
+     is generated and stored in *.pyo* files. The optimizer currently doesn't
+     help much; it only removes *assert* statements. When *-O* is used,
+     all *bytecode* is optimized; *.pyc* files are ignored and *.py* files are
+     compiled to optimized bytecode.
+   + Passing two *-O* flags to the Python interpreter (*-OO*) will cause the
+     bytecode compiler to perform optimizations that could in some rare cases
+     result in malfunctioning programs. Currently only *__doc__* strings are
+     removed from the bytecode, resulting in more compact *.pyo* files. Since
+     some programs may rely on having these available, you should only use this
+     option if you know what you're doing.
+   + A program doesn't run any faster when it is read from a *.pyc* or *.pyo*
+     file than when it is read from a *.py* file; the only thing that's faster
+     about *.pyc* or *.pyo* files is the speed with which they are loaded.
+   + When a script is run by giving its name on the command line, the bytecode
+     for the script is never wirtten to a *.pyc* or *.pyo* file. Thus, the
+     startup time of a script may be reduced by moving most of its code to a
+     module and having a small bootstrap script that imports that module. It is
+     also possible to name a *.pyc* or *.pyo* file directly on the command line
+   + It is possible to have a file called *spam.pyc* (or *spam.pyo* when *-O* is
+     used) without a file *spam.py* for the same module. This can be used to
+     distribute a library of Python code in a form that is moderately hard to
+     reverse engineer.
+   + The module *compileall* can create *.pyc* files (or *.pyo* files when *-O*
+     is used) for all modules in a directory.
+
+   我的理解:
+   + *.pyc* 只会在 import 该文件或通过 *compileall* module 时生成，直接执行该文
+     件时不会生成
+   + *.pyc* 只会提高 module/package 的载入速度，而不能提高执行速度.
+   + 载入 module/package 时，会检查是否有同名的 *.pyc* 或 *.pyo* 文件，若有，检
+     查 *.pyc* 或 *.pyo* 文件的完整性和修改时间，若和 *.py* 文件不符，则不使
+     用 *.pyc* 或 *.pyo* 文件。
+* dir()
+  可通过 *dir()* 这个 built-in function 查看 module/package 或当前环境中的
+  symbol table，包括:
+  + variables
+  + functions
+  + modules
+  + etc.
+ 
+  *dir()* does not list the names of built-in functions and variables. If you
+  want a list of those, they are defined in the standard module *__builtin__*.
+* str() 和 repr() 区别
+  + The *str()* function is meant to return representations of values which are
+    fairly human-readable.
+  + The *repr()* is meant to generate representations which can be read by the
+    interpreter (or will force a *SyntaxError* if there is no  equivalent
+    syntax).
+	
+  For objects which don't have a particular representation for human
+  consumption, *str()* will return the same value as *repr()*. 
+  Many values, such as numbers or structures like lists and dictionaries, have
+  the same representation using either function. 
+  Strings and floating point numbers, in particular, have two distinct
+  representations.
+* I/O
+** 持久化
+   *持久化* 一般指的是把各种类型的数据存储到文件中供程序间分享或未来使用。由于
+   Python 的 file object I/O 都是针对 str 类型的数据，故需要通过其它方法把需要持
+   久化的数据转化为 str 类型进行存储，同时提供方法从文件中读出数据后再转换成对应
+   的类型。一般通过 pickle module 进行。
+* Errors
+** Two kinds of errors
+   + syntax errors (parsing errors)
+   + exceptions
+	 They are errors detected during execution.
+** how _try_ works:
+   1) First, the *try* clause (the statement(s) between the *try* and *except*
+      keywords) is executed.
+   2) If no exception occurs, the *except* clause is skipped and execution of
+      the *try* statement is finished.
+   3) If an exception occurs during execution of the *try* clause, the rest of
+      the clause is skipped. Then if its type matches the exception named after
+      the *except* keyword, the except clause is executed, and then execution
+      continues after the *try* statement.
+   4) If an exception occurs which does not match the exception named in the
+      except clause, it is passed on to outer *try* statements; if no handler
+      is found, it is an _unhandled exception_ and execution stops with a
+      message shown.
+
+   e.g.:
+
+   import sys
+
+   try:
+       f								= open('myfile.txt')
+	   s								= f.readline()
+	   i								= int(s.strip())
+   except IOError as e:
+       print "I/O error({0}: {1})".format(e.errno, e.strerror)
+   except ValueError:
+       print 'Could not convert data to an integer.'
+   except:
+       print 'Unexcepted error: %s' % (sys.exec_info()[0], )
+	   raise
+** Exception arguments
+   The *except* clause may specify a variable after the exception name (or
+   tuple). The variable is bound to an exception instance with the arguments
+   stored in *instance.args*. For convenience, the exception instance
+   defines *__str__()* so the arguments can be printed directly without having
+   to reference *.args*.
+   If an exception has an argument, it is printed as the last part ('detail')
+   of the message for unhandled exceptions.
+
+   e.g.:
+   
+   try:
+       raise Exception('spam', 'eggs')
+   except Exception as inst:
+       print type(inst)
+	   print inst.args
+	   print inst
+	   x, y								= inst.args
+	   print 'x							= %s' % (x, )
+	   print 'y							= %s' % (y, )
+** raise
+   The *raise* statement allows the programmer to force a specified exception
+   to occur.
+   The sole argument to *raise* indicates the exception to be raised. This
+   must be either an exception instance or an exception class (a class that
+   derives from *Exception*).
+   If you need to determine whether an exception was raised but don't intend to
+   handle it, a simpler form of the *raise* statement allows you to re-raise
+   the exception.
+
+   e.g.:
+   
+   try:
+       raise NameError('Hi There')
+   except NameError:
+       print 'An exception flew by!'
+	   raise
+** finally
+   It's a way of defining clean-up actions.
+   
+   A *finally* clause is always executed before leaving the *try* statement,
+   whether an exception has occured or not.
+   When an exception has occurred in the *try* clause and has not been handled
+   by an *except* clause (or it has occurred in a *except* or *else* clause),
+   it is re-raised after the *finally* clause has been executed. The *finally*
+   clause is also executed "on the way out" when any other clause of the *try*
+   statement is left via a *break*, *continue* or *return* statement.
+
+   In real world applications, the *finally* clause is useful for releasing
+   external resources (such as files or network connections), regardless of
+   whether the use of the resource was successful.
+* Predefined Clean-up Actions
+** with
+   The *with* statement allows objects like files to be used in a way that
+   ensures they are always cleaned up promptly and correctly.
+* Class
+** 概述
+   When a class definition is entered, a new namespace is created, and used as
+   the local scope -- thus, all assignments to local variables go into this new
+   namespace. In particular, function definitions bind the name of the new
+   function here.
+   When a class definition is left normally (via the end), a *class object* is
+   created. This is basically a wrapper around the contents of the namespace
+   created by the class definition. The original local scope (the one in effect
+   just before the class definition was entered) is reinstated, and the class
+   object is bound here to the class name given in the class definition header.
+
+   Each value is an object, and therefore has a _class_ (also called its
+   _type_). It is stored as *object.__class__*.
+** Class Objects
+   Class objects support two kinds of operations:
+   1) *attribute references*
+	  *Attribute references* use the standard syntax used for all attribute
+      references in Python: *obj.name*. Valid attribute names are all the names
+      that were in the class's namespace when the class object was created.
+   2) *instantiation*
+	  *Class instantiation* uses function notation.
+	  Create a new instance of the class and assigns this object to a local
+      variable.
+** Instance Objects
+   The only operations understood by instance objects are 
+   *attribute references*.
+   There are two kinds of valid attribute names:
+     + *data attributes*
+	   *Data attributes* need not to be declared. Like local variables, they
+       spring into existence when they are first assigned to.
+	 + *methods*
+	   A method is a function that "belongs to" an object.
+	   Valid method names of an instance object depend on its class.
+	   By definition, all attributes of a class that are *function objects*
+       define corresponding methods of its instances.
+	   *function object*  is different from *method object*.
+
+	   When an instance attribute is referenced that isn't a data attribute,
+       its class is searched. If the name denotes a valid class attribute that
+       is a *function object*, a *method object* is created by packing (pointers
+       to) _the instance object_ and _the function object_ just found together
+       in an abstract object: this is _the method object_. When the method
+       object is called with an argument list, a new argument list is
+       constructed from the instance object and the argument list, and the
+       function object is called with this new argument list.
+** 两个相关的函数
+   + isinstance()
+   + issubclass()
+** Multiple Inheritance
+   Python supports a limited form of multiple inheritance.
+** Private variables and class-local references
+   "Private" instance variables that cannot be accessed except from inside an
+   object don't exist in Python.
+   However, there is a convention that is followed by most Python code: a name
+   prefixed with an underscore (e.g. *_spam*) should be treated as a non-public
+   part of the API(whether it is a function, a method or a data member).
+   There is limited support for such a mechnism, called *name mangling*. Any
+   identifier of the form *__spam* (at least two leading underscores, at most
+   one trailing underscore) is textually replaced with *_classname_spam*,
+   where *classname* is the current class name with leading underscore(s)
+   stripped. 
+   Name mangling is useful for letting subclasses override methods without
+   breaking intraclass method calls.
+
+   Note that the mangling rules are designed mostly to avoid accidents; it
+   still is possible to access or modify a variable that is considered
+   private. This can even be userful in special circumstances, such as in the
+   debugger.
+** Iterators
+   When using *for*, the *for* statement calls *iter()* on the container
+   object. The function returns an iterator object that defines the
+   method *next()* which accesses elements in the container one at a time. When
+   there are no more elements, *next()* raises a *StopIteration* exception
+   which tells the *for* loop to terminate.
+
+   If you want to add iterator behavior to classes, define an *__iter__()*
+   method which returns an object with a *next()* method. If the class
+   defines *next()*, then *__iter__()* can just return *self*:
+
+   class Reverse(object):
+       """Iterator for looping over a sequence backwards."""
+	   def __init__(self, data):
+	       self.data  = data
+		   self.index = len(self.datadata)
+		   
+	   def __iter__(self):
+	       return self
+
+	   def next(self):
+	       if self.index == 0:
+		       self.index = len(self.data)
+			   raise StopIteration
+		   self.index -= 1
+		   return self.data[self.index]
+** Generators
+   *Generators* are a simple and powerful tool for creating iterators. They are
+   written like regular functions but use the *yield* statement whenever they
+   want to return data. Each time *next()* is called, the generator resumes
+   where it left-off (it remembers all the data values and which statement was
+   last executed).
+
+   e.g.:
+
+   def reverse(data):
+       for index in xrange(len(data)-1, -1, -1):
+	       yield data[index]
+
+
+   Anything that can be done with generators can also be done with class based
+   iterators. What makes generators so compact is that the *__iter__()*
+   and *next()* methods are created automatically.
+
+   Another key feature is that _the local variables_ and _execution state_ are
+   automatically saved between calls. This made the function easier to write
+   and much more clear than an approach using instance variable
+   like *self.index* and *self.data*.
+
+   In addition to automatic method creation and saving program state, when
+   generators terminate, they automatically raise *StopIteration*.
+   
+   In combination, these features make it easy to create iterators with no more
+   effort than writing a regular function.
+** Generator Expressions
+   形如 
+   >>> it								= (i for i in xrange(i))
+   生成的是 iterator.
+   形如 
+   >>> a_list							= [i for i in xrange(i)]
+   生成的是 list.
+
+   Generator expressions are designed for situations where the generator is
+   used right away by an enclosing function. Gnerator expressions are more
+   compact but less versatile than full generator definitions and tend to be
+   more memory friendly than equivalent list comprehensions.
+
+   e.g.:
+   >>> sum(i*i for i in xrange(10))
+** 我的理解
+   1) class 可进行的操作有哪些?
+	  两种:
+	  + attribute inferences
+		三种类型的 attribute:
+		- class data
+		- class method
+		- static method
+	  + instantiation
+   2) object 可进行的操作有哪些?
+	  只有一种:
+	  + attribute inferences
+		五种类型 attribute:
+		- class data
+		- object data
+		- class method
+		- object mthod
+		- static method
+   3) 如何查看 object 对应的 class?
+	  object.__class__
+   4) 如何判断一个 object 是否是一个 class 的 instance?
+	  通过 *isinstance(obj, class)* 函数。
+   5) 如何判断一个 subclass 是否继承自一个 class?
+	  通过 *issubclass(subclass, class)* 函数。
+   6) Python 是否支持多重继承
+	  支持。
+   7) class 中的 attribute 默认的访问限制
+	  默认都是 public，逻辑上认为形如 '_a'、'__a'(开头至少两个下划线，结尾最多一
+      个下划线) 为 private，但实现上只有对后一种会做处理，解释为 *_classname_a*
+      的形式，对前者只做逻辑上处理.
+   8) 什么是 iterator?
+	  本质是 "从一个容器中一次只取一个数据"，可通过三种方式实现:
+	  + class
+		需要定义 *__iter__()* 和 *next()* 方法:
+        - *__iter__()* 返回一个 iterator object，通常是该 class 的 instance，
+          即 *self*.
+        - *next()* 负责每次调用时返回一个数据，当逻辑上没有数据需要返回时，执行 
+		  *raise StopIteration* 语句.
+	  + generator
+		一般是通过函数实现，执行 *yield* 语句，它自身实现了 *__iter__()*
+        和 *next()* 方法，同时还会记录上次执行的状态.
+	  + generator expression
+		形如
+		>>> it = (x for i in xrange(10))
+		形式更简洁。
+* Namespace/Scope
+** namespace
+   A *namespace* is a mapping from _names_ to _objects_. Most namespaces are
+   currently (Python2.7) implemented as Python dictionaries, but that's
+   normally not noticeable in any way (except for performance), and it may
+   change in the future.
+   Examples of namespaces are:
+     + the set of built-in names (containing functions such as *abs()*, and
+       built-in excpetion names)
+	 + the global names in a module
+	 + the local names in a function invocation
+   In a sense, the set of _attributes_ of an object also form a namespace.
+   The import thing to know about namespace is that there is absolutely no
+   relation between names in different namespace.
+
+   Namespaces are created at different moments and have different lifetime. 
+   + The namespace containing the built-in names is created when the Python
+     interpreter starts up and is never deleted.
+   + The global namespace for a module is created when the module definition is
+     read in; normally, module namespaces also last until the interpreter quits.
+   + The statements executed by the top-level invocation of the interpreter,
+     either read from a script file or interactively, are considered part of a
+     module called *__main__*, so they have their own global namespace. (The
+     built-in names actually also lives in a module; this is
+     called *__builtin__*).
+   + The local namesapce for a function is created when the function is called,
+     and deleted when the function returns or raises an exception that is not
+     handled within the function. Recursive invocations each have their own
+     local namespace.
+
+   可通过 *__dict__*  属性进行查看。
+** scope
+*** definition
+	A *scope* is a textual region of a Python program where a namespace is
+	directly accessible.
+*** searching sequences relating to _scope_
+   1) the innermost scope, which is searched first, contains the local names
+   2) the scopes of any enclosing functions, which are searched starting with
+      the nearest enclosing scope, contains non-local, but also non-global names
+   3) the next-to-last scope contains the current modules's global names
+   4) the outermost scope (search last) is the namespace containing built-in
+      names
+** Note
+   + If a name is declared *global*, then all referencs and assignments go
+     directly to the middle scope containing the module's global
+     names. Otherwise, all variables found outside of the innermost scope are
+     read-only (an attempt to write to such a variable will simply create a new
+     local variable in the innermost scope, leaving the identically named outer
+     variable unchanged).
+   + A special quirk of Python is that -- if no *global* statement is in effect
+     -- assignments to names always go into the innermost scope. Assignments do
+     not copy data -- _they just bind names to objects._ The same is true for
+     deletions: the statement *del x* removes the binding of *x* from the
+     namespace referenced by the local scope. In fact, all operations that
+     introduce new names use the local scope: in particular, *import*
+     statements and function definitions bind the module or function name in
+     the local scope. (The *global* statement can be used to indicate that
+     particular variables live in the global scope.)
+** 我的理解
+   1) 什么是 namespace?
+	  是从 name 到 object 的映射，类似于 C 中的指针。
+	  Python 中一切皆 object,当赋值时 (不论是数据、函数、类的实例等)，都是做了一
+      个 name 到该 object 的映射。
+	  
+	  除了常见的赋值方式外，还可以通过 *hasattr()* 和 *getattr()* 函数。
+	  通过 *hasattr()* 判断 object 是否含有某个同名的 object，若有，则通
+      过 *getattr* 做一个从 name 到该 object 的映射。
+   2) 什么是 scope?
+	  是 namespace 查找对应 object 的范围，如语句块、函数块、module 等。
+
+	  查找顺序是：先查找当前所在的最小的 scope，然后依次查找包含该 scope 的次小
+      scope，依次类推。
+	  特别地，若一个变量定义为了 *global* 类型的，则在比 *global* 变量所在的
+      scope 小的 scope 范围内查找同名变量时，会把该 *global* 变量当作 read-only，
+      若给同名变量赋值，则生成了一个同名的局部变量，除非是在该 scope 内显示使
+      用 *global* 进行声明。
+* anti-idioms
+** from module import name1, name2
+   This is a "don't" you should not do if you don't have good reasons to do
+   that. The reason it is usually a bad idea is because you suddenly have an
+   object which lives in two separate namespaces.
+   When the binding in one namespace changes, the binding in the other will
+   not, so there will be a discrepancy between them. This happens when, for
+   example, one module is reloaded, or changes the definition of a function at
+   runtime.
+* Descriptor
+** Definition
+   In general, a descriptor is an object attribute with "binding behavior", one
+   whose attribute access has been overridden by methods in the descriptor
+   protocol. Those methods are *__get__()*, *__set__()* and *__delete__()*. If
+   any of those methods are defined for an object, it is said to be a
+   descriptor.
+
+   The default behavior for attribute access is to *get*, *set*, or *delete*
+   the attribute from an object's dictionary. 
+   For instance, *a.x* has a lookup chain starting with *a.__dict__['x']*, then 
+   *type(a).__dict__['x']*, and continuing through the base classes
+   of *type(a)* excluding metaclasses. If the looked-up value is an object
+   defining one of the descriptor methods, then Python may override the default
+   behavior and invoke the descriptor method instead. Where this occurs in the
+   precedence chain depends on which descriptor methods were defined.
+
+   Descriptors are only invoked for new style objects or classes (a class is new
+   style if it inherits from *object* or *type*).
+
+   Descriptors are a powerful, general purpose protocol. They are the mechanism
+   behind properties, methods, static methods, class methods, and *super()*.
+** Descriptor Protocol
+   descr.__get__(self, obj, type=None) --> value
+   descr.__set__(self, obj, value) --> None
+   descr.__delete__(self, obj) --> None
+
+   That is all there is to it. Define any of these methods and an object is
+   considered a descriptor and can override default behavior upon being looked
+   up as an attribute.
+
+   If an object defines both *__get__()* and *__set__()*, it is considered a
+   _data descriptor_.
+   Descriptors that only define *__get__()* are called _non-data descriptors_
+   (they are typically used for methods but other uses are possible).
+   Data and non-data descriptors differ in how overrides are calculated with
+   respect to entries in an instance's dictionary. If an instance's dictionary
+   has an entry with the same name as a _data descriptor_, the data descriptor
+   takes precedence. If an instance's dictionary has an entry with the same
+   name as a _non-data descriptor_, the dictionary entry takes precedence.
+
+   To make a read-only data descriptor, define both *__get__()* and *__set__()*
+   with *__set__()* raising an *AttributeError* when called. Define
+   the *__set__()* method with an exception raising placeholderis enough to
+   make is a data descriptor.
+
+   Note:
+   + 从 descriptor protocol 可以看出 descriptor 具体指什么。这三个 method 中第一
+     个参数都是 *self*,表明 descriptor 本身是一个 '特殊的' class 的 instance。第
+     二个参数都是 *obj*,表明 descriptor 又是使用它的 instance 的 attribute。
+** Invoking Descriptors
+   A descriptor can be called directly by its method name. For example, 
+   *d.__get__(obj)*.
+   Alternatively, it is more common for a descriptor to be invoked
+   automatically upon attribute access. For example, *obj.d* looks up *d* in
+   the dictionary of *obj*. If *d* defines the method *__get__()*, then 
+   *d.__get__(obj)* is invoked according to the precedence rules listed below.
+   The details of invocation depend on whether *obj* is an object or a
+   class. Either way, descriptors only work for new style objects and
+   classes. A class is new style if it is a subclass of *object*.
+     + For objects,
+	   the machinery is in *object.__getattribute__()* which transforms *b.x*
+       into *type(b).__dict__['x'].__get__(b, type(b))*. The implementation
+       works through a precedence chain that gives _data descriptors_ priority
+       over _instance variables_, _instance variables_ priority over 
+       _non-data descriptors_, and assigns lowest priority to *__getattr__()*
+       if provided.
+     + For classes,
+	   the machinery is in *type.__getattribute__()* which transforms *B.x*
+       into *B.__dict__['x'].__get__(None, B)*. In pure Python, it looks like:
+	   
+	   def __getattribute__(self, key):
+	       v = object.__getattribute__(self, key)
+	       if hasattr(v, '__get__'):
+	           return v.__get__(None, self)
+	       return v
+
+   The import points to remember are:
+     + descriptors are invoked by the *__getatrribute__()* method
+	 + overriding *__getattribute__()* prevents automatic descriptor calls
+	 + *__getattribute__()* is only available with new style classes and objects
+	 + *object.__getattribute__()* and *type.__getattribute__()* make different
+       calls to *__get__()*
+	 + _data descriptors_ always override instance dictionaries
+	 + _non-data descriptors_ may be overridden by instance dictionaries
+
+   The object returned by *super()* also has a custom *__getatrribute__()*
+   method for invoking descriptors. The call *super(B, obj).m()* searches 
+   *obj.__class__.__mro__* for the base class *A* immediately following *B* and
+   then returns *A.__dict__['m'].__get__(obj, A)*. If not a descriptor, *m* is
+   returned unchanged. If not in the dictionary, *m* reverts to a search using 
+   *object.__getattribute__()*.
+
+   The details above show that the mechnism for descriptors is embedded in the 
+   *__getatrribute__()* methods for *object*, *type* and *super()*. Classes
+   inheri this machinery when they derive from *object* or if they have a
+   meta-class providing similar functionality.
+   Likewise, classes can turn-off descriptor invocation by
+   overriding *__getattribute__()*.
+** Descriptor Example
+   class MyDesc(object):
+	    def __init__(self, val):
+		    self._val = val
+	    def __get__(self, obj, objtype=None):
+		    print 'retrieving data'
+			return self._val
+        def __set__(self, obj, val):
+		    print 'setting data'
+			self._val = val
+
+    class Test(object):
+	    x = MyDesc(10)
+		y = 'flyer'
+		
+	test = Test()
+	test.x
+	test.x = 2
+
+	Several use cases are so common that they have been packaged into
+	individual function calls.
+	*Properties*, *bound and unbound methods*, *static methods*, and 
+	*class methods* are all based on the descriptor protocol.
+** property()
+   Calling *property()* is a succient way of building a data descriptor that
+   triggers function calls upon access to an attribute.
+
+   A Python equivalent of *property()*:
+   
+   class property(object):
+   
+       def __init__(self, fget=None, fset=None, fdel=None, doc=None):
+	       self.fget = fget
+		   self.fset = fset
+		   self.fdel = fdel
+		   if doc is None and fget is not None:
+		       doc = fget.__doc__
+		   self.__doc__ = doc
+
+	   def __get__(self, obj, objtype=None):
+	       if obj is None:
+		       return self
+		   if self.fegt is None:
+		       raise AttributeError("unreadable attribute")
+		   return self.fget(obj)
+
+	   def __set__(self, obj, value):
+	       if self.fset is None:
+		       raise AttributeError("can't set attribute")
+		   self.fset(obj, value)
+
+	   def __delete__(self, obj):
+	       if self.fdel is None:
+		       raise AttributeError("can't delete attribute")
+		   self.fdel(obj)
+
+	   def getter(self, fget):
+	       return type(self)(fget, self.fset, self.fdel, self.__doc__)
+		
+	   def setter(self, fset):
+	       return type(self)(self.fget, fset, self.fdel, self.__doc__)
+		   
+	   def delete(self, fdel):
+	       return type(self)(self.fget, self.fset, fdel, self.__doc__)
+
+   The *property()* builtin helps whenever a user interface has granted
+   attribute access and then subsequent changes require the intervention of a
+   method.
+
+   For instance, a spreadsheet class may grant access to a cell value through 
+   *Cell('b10').value*. Subsequent improvements to the program require the cell
+   to be recalculated on every access; however, the programmer does not want to
+   affect existing client code accessing the attribute directly. The solution
+   is to wrap access to the value attribute in a property data descriptor.
+** Functions and Methods
+   Python's object oriented features are built upon a function base
+   environments. Using _non-data descriptors_, the two are merged seamlessly.
+   
+   Class dictionaries sotre methods as functions. In a class definition,
+   methods are written using *def* and *lambda*, the usual tools for creating
+   functions. The only difference from regular functions is that the first
+   argument si reesrved for the *object instance*. 
+   
+   To support method calls, functions include the *__get__()* method for
+   binding methods during attribute access. This means that all functions are 
+   _non-data descriptors_ which return bound or unbound methods depending
+   whether they are invoked from an object or a class.
+
+   e.g.:
+
+   >>> class D(object):
+   ....:    def f(self, x):
+   ....:        return x
+   >>> D.__dict__['f']
+       <function __main__.f>
+   >>> D.f
+       <unbound method D.f>
+   >>> d.f
+       <bound method D.f of <__main__.D object at 0x8a45d6c>>
+
+   Bound and unbound methods are two different types.
+** Static Methods and Class Methods
+   _Non-data descriptors_ provide a simple mechanism for variations on the
+   usual patterns of binding functions into methods.
+
+   Functions have a *__get__()* method so that they can be converted to a
+   method when accessed as attributes. The _non-data descriptors_ transforms
+   a *obj.f(*args)* call into *f(obj, *args)*. Calling *klass.f(*args)* becomes
+   *f(*args)*.
+
+   This chart summarizes the binding and its two most useful variants:
+
+   | Transformation | Called from an Object | Called from a Class |
+   |----------------+-----------------------+---------------------|
+   | function       | f(obj, *args)         | f(*args)            |
+   | staticmethod   | f(*args)              | f(*args)            |
+   | classmethod    | f(type(obj), *args)   | f(kclass, *args)    |
+
+   Static methods return the underlying function without changes. Calling
+   either *c.f* or *C.f* is the equivalent of a direct lookup into 
+   *object.__getattribute__(c, "f")* or *object.__getattribute__(C, "f")*.
+   
+   Good candidates for static methods are methods that do not reference
+   the *self* variable.
+   For instance, a statics package may include a container class for
+   experimental data. The class provides normal methods for computing the
+   average, mean, and other descriptive statistics that depend on the
+   data. However, there may be useful functions which are conceptually related
+   but do not depend on the data. For instance, *erf(x)* is handy conversion
+   routine that comes up in statistical work but does not directly depend on a
+   particular dataset. It can be called either from an object or the class.
+   Staticmethods return the underlying function with no changes.
+
+   A pure Python version of *staticmethod()* would look like this:
+   
+   class StaticMethod(object):
+       def __init__(self, f):
+	       self.f = f
+	   def __get__(self, obj, objtype=None):
+	       return self.f
+
+   Class methods prepend the class reference to the argument list before
+   calling the function. 
+   This behaviro is useful whenever the function only needs to have a class
+   reference and doesn't care about any underlying data. One use for
+   classmethods is to create alternate class constructors, such as the
+   classmethod *dict.fromkeys()* create a new dictionary from a list of keys.
+
+   A pure Python version of *classmethod()* would look like this:
+   
+   class ClassMethod(object):
+       def __init__(self, f):
+	       self.f = f
+	   def __get__(self, obj, klass=None):
+	       if klass is None:
+		       klass = type(obj)
+		   def newfunc(*args):
+		       return self.f(klass, *args)
+		   return newfunc
+** 我的理解
+   1) 什么是 descriptor?
+	  它是一个 object 的 attribute，通过 obj.attribute 的形式访问，但它修改了访
+      问的方法。
+	  对 object 的属性的访问，一般有 *get*, *set*, *delete* 三种类型的操作，通常
+      是对 object.__dict__ 按照 dict 的方式进行。但 descriptor 通
+      过 *__get__()*, *__set__()*, *__delete__()* 方法重新定义了上述三种操作，使
+      得对 attribute 的访问更加灵活和可控，如访问时增加验证机制、日志记录等其它
+      操作。
+	  descriptor 本质是一种特殊的 class 的 instance，这种 class 定义
+      了 *__get__()*, *__set__()*, *__delete__()* 中的任一种或多种。
+	  - 只定义了 __get__()
+		这种的 descriptor 被称为 _non-data descriptor_, 通常是用于修改 class 中
+        的 function 行为。
+	  - 同时定义了 __get__() 和 __set__()
+		这种的 descriptor 被称为  _data descriptor_, 通常用于修改 class 中数据类
+        型的 attribute 的行为。
+   2) descriptor 的分类
+	  + data descriptor
+		同时定义了 __get__() 和 __set__() 方法，通过对 __set__() 方法进行限制，
+        可以定义 *read-only data* 和 *read-write data*:
+		- 若在 __set__() 执行 *raise AttributeError*，则定义的是 
+          *read-only data*
+		- 若在 __set__() 中可以赋值，则是 *read-write data*
+	  + non-data descriptor
+		只定义了 __get__() 方法，常用于修改 class 中 function 的行为.
+   3) descriptor protocol
+	  descr.__get__(self, obj, type=None) --> value
+	  descr.__set__(self, obj, value)     --> None
+	  descr.__delete__(self, obj)         --> None
+   4) 形如 "x.attribute" 的解析顺序
+  	  + 若 x 是 object，则按照如下方式查找
+		type(x).__dict__['x']
+		若在 x 对应的 class 中有对应的 descriptor，则调用该 descriptor 中的
+        get, set, delete 方法，否则作为一般的 dict 类型处理.
+
+		优先级:
+		data descriptor > instance variable > non-data descriptor >
+        __getattr__() 
+
+		如
+
+		class Test(object):
+		    def __init__(self, name='flyer'):
+		        self._name = name
+		    def _name(self, name='flx'):
+		        print name
+
+		>>> test = Test()
+		>>> test._name   # 返回 'flyer'，因为 method 本质是 non-data descriptor
+	  + 若 x 是 class, 则按如下方式查找
+		x.__dict__['x']
+		若在 class x 中有对应的 descriptor, 则调用该 descriptor 中的 get, set,
+        delete 方法，否则作为一般的 dict 类型处理.
+   5) descriptor 执行的本质
+	  descriptor 只有在形如 "x.attribute" 的形式时才会被触发，即执行
+      "x.attribute" 时，先调用 class 中的 *__getattribute__()* 方法，然后再判断
+      是否有对应的 descriptor.
+	  "x" 必须是继承自 object 的 class 或这样的 class 的 instance.
+
+	  因此，可通过修改 *__getatrribute__()* 的这种默认行为来不触发 descriptor.
+   6) 常见的 descriptor
+	  + property()
+		一般生成的是 data descriptor，用于对 class 中的数据类型的 attribute 的行
+        为进行控制。
+	  + method
+		一般是 non-data descriptor，在执行形如 "x.func" 时把 class 中的
+        function 与 class 或 instance 进行绑定，即 class 中的 function 默认是
+        non-data descriptor，因此在形如 "x.attr" 的访问中优先级最低 (若 class 中
+        没有定义 *__getattr__()* 方法) 
+	  + staticmethod()
+		是逻辑上实现的需要。
+
+		此时把 class 当作容器，仅有 *属于* 的关系，与该 class 中的其它数据没有关
+        系.
+	  + classmethod()
+		逻辑上和修改 class 默认的初始化行为的需要.
+
+		该 function 仅与该 class 进行绑定，不与 instance 绑定，它在逻辑上表示不
+        依赖于 instance 的数据，例子是 *dict.fromkeys()*, 即通过 classmethod 实
+        例化了该 class，但不掉用默认的 *__init__()* 方法。
+   7) method、staticmethod 和 classmethod 的绑定行为
+      | Transformation | Called from an Object | Called from a Class |
+      |----------------+-----------------------+---------------------|
+      | function       | f(obj, *args)         | f(*args)            |
+      | staticmethod   | f(*args)              | f(*args)            |
+      | classmethod    | f(type(obj), *args)   | f(kclass, *args)    |
+* Socket
+** Definition
+   A *client* socket is like an endpoint of a conversation.
+   A *server* socket is more like a switchboard operator.
+
+   The client application (the browser, for example) uses *client* sockets
+   exclusively.
+   The web server which the client app is talking to uses both *server* sockets
+   and *client* sockets.
+
+   *Client* sockets are normally only used for one exchange or a small set of
+   sequential exchanges.
+
+   *Server* sockets doesn't send any data. It doesn't receive any data. It just
+   produces *client* sockets. Each *clientsocket* is created in response to
+   some other *client* socket doing a *connect()* to the host and port
+   the *server* sockets are bound to. As soon as the *clientsocket* has been
+   created, the *server* socket goes back to listening for more
+   connections. The two *clients* are free to chat it up -- they are using
+   dynamically allocated port which will be recycled when the conversation
+   ends.
+** 本质
+   On any given platform, there are likely to be other forms of IPC that are
+   faster, but for cross-platform communication, *socketse* are about the only
+   game in town.
+
+   If you need faster IPC between two processes on one machine, you should look
+   into whatever form of shared memory the platform offers. A simple protocol
+   based around shared memory and locks or semaphores is by far the fastest
+   technique.
+
+   If you decide to use sockets, bind the *server* socket to _localhost_. On
+   most platforms, this will take a shortcut around a couple of layers of
+   network code and be quite a bit faster.
+** Using a Socket
+   The first thing to note, is that the web browser's *client* socket and the
+   web server's *client* socket are identical beasts. That is, this is a 
+   _peer to peer_ conversation. Or to put is another way, as a designer, you
+   will have to decide what the rules of etiquette are for a conversation.
+   Normally, the *connecting* socket starts the conversation, by sending in a
+   request, or perhaps a signon. But that's a design decision -- it's not a
+   rule of sockets.
+
+   There are two sets of verbs to use for communication. You can use *send*
+   and *recv*, or you can transform your *client* sockets into a file-like
+   beast and use *read* and *write*. The latter is the way Java presents its
+   sockets. For the latter, you need to *flush* on sockets. These are buffered
+   "files", and a common mistake is to *write* something, and then *read* for a
+   reply. Without a *flush* in there, you may wait forever for the reply,
+   because the request may still be in your output buffer.
+
+   *send* and *recv* operate on the _network buffers_. They do not necessarily
+   handle all the bytes you hand them (or expect from them), because their
+   major focus is handling the network buffers. In general, they return when
+   the associated network buffers have been filled (*send*) or emptied
+   (*recv*). They then tell you how many bytes they handled. It is your
+   responsiblity to call them again until your message has been completely
+   dealt with.
+
+   When a *recv* returns 0 bytes, it means the other side has closed (or is in
+   the process of closing) the connection. You will not receive any more data
+   on this connection. You may be able to send data successfully.
+
+   A protocol like HTTP uses a socket for only one transfer. The client sends a
+   request, then reads a reply. That's it. The socket is discarded. This means
+   that a client can detect the end of the reply by receiving 0 bytes.
+
+   But if you plan to reuse your socket for further transfers, you need to
+   realize that there is no *EOT* (end of transfer) on a socket.
+   If a socket *send* or *recv* returns after handling 0 bytes, the connection
+   has been broken. If the connection has not been broken, you may wait on
+   a *recv* forever, because the socket will not tell you that there's nothing
+   more to read (for now). Now if you think about that a bit, you'll come to
+   realize a fundermental truth of sockets: *messages* must either
+     + be fixed length, or
+	 + be delimited, or
+	 + indicate how long they are, or
+	 + end by shutting down the connection
+   The choice is entirely yours.
+
+   The easiest enhancement is to make the first character of the message an
+   indicator of message type, and have the type determine the length.
+   Now you have two *recvs* -- the first to get (at least) that first character
+   so you can look up the length, and the second in a loop to get the rest.
+   This is what the *HTTP* protocol uses.
+
+   If you decide to go the delimited route, you'll be receiving in some
+   arbitrary chunk size, (4096 or 8192 is frequently a good match for network
+   buffer size), and scanning what you've received for a delimiter.
+** Binary Data
+   It is perfectly possible to send binary data over a socket. The major
+   problem is that not all machines use the same formats for binary data. For
+   example, a Motorola chip will represent a 16 bit integer with the value _1_
+   as the two hex bytes _00 01_. Intel and DEC, however, are byte-reversed --
+   that same _1_ is _01 00_. Socket libraries have calls for converting 16 and
+   32 bit integers -- *ntohl*, *htonl*, *ntohs*, *htons* where "n" means
+   _network_ and "h" means _host_, "s" means _short_ and "l" means
+   _long_. Where *network order* is *host order*, these do nothing, but where
+   the machine is byte-reversed, these swap the bytes around appropriately.
+
+   In these days of 32 bit machines, the ascii representation of binary data is
+   frequently smaller than the binary representation. That's because a
+   surprising amount of the time, all those longs have the the value 0,
+   maybe 1. The string "0" would be two bytes, while binary is four. Of course,
+   this doesn't fit well with fixed-length messages. Decisions, decisions.
+** Disconnecting
+   Strictly speaking, you're supposed to use *shutdown* on a socket before
+   you *close* it. The *shutdown* is an advisory to the socket at the other
+   end. Depending on the argument you pass it, it can mean "I'm not going to
+   send anymore, but I'll still listen", or "I'm not listening, good
+   riddance!". Most socket libraries, however, are so used to programmers
+   neglecting to use this piece of etiquette that normally a *close* is the
+   same as *shutdown(); close()*. So in most situations, an explicit *shutdown*
+   is not needed.
+
+   One way to use *shutdown* effectively is in an HTTP-like exchange. The
+   client sends a request and then does a *shutdown*. This tells the server
+   "This client is done sending, but can still receive". The server can
+   detect *EOF* by a receive of 0 bytes. It can assume it has the complete
+   request. The server sends a reply. If the *send* completes successfully
+   then, indeed, the client was still receiving.
+
+   Python takes the *automatic shutdown* a step further, and says that when a
+   socket is garbage collected, it will automatically do a *close* if it's
+   needed. But relying on this is a very bad habit. If your socket just
+   disappears without doing a *close*, the socket at the other end may hang
+   indefinitely, thinking you're just being slow.
+   Please *close* your sockets when you're done.
+** When Sockets Die
+   Probably the worst thing about using blocking sockets is what happens when
+   the other side comes down hard (without doing a *close*). Your socket is
+   likely to hang. *SOCKSTREAM* is a reliable protocol, and it will wait 
