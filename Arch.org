@@ -6,7 +6,8 @@
   需要在 zh_CN.* 环境中使用，可修改 /etc/locale.conf 为:
 
   LANG=zh_CN.UTF-8
-* pacman 无法下载某些包
+* pacman
+** pacman 无法下载某些包
   可尝试通过如下命令解决:
   # pacman -Syy
 
@@ -14,3 +15,22 @@
 
   Ref:
   + [[https://bbs.archlinux.org/viewtopic.php?id=151271][pacman - The requested URL returned error: 404 Not Found]]
+** 常用操作
+   # pacman -S 包     (下载包)
+   # pacman -Ss 包    (查询包)
+   # pacman -R 包     (删除某个包，但保留其全部已安装的依赖关系)
+   # pacman -Rs 包    (删除某个包，及其所有没被其他已安装软件包使用的依赖关系)
+   # pacman -Rsc 包   (删除软件包及其所有依赖这个软件包的程序)
+   # pacman -Rn 包    (删除某个包及其配置)
+   # pacman -Rsn 包   (删除某个包和配置，及其所有没被其他已安装软件包使用的依赖
+                      关系和配置)
+   # pacman -Syu      (升级整个系统)
+   # pacman -Qs 包     (查询本地已经安装的软件包)
+   # pacman -Si 包    (显示包的详细信息)
+   # pacman -Qi 包    (查询本地安装包的详细信息)
+   # pacman -Ql 包    (获取已安装的包所包含文件的列表)
+   # pacman -Qo /path/to/a/file    (查询数据库获取某个文件属于哪个软件包)
+   $ pactree 包        (显示软件包的依赖树)
+   $ whoneeds 包       (检查一个安装的包被哪些包依赖)
+   # pacman -U /path/to/package/package_name-verison.pkg.tar.xz   (安装一个本地
+                       包)

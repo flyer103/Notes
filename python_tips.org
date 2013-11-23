@@ -1241,4 +1241,67 @@
 ** When Sockets Die
    Probably the worst thing about using blocking sockets is what happens when
    the other side comes down hard (without doing a *close*). Your socket is
-   likely to hang. *SOCKSTREAM* is a reliable protocol, and it will wait 
+   likely to hang. *SOCKSTREAM* is a reliable protocol, and it will wait a
+   long, long time before giving up on a connection. If you're using threads,
+   the entire thread is essentially dead. There's not much you can do about
+   it. As long as you aren't doing something dumb, like holding a lock while
+   doing a blocking read, the thread isn't really consuming much in the way of
+   resources. Do not try to kill the thread -- part of the reason that threads
+   are more efficient than processes is that they avoid the overhead associated
+   with the automatic recycling of resources. In other words, if you do manage
+   to kill the thread, your whole process is likely to be screwed up.
+** Non-blocking Sockets
+   In Python, you use *socket.setblocking(0)* to make it non-blocking.
+
+   The major mechanical difference between non-blocking sockets and blocking
+   sockets is that *send*, *recv*, *connect* and *accept* can return without
+   having done anything. You have a number of choices. You can check return
+   code and error codes and generally drive yourself crazy.
+   So use *select*.
+
+   The code is like this:
+   >>> ready_to_read, ready_to_write, in_error = select.select(
+   ...    potential_readers,
+   ...    potential_wirters,
+   ...    potential_errs,
+   ...    timeout)
+   
+   The *select* call is blocking, but you can give it a timeout. This is
+   generally a sensible thing to do -- give it a nice long timeout (say a
+   minute) unless you have good reason to do otherwise.
+
+   In return, you will get three lists. They contain the sockets that are
+   actually readable, writable, and in error. Each of these lists is a subset
+   (possibly empty) of the corresponding list you passed in.
+
+   If you have a "server" socket, put it in the *potential_readers* list. If it
+   comes out in the readable list, your *accpet* will (almost certainly) work.
+   If you have created a new socket to *connect* to someone else, put it in
+   the *potential_writers* list. If it shows up in the writable list, you have
+   a decent chance that it has connected.
+
+   One very nasty problem with *select*: if somewhere in those input lists of
+   sockets is one which has died a nasty death, the *select* will fail. You
+   then need to loop through every single damn socket in all those lists and do
+   a *select([sock], [], [], 0)* until you find the bad one. That timeout of 0
+   means it won't take long, but it's ugly.
+
+   On Unix, *select* works both with the _sockets_ and _files_.
+   On Windows, *select* works with _sockets_ only.
+** 我的理解
+   1) socket 的作用
+	  本质是 IPC，连接本机或本机与远程机器上的不同进程，为进程间通信建立通道。
+   2) 使用 socket 的一般场景
+	  1. 通过 socket 为两个进程建立通信通道
+      2. 两个进程通过一定的协议通过 socket 发送、接收数据，然后处理数据
+	  3. 两个进程关闭 socket
+
+	  对网络通信而言，一般情况下两个进程分别对各自的 network buffer 读取数据和写
+      入数据，需要通过一定的机制使通信双方明白
+		 - 何时传送了一段逻辑上完整的信息
+		 - 是否可以关闭 socket
+		 - 是否继续发送、接收数据
+      不同的作用于网络的应用层协议就是基于 socket 建立的通信通道，制定了一套规则，
+      使通信双方明白如何处理数据和 socket.
+   3) socket 只用于网络通信吗
+	  不是。在 Unix 及 Unix-like 系统中，还可以用于本地通信。

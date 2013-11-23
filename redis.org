@@ -1,0 +1,38 @@
+* Why is Redis fast?
+  + *Keys* are strings which identify pieces of data (values)
+  + *Values* are arbitrary byte arrays that Redis doesn't care about
+  + Redis exposes (and is implemented as ) *five* specialized data structures
+ 
+  Combined, the above make Redis fast and easy to use, but not suitable for
+  every scenario.
+* The Data Structures
+** Strings
+   格式:
+   key: value
+
+   Since getting a value by key is so fast, *strings* are often used to cache
+   data.
+** Hashes
+   格式:
+   mainkey: {subkey0: value0, subkey1:value1, ...}
+** Lists
+   格式:
+   key: [val0, val1, val2, ...]
+
+   Lists let you store and manipulate an array of values for a given key. You
+   can add values to the list, get the first or last value and manipulate
+   values at a given index. Lists maintain their order and have efficient
+   index-based operations.
+** Sets
+   类 Lists，但其中的元素唯一，没有重复。
+
+   Sets are used to store unique values and provide a number of set-based
+   operations, like unions. Sets aren't ordered but they provide efficient
+   value-based operations.
+
+   Sets are great for tagging or tracking any other properties of a value for
+   which duplicates don't make any sense (or where we want to apply set
+   operations such as intersections and unions).
+** Sorted Sets
+   If *hashes* are like *strings* but with fields, then *sorted sets* are like
+   *sets* but with a score. The score provides sorting and ranking capabilities.
