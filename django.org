@@ -881,6 +881,13 @@
       class may inherit from *View* and the rest (if any) should be
       mixins. Trying to inherit from more than one class that inherits
       from *View* won't work as expected.
+	+ generic.ListView
+	  若定义了 *queryset*, 则在 template 中使用 *object_list* 获得对应的 view 返
+      回的数据.
+	+ generic.DetailView
+	  定义 *model* 参数后，如 
+	  >>> model = Post
+	  则在 template 中使用 *post* 作为数据。
 ** generic class-based views
 *** 概述
 	本质上也是 class-based views，只是把 web 开发过程中使用 class-based views 时
@@ -1118,6 +1125,10 @@
 	   {{value | striptagse}}
 	   If _value_ is "<b>Joel</b> <button>is</button> a <span>slug</span>", the
        output will be "Joel is a splug".
+   + linebreaks
+	 Replace line breaks in plain text with appropriate HTML; a single newline
+     becomes an HTML line break (*<br/>*) and a new line followed by a blank
+     becomes a paragraph break (*</p>*).
 ** Tags
    Tags look like this: {% tag %}
  
@@ -2024,3 +2035,89 @@
    在 template 中需要使用路径时，进行如下类似操作:
 
    <a href="{% url 'url名:app中url名' [传给app中url的参数] %}"></a>
+* FAQ
+** 如何使用项目根目录中 static file？
+   1) 在 *settings.py* 的 *STATICFILES_DIRS* 中添加 static 所在的目录的绝对路径
+   2) 在 template 中先加入 *{% load static from staticfiles %}*, 接下来使用
+      static files 时和一般的 static files 的使用方法一样.
+
+   Ref:
+   + [[https://docs.djangoproject.com/en/1.5/howto/static-files/][Managing static files]]
+   + [[https://docs.djangoproject.com/en/1.5/ref/contrib/staticfiles/#s-template-tags][related template tags]]
+** 支持 markdown
+   1) 安装 django-markup
+   2) 在 'INSTALLED_APPS' 中添加 'django.contrib.markup'
+   3) 在需要支持 markdown 显示的 template 中添加 
+	  {% load markup %}
+	  然后在需要 markdown 解析的地方用类似如下的语句:
+	  {{blog.content | markdown}}
+
+   Ref:
+   + [[http://markdown.tw/][markdown 语法参考]]
+** 代码高亮显示
+   以 pygments 提供代码高亮显示功能为例:
+   1) 安装 pygments
+   2) 运行如下命令:
+	  $ pygmentize -S default -f html -a .codehilite > code.css
+   3) 把 code.css 文件放在项目中存放静态文件的目录中，然后在相应的 template 中添
+      加该 css 文件，并在需要代码高亮显示的地方用类似如下的语句:
+
+	  {{blog.content | markdown:'codehilite'}}
+
+	  写博客时，按照 markdown 语法中代码块的方式来写，如:
+	  
+	      :::python
+	      print('Hello world!')
+	  
+	  注意 markdown 中，行以 4 个空格开头时表示输入的是代码块，用 *:::python* 表
+      示是 python 代码.
+** 添加标签支持
+   1) 安装 django-taggit
+   2) 在 'INSTALLED_APPS' 中加入 'taggit'
+   3) 在相应的 models.py 中做类似的修改:
+
+	  from django.db import models
+	  from taggit.managers import TaggableManager
+
+	  class Post(models.Model):
+	      title = models.CharField(max_length100)
+	      body = models.TextField()
+	      tags = TaggableManager()
+
+	      def __unicode__(self):
+	          return self.title
+
+
+    Ref:
+	+ [[https://github.com/arocks/django-blog-screencast][django-blog-screencast]]
+** 添加 Feed (即 '订阅' 功能) 支持
+   在相应的 urls.py 中做类似下述的修改:
+
+   from django.contrib.syndication.views import Feed
+
+   from blog.models import Post
+
+   class BlogFeed(Feed):
+       title = "MySite"
+	   description = "Some ramblings of mine"
+	   link = "/blog/feed/"    # 与该 feed 页的 url 对应
+
+	   def items(self):
+	       return Post.objects.all()
+
+	   def item_title(self, item):
+	       return item.title
+	 
+       def item_description(self, item):
+	       return item.body
+ 
+       def item_link(self, item):
+	       return u'/blog/%d' % (item.id, )
+
+   urlpatterns = patterns('',
+       url(r'^feed/', BlogFeed()),
+   )
+
+
+   Ref:
+   + [[https://github.com/arocks/django-blog-screencast][django-blog-screencast]]
