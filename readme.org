@@ -9,3 +9,6 @@
   + 'emacs' 是我使用的 Emacs 配置文件，目前没有很好整理，暂时把该配置通过
     github 管理。使用时，提示缺哪个 extension 就下哪个 extension，可通过 el-get
     方便下载和管理包.
+  + 有些文档通过 Emacs org-mode 记录不方便，我记录在了我的博客中，有兴趣可以看
+    下:
+	http://flyer103.diandian.com/
