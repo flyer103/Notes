@@ -1103,7 +1103,7 @@
 
 		该 function 仅与该 class 进行绑定，不与 instance 绑定，它在逻辑上表示不
         依赖于 instance 的数据，例子是 *dict.fromkeys()*, 即通过 classmethod 实
-        例化了该 class，但不掉用默认的 *__init__()* 方法。
+        例化了该 class，但不调用默认的 *__init__()* 方法。
    7) method、staticmethod 和 classmethod 的绑定行为
       | Transformation | Called from an Object | Called from a Class |
       |----------------+-----------------------+---------------------|
@@ -1377,6 +1377,184 @@
      行 *logging.basicConfig()*
    + *logging.basciConfig()* 只有在第一次调用时生效，之后再次调用修改配置时，
      *logging.basicConfig()* 不再生效，仅按第一次的配置。
+* dict
+** dict.copy and copy.deepcopy(dict)
+   有三种形式:
+   >>> a = {1: [1, 2, 3]}
+
+   + b = a
+	 此时是把 {1: [1, 2, 3]} object 与 'a' 和 'b' 这两个名称进行绑定，对 a 或 b
+     操作都会影响 {1: [1, 2, 3]} object.
+   + b = a.copy()
+	 把 b 与一个新的 dict object 进行绑定，该 object 中包含 a 中的所有的 key，这
+     些 key 的值与 a 中对应的 key 的值的 object 绑定，即修改 a 或 b 中相同 key
+     对应的值后，双方都会受影响。但 b 中新增的 key-value 与 a 无任何关系。
+   + b = copy.deepcopy(a)
+	 把 b 与一个新的 dict object 进行绑定，该 object 中的所有 key-value 与 a 中
+     的所有 key-value 在值上相同，但无绑定关系，即 a 和 b 没有任何关联，操作互不
+     影响。
+
+   Ref:
+   + [[http://stackoverflow.com/questions/3975376/understanding-dict-copy-shallow-or-deep][Understanding dict.copy() - shallow or deep?]]
+* functools module
+** 概述
+   The *functools* module is for higher-order functions: functions that act on
+   or return other functions. In general, any callable object can be treated as
+   a function for the purposes of this module.
+
+** partial(func[, *args][, **kwargs])
+   Return a new *partial* object which when called will behave like *func*
+   called with the positional arguments *args* and keyword
+   arguments *kwargs*. If more arguments are supplied to the call, they are
+   appended to *args*. If additional keyword arguments are supplied, they
+   extend and override *kwargs*.
+
+   可把 function.partial() 作用后的函数认为是对原函数的一层抽象，固定了原函数的
+   某些参数。
+
+   e.g.:
+
+   def add(a, b):
+       return a+b
+   plus4 = functools.partial(add, 4)
+   plus4(5)    # 返回 9
+
+   Ref:
+   + [[http://docs.python.org/2/library/functools.html#functools.partial][functools.partial---pydoc]]
+* Meta class
+  Metaclasses are the stuff that creates classes.
+  *type* is the metaclass Python uses to create all classes behind the scenes.
+  
+  When you do:
+  >>> class Foo(Bar):
+  ...    pass
+  Python does the following:
+  1) Is there a *__metaclass__* attribute in *Foo*?
+  2) If yes, create in memory a class object, with the name *Foo* by using what
+     is in *__metaclass__*.
+  3) If Python can't find *__metaclass__*, it will look for a *__metaclass__*
+     in *Bar* (the parent class), and try to do the same.
+  4) If Python can't find *__metaclass__* in any parent, it will look for
+     a *__metaclass__* at the MODULE level, and try to do the same.
+  5) Then if it can't find any *__metaclass__* at all, it will use *type* to
+     create the class object.
+
+  The main purpose of a metaclass is to change the class automatically, when
+  it's created.
+  You usually do this for APIs, where you want to create classes matching the
+  current context.
+
+  Everything is an object in Python, and they are all either instances of
+  classes or instances of metaclasses.
+  Except for *type*.
+  *type* is actually its own metaclass. This is not something you could
+  reproduce in pure Python, and is done by cheating a little bit at the
+  implementation level.
+
+  我的理解:
+  class 也是 object，区别在于 class object 可以生成其他的 object。class 是
+  由 *type* 生成的 object. Python 通过 *type* 生成 class，这种机制是 Python 的底
+  层实现保证的，但可通过继承 *type* 来修改生成 class object 时的行为。
+
+  Ref:
+  +
+    [[http://stackoverflow.com/questions/100003/what-is-a-metaclass-in-python][What is a metaclass in Python?]]
+* Magic Methods
+** __new__ and __init__
+   参考:
+   + [[http://stackoverflow.com/questions/674304/pythons-use-of-new-and-init][Python's use of __new__ and __init__?]]
+   + [[http://stackoverflow.com/questions/2017876/why-defined-new-and-init-all-in-a-class][why defined '__new__' and '__init__' all in a class]]
+   + [[http://stackoverflow.com/questions/11789955/new-and-init][__new__ and __init__]]
+** __call__
+   Ref:
+   + [[http://stackoverflow.com/questions/111234/what-is-a-callable-in-python][What is a “callable” in Python?]]
+** __len__
+   若一个 class 定义了 __len__ 方法，则 len() 作用于该 class 的实例时，会调用
+   __len__ 方法，如
+
+   class MyClass(object):
+       def __init__(self, val=None):
+	       self.val = val
+       def __len__(self):
+	       if self.val == None:
+		       return 0
+		   else:
+		       return len(self.val)
+
+   >>> test = MyClass()
+   >>> len(test)    # 返回 0
+   >>> test = MyClass('flyer')
+   >>> len(test)    # 返回 5
+
+   Note:
+   + object 的 Boolean
+	 若 class 中没定义 __nonzero__ (python2.x 中) 或 __bool__ (python3.x 中) 时，
+     计算该 class 的实例的 Boolean 值时，会根据 __len__ 的返回值判断.
+** __nonzero__ (python2.x 中) __bool__ (python3.x 中)
+   计算一个 class 的实例的 Boolean 值时调用该方法，如
+
+   class MyClass(object):
+       def __init__(self, val=None):
+	       self.val = val
+	   def __nonzero__(self):
+	       if self.val == None:
+		       return False
+           else:
+		       return True
+
+   则该 class 的实例中，若 val 值不为 None，则实例的 Boolean 值为 True，否则为
+   False.
+* wsgi
+** env 相关
+   env 是一个字符串，格式是 'key0: val0\nkey1: val1\nkey2: val2\nkey3: val3...'，
+   因此可通过 '\n' 进行分割.
+
+   我常用的参数:
+   以
+   'http://www.python-requests.org/en/latest/user/advanced?key0=val0&key1=val1&key2=val2' 
+   为例。
+   + wsgi.url_scheme
+	 用户请求的 url 的 scheme.
+	 如 'wsgi.url_scheme: http'
+   + SERVER_NAME
+	 用户请求的 url 的 host 部分.
+	 如 'SERVER_NAME: www.python-requests.org'
+   + SERVER_PORT
+	 用户请求的 url 的 port 部分.
+	 如 'SERVER_PORT: 80'
+   + PATH_INFO
+	 用户请求的 url 的资源的路径信息.
+	 如 'PATH_INFO: /en/latest/user/advanced'
+   + QUERY_STRING
+	 用户请求的 url 中查询部分.
+	 如 'QUERY_STRING: key0=val0&key1=val1&key2=val2'
+   + RAW_URI
+	 用户请求的 url 中，PATH_INFO+QUERY_STRING 部分.
+	 如 'RAW_URI: /en/latest/user/advanced?key0=val0&key1=val1&key2=val2'
+   + HTTP_XXXX
+	 用户的请求的头部信息，如
+	 'HTTP_CONNECTION: close'
+	 'HTTP_USER_AGENT: python-requests/2.0.1 CPython/2.7.5 Linux/3.11.6-1-ARCH'
+	 'HTTP_ACCEPT: */*'
+	 'HTTP_HOST: www.python-requests.org'
+	 'HTTP_ACCEPT_ENCODING: gzip,deflate,compress'
+
+   参考:
+   + [[http://www.python.org/dev/peps/pep-0333/#environ-variables][pep0333:wsgi_env]]
+* '\u1212', unicode('\u1212') 和 u'\u1212' 区别
+  In python-2.x:
+  '\u1212' is an ASCII string with 6 characters: \, u, 1, 2, 1, and 2.
+  unicode('\u1212') is a Unicode string with 6 characters: \, u, 1, 2, 1, and 2.
+  u'\u1212' is a Unicode string with one character: ሒ
+
+  If needing to convert '\u1212' to u'\u1212', use:
+  >>> '\u1212'.decode('unicode-escape')
+
+  In python-3.x:
+  Strings are always Unicode.
+
+  Reference:
+  + [[http://stackoverflow.com/questions/20510929/difference-between-ustring-and-unicodestring][Difference between u'string' and unicode(string)]]
 * Best Practice
 ** 处理有对应关系的两个 list
    如有两个 list:
@@ -1402,3 +1580,24 @@
 
     即可得到如下的一个 dict:
 	>>> {'bobby': {'loc1': 2}, 'sarah': {'loc2': 3}, 'tim': {'loc1': 3}}
+** 计算文件的行数
+   原理是计算文件中 '\n' 的个数 (对于最后一行需要做判断，判断是否以 '\n') 结尾，
+   简单的代码:
+
+   count = 0
+   abuffer = bytearray(2048)
+   with open(filename, 'rb') as fp:
+       while fp.readinto(buffer) > 0:
+	       count += abuffer.count('\n')
+** XXX.map() 操作应用在包含多个参数的函数上
+   根据 map() 的语义，函数应该只有一个可变的参数。有三种解决方法:
+   + 使用 functools.partial() 函数固定函数的其它参数值
+   + 使用一个 list 或 tuple 变量做函数参数，封装函数的其它参数
+   + 不使用 map()，由其它方法生成相应的程序单元 (如 process 或 greenlet)，然后加
+     入到对应的 XXX 中
+
+   参考:
+   + [[http://stackoverflow.com/questions/20473589/multiprocessing-pool-for-regular-function/20476773][Multiprocessing.Pool for regular function?]]
+** any(), all()
+   若要求一个 iterator 中的所有成员都为 True 时返回 True，用 *all()*.
+   若要求一个 iterator 中只有有一个成员为 True 时就返回 True，用 *any()*

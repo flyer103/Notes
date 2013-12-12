@@ -1,0 +1,30 @@
+* Basics
+  MongoDB is a *document-oriented* database.
+
+  There are six simple concepts we need to understand:
+  1) MongoDB has the same concept of a database with which you are likely
+     already familiar.
+	 Within a MongoDB instance, you can have zero or more *databases*, each
+     acting as high-level containers for everything else.
+  2) A database can have zero or more *collections*. A collection shares enough
+     in common with a traditional _table_ that you can safely think of the two
+     as the same thing.
+  3) Collections are made up of zero or more *documents*. Again, a document can
+     safely be thought of as a _row_.
+  4) A document is made up of one or more *fields*, which you probably guess
+     are a lot like _columns_.
+  5) *Indexes* in MongoDB function much like their RDBMS counterparts.
+  6) *Cursors*: The important thing to understand about cursors is that when
+     you ask MongoDB for data, it returns a cursor, which we can do things to,
+     such as counting or skipping ahead, without actually pulling down data.
+
+  MongoDB -> collections -> documents -> fields
+
+  MongoDB is made up of databases which contain *collections*. A collection is
+  made up of *documents*. Each documents is made up of *fields*. *Collections*
+  can be inserted, which improves look up and sorting performance. When we get
+  data from MongoDB, we do so through a *cursor* whose actual extension is
+  delayed until necessary
+* Query Selectors
+  A selector is a JSON object, the simplest of which is *{}* which matches all
+  documents (*null* works too).

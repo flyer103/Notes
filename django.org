@@ -1789,6 +1789,13 @@
    # Or with custom size (default is 'col-lg-2 col-sm-2')
    {{form | bootstrap_horizontal:'col-lg-4'}}
 * Admin
+** 概述
+   The automatic admin interface reads metadata in your model to provide a
+   powerful and production-ready interface that content producers can
+   immediately use to start adding content to the site.
+** ModelAdmin
+   The *ModelAdmin* class is the representation of a model in the admin
+   interface. These are stored in a file named *admin.py* in your application.
 ** ModelAdmin options
    + 总体原则
 	 If neither *fieldsets* nor *fields* options are present, Django will
@@ -1881,6 +1888,46 @@
    + list_display
 	 Set *list_display* to control which fields are displayed on the change
      list page of the admin.
+** Overridding admin templates
+*** Steps
+	1) Create an *admin* directory in your project's *templates*
+       directory. This can be any of the directories you specified
+       in *INSTALLED_APPS*.
+	2) Within the *admin* directory, create sub-directories named after your
+       app. 
+	   Within these app subdirectories, create sub-directories named after your
+       models. Note that, the admin app will lowercase the model name when
+       looking for the directory, so make sure you name the directory in all
+       lowercase if you are going to run your app on a case-sensitive
+       filesystem.
+	3) To override an admin template for a specific app, copy and edit the
+       template from the *django/contrib/admin/templates/admin* directory, and
+       save it to one of the directories you just created.
+*** Overridding vs. replacing an admin template
+	Because of the modular design of the admin templates, it is usually neither
+	necessary nor advisable to replace an entire template. It is almost always
+	better to override only the section of the template which you need to
+	change. 
+*** Templates which may be overridden per app or model
+	Not every template in *contrib/admin/templates/admin/* may be overridden
+	per app or per model. The following can:
+	+ app_index.html
+	+ change_form.html
+	+ change_list.html
+	+ delete_confirmation.html
+	+ object_histor.html
+
+    For those templates that cannot be overridden in this way, you may still
+    override them for your entire project. Just place the new version in your 
+	*templates/admin* directory. This is paritcular useful to create custom 404
+	and 500 pages.
+*** Root and login templates
+	If you wish to change the index, login or logout templates, you are better
+	off creating your own *AdminSite* instance, and changing the
+	  + *AdminSite.index_template*
+	  + *AdminSite_template*
+	  + *AdminSite.logout_template*
+    properties.
 * 测试
 ** TDD (Test Driven Development)
    先写测试后写代码，思维过程是 "描述问题-->解决问题".

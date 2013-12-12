@@ -1,0 +1,130 @@
+* 常用的 HTTP method
+  + 概述
+	The HTTP method (also often called "the verb") tells the server what the
+    clients want to *do* with the requested page.
+  + GET
+	The browser tells the server to just *get* the information stored on that
+    page and send it.
+  + HEAD
+	The browser tells the server to get the information, but it is only
+    interested in the *headers*, not the content of the page. An application is
+    supposed to handle that as if a *GET* request was received but to not
+    deliver the actual content. 
+    In Flask, you don't have to deal with that at all, the underlying
+    _Werkzeug_ library handles that for you.
+  + POST
+	The browser tells the server that it wants to *post* some new information
+    to that URL and that the server must ensure the data is stored and only
+    stored once.
+	This is how HTML forms usually transmit data to the server.
+
+	我觉得类似于 *新建*, 且同个 key 的数据只能 *新建* 一次。
+  + PUT
+	Simlilar to *POST* but the server might trigger the store procedure
+    multiple times by overriding the old values more than once.
+	Consider that the connection is lost during transmission: in this
+    situation, a system between the browser and the server might receive the
+    request safely a second time without breaking things. With *POST* that
+    would not be possible because it must only be triggered once.
+
+	我的理解：即更新已有的数据.
+  + DELETE
+	Removes the information at the given location.
+  + OPTIONS
+	Provides a quick way for a client to figure out which methods are supported
+    by this URL. 
+* Configuration Handling
+** Basics
+   Independent of how you load your config, there is a config object available
+   which holds the loaded configuration values: The *config* attribute of
+   the *Flask* object.
+   This is the place where Flask itself puts certain configuration values and
+   also where extensions can put their configuration values. But this is also
+   where you can have your own configuration.
+** Builtin Configuration Values
+   常用的：
+   + DEBUG
+	 enable/disable debug mode
+   + TESTING
+	 enable/disable testing mode
+   + SECRET_KEY
+	 the secret key
+
+   Ref:
+   + [[http://flask.pocoo.org/docs/config/#builtin-configuration-values][Builtin Configuration Values]]
+** 载入配置的三种方式
+   + app.config.from_object(obj)
+	 Updates the value from the given object. 
+     An object can be one of the following two types:
+	 - a string
+	   in this case, the object with that namt will be imported.
+	 - an actual object reference
+	   that object is used directly.
+     Objects are usually either modules or classes.
+   + app.config.from_envvar(environment_variable, silent=False)
+	 Load a configuration from an environment variable pointing to a
+     configuration file.
+	 This is basically just a shortcut with nicer error message for this line
+     of code:
+	 >>> app.config.from_pyfile(os.environ['YOUR_APP_SETTINGS_PATH'])
+
+     Return Value: bool. *True* if able to load config, *False* otherwise.
+   + app.config.from_pyfile(filename, silent=False)
+	 Updates the values in the config from a Python file. This function behaves
+     as if the file was imported as module with the *from_object()* function.
+
+	 Parameters:
+      - filename
+		the filename of the config. This can be either an absoulute filename or
+        a filename relative to the root path.
+	  - silent
+		set to *True* if you want silent failure for missing files.
+
+   三种方法本质都是一样，都是从指定的文件或 object 中载入 key 全为大写的
+   'key-value' 对.
+** Best Practice
+   + Keep a default configuration in version control.
+	 Either populate the config with this default configuration or import it in
+     your own configuration files before overriding values.
+   + Use an environment variable to switch between the configuration.
+	 This can be done from outside the Python interpreter and makes
+     _development_ and  _depolyment_ much easier because you can quickly and
+     easily switch between different configs without having to touch the code
+     at all. If you are working often on different projects you can create your
+     own script for sourcing that activates a virtualenv and exports the
+     development configuration for you.
+   + Use a tool like *fabri* in production to push code and configurations
+     separately to the production server(s).
+** Note
+   + 不管是从当前文件还是其它文件中载入配置，只有 key 全为大写的 'key-value' 对
+     才能被 config object 识别并载入.
+* url 规则
+  常见的两种设置 url 和对应的 view 的方式:
+  + app.route()
+	这种方式中，end_point 就是对应的函数的名字.
+  + app.add_url_rule()
+	这种方式中，end_point 可由用户设定，如
+	- app.add_url_rule('/', view_func=IndexView.as_view('index'))
+	  其中在 as_view() 中的名字就是对应的 end_point.
+	- app.add_url_rule('/', endpoint='indexroot',
+      view_func=IndexView.as_view('index'))
+	  其中，通过 endpoint 指定的就是对应的 end_point.
+
+	具体可参考 flask 源码中的 app.py 文件中的 add_url_rule() 
+
+  url 的展现形式一般有两种：
+  + 形如 http://example.com/blog/flyer/test
+  + 形如 http://example.com/blog?author=flyer&post=test
+
+  在 Flask 的模板中，动态构成 url 的函数是使用 Flask 中的 *url_for()* 函数，它对
+  以上两种 url 形式的使用方法一样，区别在于设置 url 与对应 view 的规则时，url 的
+  形式。
+  以 app.add_url_rule() 为例:
+  + 若设置为 app.add_url_rule('/blog/<author>/<post>', ...) 时，则 template 中通
+    过 url_for() 动态生成的 url 就是第一种形式的 url
+  + 若设置为 app.add_url_rule('/blog', ...) 时，则 template 中通过 url_for() 动
+    态生成的 url 就是第二种形式的 url
+
+Q:
+* g 和 session 的区别
+* blueprint

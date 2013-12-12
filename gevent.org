@@ -1,3 +1,6 @@
+* 基本概念
+** Greenlet
+   *Greenlet* is a light-weight cooperatively-scheduled execution unit.
 * Cooperative multitasking
   The greenlets all run _in the same OS thread_ and scheduled
   cooperatively. This means that until a particular greenlet gives up control,
