@@ -1,0 +1,10 @@
+* XPATH 相关
+** 常用的语法有哪些?
+   参见这里 [[http://www.w3schools.com/xpath/xpath_syntax.asp][XPath Syntax]]
+** 有哪些高级函数
+   参见这里 [[http://www.w3schools.com/xpath/xpath_functions.asp][XPath Functions]]
+** lxml 是否支持这些高级函数?
+   暂时不支持，参见这里 [[http://lxml.de/xpathxslt.html][xpathxslt]] 和 [[http://stackoverflow.com/questions/20528146/lxml-finding-all-links-with-certain-extensions/20534243][lxml - Finding all links with certain extensions]]
+** 有哪些有用但不为常用的方法?
+*** 正则表达式
+	参见这里 [[http://lxml.de/xpathxslt.html#regular-expressions-in-xpath][regular-expressions-in-xpath]]
