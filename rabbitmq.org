@@ -1,0 +1,6 @@
+* python client
+  常用的是 pika，但它有个缺陷，不是线程安全的。若想在多个线程中使用 pika 连接，
+  需要在每个线程中设置一个 pika 连接.
+
+  Ref:
+  + [[https://pika.readthedocs.org/en/0.9.13/faq.html][Is Pika thread safe?]]

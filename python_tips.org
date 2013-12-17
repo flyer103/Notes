@@ -1110,6 +1110,26 @@
       | function       | f(obj, *args)         | f(*args)            |
       | staticmethod   | f(*args)              | f(*args)            |
       | classmethod    | f(type(obj), *args)   | f(kclass, *args)    |
+   8) descriptor 该在何处设置?
+	  应该作为 class 的 attribute 而非 instance 的 attributes.
+	  具体原因可参见这里的调用方法: [[http://docs.python.org/2/reference/datamodel.html#invoking-descriptors][Invoking Descriptors]]
+   9) 如何把 instance 的 attributes 设置为一个 descriptor?
+	  有三种方法：
+	  + 修改 class 的 __getattribute__() 方法
+		这种方法会使得该 class 效率降低
+	  + 使用 proxy property (不太理解)
+		参见这个问题的答案: [[http://stackoverflow.com/questions/12599972/descriptors-as-instance-attributes-in-python][Descriptors as instance attributes in python]]
+	  + 定义 class 的 attributes 为某个 descriptor，初始化 class 时，修改
+        instance 的 __dict__ 属性
+		该方法不优雅.
+		假设 'MyDesc' 是个 descriptor class.
+
+		class MyClass(object):
+
+            x = MyDesc(5)
+
+            def __init__(self):
+                self.__dict__['x'] = self.x
 * Socket
 ** Definition
    A *client* socket is like an endpoint of a conversation.
@@ -1540,7 +1560,11 @@
 	 'HTTP_ACCEPT_ENCODING: gzip,deflate,compress'
 
    参考:
-   + [[http://www.python.org/dev/peps/pep-0333/#environ-variables][pep0333:wsgi_env]]
+   +
+     [[http://www.python.org/dev/peps/pep-0333/#environ-variables][pep0333:wsgi_env]]
+* threading
+** how to kill a thread
+   Refer to [[http://stackoverflow.com/questions/323972/is-there-any-way-to-kill-a-thread-in-python][this question]]
 * '\u1212', unicode('\u1212') 和 u'\u1212' 区别
   In python-2.x:
   '\u1212' is an ASCII string with 6 characters: \, u, 1, 2, 1, and 2.
@@ -1601,3 +1625,69 @@
 ** any(), all()
    若要求一个 iterator 中的所有成员都为 True 时返回 True，用 *all()*.
    若要求一个 iterator 中只有有一个成员为 True 时就返回 True，用 *any()*
+** 实现限时输入
+   问题来自这里: [[http://stackoverflow.com/questions/20589620/do-things-for-a-period-of-time-program-in-python/20590521][Do things for a period of time program in python]]
+
+   由于 *raw_input() (python2.x 中)* 和 *input() (python3.x 中)* 是阻塞输入，若
+   想实现限时输入，一般有两种方法:
+   + 使用线程
+	 把阻塞输入的过程封装到一个 thread 中，然后 join 一段时间，超时后 kill 掉该
+     线程。
+	 这种方法不推荐，而且 threading module 中没有相应的方法实现，实现起来有些难
+     度。
+   + 使用非阻塞输入函数 (通过 signal 实现)
+	 [[http://www.garyrobinson.net/2009/10/non-blocking-raw_input-for-python.html][这篇博客]] 描述了一种实现非阻塞输入的方法，通过信号来实现，易于理解。
+     代码如下:
+
+     #!/usr/bin/env python3
+     # -*- coding: utf-8 -*-
+
+     import signal
+
+     y = 'a'
+     x = 0
+
+
+    class AlarmException(Exception):
+        pass
+    
+    def alarm_handler(signum, frame):
+        raise AlarmException
+
+    def my_input(prompt="What's your name? ", timeout=3):
+        signal.signal(signal.SIGALRM, alarm_handler)
+		signal.alarm(timeout)
+		try:
+            name = input(prompt)
+			signal.alarm(0)
+			return name
+		except AlarmException:
+            print('timeout......')
+        signal.signal(signal.SIGALRM, signal.SIG_IGN)
+    
+		return
+
+		
+	while x != 10 and y == 'a':
+        y = my_input(timeout=3) or 'a'
+		x += 1
+
+    if y != 'a':
+        print('Hi %s' % (y,))
+    else:
+        print('You took too long to answer.')
+** 处理 C-c 信号
+   程序运行过程中，用户随时可能会通过 C-c 终止程序的运行，若不处理该信号，则终端
+   上会输出比较难看的 traceback 信息.可通过 signal 模块处理该中止信号.
+
+   import sys
+   import signal
+
+   def interrupt_handler(signum, frame):
+       sys.exit('Thanks for using.')
+    
+   if __name__ == '__main__':
+       signal.signal(signal.SIGINT, interrupt_handler)
+       while True:
+           print('flyer')
+

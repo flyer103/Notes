@@ -1,0 +1,291 @@
+* Facts about ZMQ
+** The Zen of Zero
+   The 0 in 0MQ is all about tradeoffs.
+   Originally the 0 in 0MQ was meant as 'zero broker' and (as close to) 'zero
+   latency' (as possible). Since then, it has come to encompass different goals:
+   0 administration, 0 cost, 0 waste. More generally, 0 refers to the culture of
+   minimalism that permeats the project.
+** Some other facts
+   + It delivers blobs of data (messages) to nodes, quickly and efficiently.
+   + It gives your applications a signle socket API to work with, no matter
+     what the actual transport (like in-process, inter-process, TCP or
+     multicast).
+   + It automatically reconnects to peers as they come and go.
+   + It queues messages at both sender and receiver, as needed.
+   + It manages these queues carefully to ensure process don't run out of
+     memory, overflowing to disk when appropriate.
+   + It handles socket errors.
+   + It does all I/O in background threads.
+   + It uses lock-free techniques for talking between nodes, so there are never
+     locks, waits, semaphores, or deadlocks.
+   + It routes and queues messages according to precise recipes
+     called *patterns*. It is these patterns that provide ZMQ's
+     intelligence. They encapsulate our hard-earned experience of the best ways
+     to distribute data and work.
+* 几种通信场景
+  + in-process
+  + inter-process
+  + TCP
+  + multicast
+* context
+  You should create and use exactly one client in your process. The context is
+  the container for all sockets in a single process, and acts as the transport
+  for inproc sockets, which are the fastest way to connect threads in one
+  process.
+* 设计 messaging system 常见的问题
+  + How do we handle I/O? 
+    Does our application block, or do we handle I/O in the background? This is a
+    key design decision. 
+    Blocking I/O creates architectures that do not scale well. 
+    But background I/O can be very hard to do right.
+  + How do we handle dynamic components, i.e., pieces that go away temporialy?
+    Do we formally split components into 'clients' and 'servers' and mandate
+    that servers cannot disappear? What then if we want to connect servers to
+    servers? Do we try to connect every few second?
+	That is, how do pieces know about each other? This is called 
+    *dynamic discovery problem*.
+  + How do we represent a message on the wire? 
+    How do we frame data so it's easy to write and read, safe from buffer
+    overflows, efficient for small messages, yet adequate for the very largest
+    videos of dancing cats wearing party hats?
+  + How do we handle messages that we can't deliver immediately? 
+    Particularly, if we're waiting for a component to come back online? Do we
+    discard messages, put them into a database, or into a memory queue?
+  + Where do we store message queues? What happens if the component reading
+    from a queue is very slow and causes our queues to build up? What's our
+    strategy then?
+  + How do we handle lost messages? Do we wait for fresh data, request a
+    resend, or do we build some kind of reliability layer that ensures messages
+    cannot be lost? What if that layer itself crashes?
+  + What if we need to use a different network transport. Say, multicast
+    instead of TCP unicast? Or IPv6? Do we need to rewrite the applications, or
+    is the transport abstracted in some layer?
+  + How do we route messages? 
+    Can we send the same message to multiple peers?
+    Can we send replies back to an original requester?
+  + How do we write an API for another language? 
+    Do we re-implement a wire-level protocol or do we repackage a library? If
+    the former, how can we guarantee  efficient and stable stacks? If the
+    latter, how can be guarantee interoperability?
+  + How do we represent data so that it can be read between different
+    architectures? Do we enforce a particular encoding for data types? How far
+    is this the job of the messaging system rather than a higher layer?
+  + How do we handle network errors? Do we wait and retry, ignore them
+    silently, or abort?
+* 'socket' in zmq
+** concept
+   Traditional network programming is built on the general assumption that one
+   socket talks to one connection, one peer. There are multicast protocols, but
+   these are exotic. When we assume 'one socket = one connection', we scale our
+   architecture in certain ways. We create threads of logic where each thread
+   work with one socket, one peer. We place intelligence and state in these
+   threads.
+   
+   In the ZMQ universe, sockets are doorways to fast little background
+   communications engines that manage a whole set of connections automatically
+   for you. You can't see, work with, open, close, or attach state to these
+   connections. Whether you use blocking send or receive, or poll, all you can
+   talk to is the socket, not the connections it manages for you. The
+   connections are private and invisible, and this is the key to ZMQ's
+   scalability.
+   
+   This is because your code, talking to a socket, can then handle any number of
+   connections across network protocols are around, without change. A messaging
+   pattern sitting in ZMQ scales more cheaply than a messaging pattern sitting
+   in your application code.
+** lifecycle of socket in zmq
+   Sockets have a life in four parts, just like BSD sockets:
+   + Creating and destroying sockets, which go together to form a karmic circle
+     of socket life.
+   + Configuring socket by setting options on them and checking them if
+     necessary.
+   + Plugging sockets into the network topology by creating ZMQ connections to
+     and from them.
+   + Using the sockets to carry data by writing and receiving messages on them.
+** 'bind' in ZMQ
+   When a socket is bound to an endpoint it automatically starts accepting
+   connections. 
+** 'connection' in ZMQ
+   The network connection itself happens in the background, and ZMQ will
+   automatically reconnect if the network connection is broken (e.g. if the peer
+   disappears and then comes back).
+
+   Your application code can't work with these connections directly; they are
+   encapsulated under the socket.
+** socket types
+   Sockets have types. The socket type defines the semantics of the socket, its
+   policies for routing messages inwards and outwards, queuing, etc.
+
+   It's the ability to onnect sockets in different ways that gives ZMQ its
+   basic power as a message queuing system.
+* Transports
+** summary
+   ZMQ provides a set of *unicast* transports (_inproc_, _ipc_ and _tcp_)
+   and *multicast* transports (_epgm_, _pgm_).
+
+   For most common cases, use *tcp*, which is a disconnected TCP transport. We
+   call it disconnected because ZMQ's *tcp* transport doesn't require that the
+   endpoint exists before you connect to it. Clients and severs can connect and
+   bind at any time, can go and come back, and it remains transparent to
+   applications. 
+
+   The inter-process *ipc* transport is disconnected, like *tcp*. It has one
+   limitation: it does not yet work on Windows. By convention, we use endpoint
+   names with an *.ipc* extension to avoid potential conflict with other file
+   names. On Unix systems, if you use *ipc* endpoints, you need to  create
+   these with appropriate permissions otherwise they may not be shareable
+   between processes running under differenct user IDs. You must also make sure
+   all processes can access the files, e.g., by running in the same working
+   directory. 
+
+   The inter-thread transport, *inproc*, is a connected signaling transport. It
+   is much faster than *tcp* or *ipc*. This transport has a specific limitation
+   compared to *tcp* and *icp*: the server must issue a bind before any client
+   issues a connect. We create and bind one socket and start the child threads,
+   which create and connect the other sockets.
+* Patterns
+** summary
+   ZMQ patterns are implemented by pairs of sockets with matching types.
+   
+   The built-in core ZMQ patterns are:
+   + *Requets-Reply*
+	 It connects a set of clients to a set of services. 
+     _This is a remote procedure call and task distribution pattern._
+   + *Pub-Sub*
+	 It connects a set of publishers to a set of subscribers.
+	 _This is a data distribution pattern_
+   + *Pipeline*
+	 It connects nodes in a fan-out/fan-in pattern that can have multiple steps
+     and loops.
+	 _This is a parallel task distribution adn collection pattern_
+   + *Exclusive Pair*
+	 It connects two sockets exclusively.
+	 _This is a pattern for connecting two threads in a process, not to be_
+     _confused with 'normal' pairs of sockets._
+
+  The *zmp_socket()* man page is fairly clear about the patterns -- it's worth
+  reading several times until it starts to make sense.
+** socket combinatinos
+   These are the socket combinations that are valid for a connection-bind pair
+   (either side can bind):
+   + PUB/SUB
+   + REQ/REP
+   + REQ/ROUTER
+   + DEALER/REP
+   + DEALER/ROUTER
+   + DEALER/DEALER
+   + ROUTER/ROUTER
+   + PUSH/PULL
+   + PAIR/PAIR
+   + XPUB/XSUB
+	 XPUB/XSUB are exactly like PUB/SUB except that they expose subscriptions
+     as special messages. 
+     The proxy has to forward these subscription messages from subscriber side
+     to publisher side, by reading them from the XSUB socket and writing them
+     to the XPUB socket.
+	 This is the main use case for XPUB/XSUB.
+** Pub-Sub
+*** Envelope
+	In the pub-sub pattern, we can split the key into a separate message frame
+	that we call an *envelope*. Using an envelope could delimit keys from data
+	so that the prefix match doesn't accidently match data and the match won't
+	cross a frame boundary.
+
+	The corresponding API is:
+	+ send_multipart([FRAME0, FRAME1, FRAME2, ...])
+	+ recv_multipart()
+	  返回 [FRAME0, FRAME1, FRAME2, ...]
+* Messages/Frames
+** A useful lexicon
+   + A message can be one or more parts.
+   + These parts are also called 'frames'.
+   + Each part is a *zmq_msg_t* object.
+   + You send and receive each part separately, in the low-level API.
+   + Higher-level APIs provide wrappers to send entire multipart messages.
+** Some things worth knowing about messages:
+   + You may send zero-length messages, e.g., for sending a signal from one
+     thread to another
+   + ZMQ guarantees to deliver all the parts (one or more) for a message, or
+     none of them
+   + ZMQ does not send the message (single or multipart) right away, but at
+     some indeterminate time. A multipart message must therefore fit in memory
+   + A message (single or multipart) must fit in memory. If you want to send
+     files of arbitrary sizes, you should break them into pieces and send each
+     piece as separate single-part messages. Using multipart data will not
+     reduce memory consumption
+   + You must call *zmq_msg_close()* wehn finished with a received message, in
+     languages that don't automatically destroy objects when a scope
+     closes. You don't call this method after sending a message.
+* Handling multiple sockets
+  To actually read from multiple sockets all at once, use *zmq_poll()*.
+* Multipart Messages
+** Some things to know about multipart messages
+   + When you send a multipart message, the first part (and all following
+     parts) are only actually sent on the wire when you send the final part.
+   + If you are using *zmq_poll()*, when you recieve the first part of a
+     message, all the rest has also arrived.
+   + You will receive all parts of a message, or none at all.
+   + Each part of a message is a separate *zmq_msg* item.
+   + You will receive all parts of a message whether or not you check the more
+     property.
+   + On sending, ZMQ queues message frames in memory until the last is
+     received, then sends them all.
+   + There is no way to cancel a partially sent message, except by closing the
+     socket. 
+* Multithreads in ZMQ
+** Some rules
+   + Isolate data privately within its thread and never share data in multiple
+     threads. The only exception to this are ZMQ contexts, which are threadsafe.
+   + Stay away from the classic concurrency mechanisms like as mutexes,
+     critical sections, semaphores, etc. These are an anti-pattern in ZMQ
+     applications.
+   + Create one ZMQ context at the start of your process, and pass that to all
+     threads that you want to connect via *inproc* sockets.
+   + Use _attached_ threads to create structure within your application, and
+     connect these to their parent threads using *PAIR* sockets
+     over *inproc*. The pattern is: bind parent socket, then create child
+     thread which connects its socket.
+   + Use _detached_ threads to simulate independent tasks, with their own
+     contexts. Connect these over *tcp*. Later you can move these to
+     stand-alone processes without changing the code significally.
+   + All interaction between threads happens as ZMQ messages, which you can
+     define more or less formally.
+   + Dont' share ZMQ sockets between threads. ZMQ sockets are not
+     threadsafe. Technically it's possible to migrate a socket from one thread
+     to another but it demands skill. The only place where it's remotely sane
+     to share sockets between threads are in language bindings that need to do
+     magic like garbage collection on sockets.
+   + Do not use or close sockets except in the thread that created them.
+** Coordination between pairs of threads
+   The best practice is to use *zmq.PAIR*. Here's the reason:
+   + You can use *PUSH* for the sender and *PULL* for the receiver. This looks
+     simple and will work, but remeber that *PUSH* will distribute messages to
+     all available receive. If you by accident start two receivers (e.g., you
+     already have one running and you start a second), you'll "lose" half of
+     your signals. *PAIR* has the advantage of refusing more than one
+     connection; the pair is exclusive.
+   + You can use *DEALER* for the sender and *ROUTER* for the
+     receiver. *ROUTER*, however, wraps your message in an "envelope", meaning
+     yoru zero-size signal turns into a multipart message. If you don't care
+     about the data and treat anything as a valid signal, and if you don't read
+     more than once from the socket, that won't matter. If, however, you decide
+     to send real data, you will suddenly find *ROUTER* providing you with
+     "wrong" messages. *DEALER* also distribute outgoing messages, giving the
+     same risk as *PUSH*
+   + You can use *PUB* for the sender and *SUB* for the receiver. This will
+     correctly deliver your messages exactly as you sent them and *PUB* does
+     not distribute as *PUSH* or *DEALER* do. However, you need to configure
+     the subscriber with an empty subscription, which is annoying.
+* I/O
+** summary
+   ZMQ does I/O in a background thread. One I/O thread (for all sockets) is
+   sufficient for all but the most extreme applications. When you create a new
+   context, it starts with one I/O thread. The general rule of thumb is to
+   allow one I/O thread per gigabyte of data in or out per second. But you can
+   change the number of I/O threads.
+* FAQ
+** Does 'zmq_send()' method actually send messages?
+   No. It queues the messages so that the I/O thread can send it
+   asynchrounously. It does not block except in some exception cases. So the
+   message is not necessarily sent when *zmq_send()* returns to your
+   application.

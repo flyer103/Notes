@@ -62,3 +62,19 @@
    + 参数中加入 *timeout*
    + 使用时加入 *Timeout* 类
   
+* Best Practice
+** patch socket 时
+   如果要 patch socket，最好同时 patch ssl，如
+
+   gevent.monkey.patch_socket()
+   gevent.monkey.patch_ssl()
+
+   因为若需要请求 https 形式的链接，仅 patch_socket 会出现 
+
+   requests.exceptions.SSLError: [Errno 2] _ssl.c:503: The operation did not
+   complete (read)
+   
+   这样的异常.
+
+   Ref:
+   + [[http://stackoverflow.com/questions/20580252/python-requests-module-throws-exception-with-gevent/20580706][Python: requests module throws exception with Gevent]]
