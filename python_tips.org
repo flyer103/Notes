@@ -1564,7 +1564,28 @@
      [[http://www.python.org/dev/peps/pep-0333/#environ-variables][pep0333:wsgi_env]]
 * threading
 ** how to kill a thread
-   Refer to [[http://stackoverflow.com/questions/323972/is-there-any-way-to-kill-a-thread-in-python][this question]]
+   Refer to
+   [[http://stackoverflow.com/questions/323972/is-there-any-way-to-kill-a-thread-in-python][this question]]
+* multiprocessing
+** 数据/任务共享
+   一般可通过
+   + multiprocessing.Queue (数据共享)
+   + multiprocessing.JoinableQueue (任务分配)
+   + multiprocessing.Manager
+   实现.
+** 同步
+   一般通过如下几种方式:
+   + multiprocessing.Event
+	 有通知机制，进程之间有 "先后" 关系，一个进程被阻塞后通过另一个进程进行唤醒.
+   + multiprocessing.Condition
+	 类似于 Event，但它可以唤醒一个或多个阻塞的进程.
+   + multiprocessing.Lock
+	 对共享资源的访问控制，进程间仅有 *一次只能一个进程访问该资源* 的关系.
+   + multiprocessing.Semaphore
+	 类似于 Lock，但进程间有 *一次只能指定数量的进程方法该资源* 的关系.
+** 进程池
+   一般是通过 multiprocessing.Pool 创建包含多个进程的进程池，它们的作用仅是预备
+   进程，然后通过 map() 等方法将任务交给进程池中的进程执行.
 * '\u1212', unicode('\u1212') 和 u'\u1212' 区别
   In python-2.x:
   '\u1212' is an ASCII string with 6 characters: \, u, 1, 2, 1, and 2.

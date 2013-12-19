@@ -170,7 +170,21 @@
    (either side can bind):
    + PUB/SUB
    + REQ/REP
+	 两方只用发送信息的具体的内容即可. socket 处理时会自动把该信息封装成一个
+     frame，然后在该 frame 之前添加或除去一个空的 frame.
    + REQ/ROUTER
+	 - 若 REQ socket 没有设置 zmq.IDENTITY
+	   则 REQ 发送信息时只用发送信息实体，该 socket 会自动把信息封装成一个 frame，
+       然后在发送该 frame 之前发送一个空的 frame。接收 ROUTER 发来的信息时，REQ
+       socket 会收到两个 frame，第一个 frame 是空的，会被 REQ socket 自动除去，
+       只将第二个包含信息的 frame 交给应用.
+	   ROUTER socket 会自动生成一个该 REQ socket 的唯一标志符，处理后会在接收到
+       的两个 frame 之前添加一个唯一标志符的 frame，将这三个 frame 交给 ROUTER
+       处理.向 REQ socket 发送消息时也需要按此发送三个 frame，只是 ROUTER socket
+       会在定位接收信息的 REQ socket 后自动除去第一个唯一标志的 frame，这样 REQ
+       socket 实际接收到的是两个 frame，第一个 frame 是空，第二个 frame 是信息实体.
+	 - 若 REQ socket 设置了 zmq.IDENTITY
+	   大致的处理与上类似，只是会以该 IDENTITY 为该 connection 的唯一标志.
    + DEALER/REP
    + DEALER/ROUTER
    + DEALER/DEALER
@@ -276,6 +290,115 @@
      correctly deliver your messages exactly as you sent them and *PUB* does
      not distribute as *PUSH* or *DEALER* do. However, you need to configure
      the subscriber with an empty subscription, which is annoying.
+* High-Water Marks
+  它解决的是消息 发送/接收 两方速度不匹配的问题，即 *flow-control* 问题.通过
+  + 丢掉消息
+  + 阻塞发送方
+  两种方法来解决。一般有 *发送* 和 *接收* 两种类型的 HWM.
+  对于不同的 pattern，对过量的消息有不同的处理方法:
+  + PUB and ROUTER sockets will drop data if they reach their HWM
+  + Other socket types will block.
+* Missing Message Problem Solver
+  参考这篇文档中的图:
+  + [[http://zguide.zeromq.org/page:all#Missing-Message-Problem-Solver][Missing-Message-Problem-Solver]]
+
+  解释:
+  + On *SUB* sockets, set a subscription using *zmq_setsockopt()*
+    with *ZMQ_SUBSCRIBE*, or you won't get messages. Because you subscribe to
+    messages by prefix, if you subscribe to '' (an empty subscription), you
+    will get everything.
+  + If you start the *SUB* socket (i.e., establish a connection to a *PUB*
+    socket) after the *PUB* socket has started sending out data, you will lose
+    whatever it published before the connection was made. If this is a problem,
+    set up your architecture so the *SUB* socket starts first, then the *PUB*
+    socket starts publishing.
+  + [???] Even if you synchronize a *SUB* and *PUB* socket, you may still lose
+    message. It's due to the fact that internal queues aren't created until a
+    connection is actually created. If you can switch the bind/connect
+    direction so the *SUB* socket binds, and the *PUB* socket connects, you may
+    find it works more as you'd expect.
+  + If you're using *REP* and *REQ* sockets, and you're not sticking to the
+    synchronous send/recv/send/recv order, ZMQ will report errors, which you
+    might ignore. Then it would look like you're losing messages. If you
+    use *REQ* or *REP*, stick to the send/recv order, and always, in real code,
+    check for errors on ZMQ calls.
+  + If you're using *PUSH* sockets, you'll find that the first *PULL* socket to
+    connect will grab an unfair share of messages. The accurate rotation of
+    messages only happens when all *PULL* sockets are successfully connected,
+    which can take some milliseconds. As an alternative to *PUSH/PULL*, for
+    lower data rates, consider using *ROUTER/DEALER* and the load balancing
+    pattern.
+  + If you're sharing sockets across threads, don't. It will lead to random
+    weirdness, and crashes.
+  + If you're using *inproc*, make sure both sockets are in the same
+    context. Otherwise the connectin side will in fact fail. Also, bind first,
+    then connect. *inproc* is not a disconnected transport like *tcp*.
+  + If you're using *ROUTER* sockets, it's remarkably easy to lose messages by
+    accident, by sending malformed identity frames (or forgetting to send an
+    identity frame). In general setting the *ZMQ_ROUTER_MANDATORY* option
+    on *ROUTER* sockets is a good idea, but also check the return code on every
+    send call.
+  + Lastly, if you really can't figure out what's going wrong, make a minimal
+    test case that reproduces the problem, and ask for help from the ZMQ
+    community.
+* REQ/REP Patterns
+** Some things to know
+   + The *REQ* socket sends, to the network, an empty delimiter frame in front
+     of the message data. 
+     *REQ* sockets are _synchronous_. *REQ* sockets always send one request and
+     then wait for one reply.
+	 *REQ* sockets talks to one peer at a time. If you connect a *REQ* socket
+     to multiple peers, requests are distributed to and replies expected from
+     each peer one turn at a time.
+   + The *REP* socket reads and saves all identity frames up to and including
+     the empty delimiter, then passe the following frame or frames to the
+     caller.
+	 *REP* sockets are _synchronous_ and talk to one peer at a time. If you
+     connect a *REP* socket to multiple peers, requests are read from peers in
+     fair fashion, and replies are always sent to the same peer that made the
+     last request.
+   + The *DEALER* socket is oblivious to the reply envelope and handles this
+     like any multipart message.
+	 *DEALER* sockets are _asynchronous_ and like *PUSH* and *PULL*
+     combined. They distribute sent messages among all connections, and
+     fair-queue received messages from all connections.
+   + The *ROUTER* socket is obliviious to the reply envelope, like *DEALER*. It
+     creates identities for its connections, and passes these identities to the
+     caller as a first frame in any received message. Conversely, when the
+     caller sends a message, it uses the first message frame as an identity to
+     look up the connection to send to.
+	 *ROUTERS* are _asynchronous_.
+** req-rep combinatinos
+   These are the legal combinations:
+   + REQ to REP
+   + DEALER to REP
+   + REQ to ROUTER
+   + DEALER to ROUTER
+   + DEALER to DEALER
+   + ROUTER to ROUTER
+
+   There combinations are invalid:
+   + REQ to REQ
+   + REQ to DEALER
+   + REP to REP
+   + REP to ROUTER
+
+   Here're some tips for remembering the semantics.
+   *DEALER* is like an _asynchronous_ *REQ* socket, and *ROUTER* is like an
+   _asynchronous_ *REP* socket. Where we use a *REQ* socket, we can use
+   a *DEALER*; we just have to read and write the envelope ourselves. Where we
+   use a *REP* socket, we can stick a *ROUTER*; we just need to manage the
+   identities ourselves.
+
+   Think of *REQ* and *DEALER* sockets as "clients" and *REP* and *ROUTER*
+   sockets as "servers".*
+* Difference between REQ and DEALER
+   Anywhere you can use *REQ*, you can use *DEALER*. There are two specific
+   difference:
+   + The *REQ* socket always sends an empty delimiter frame before any data
+     frames; the *DEALER* does not.
+   + The *REQ* socket will send only one message before it receives a reply;
+     the *DEALER* is fully asynchrounous.
 * I/O
 ** summary
    ZMQ does I/O in a background thread. One I/O thread (for all sockets) is
@@ -289,3 +412,23 @@
    asynchrounously. It does not block except in some exception cases. So the
    message is not necessarily sent when *zmq_send()* returns to your
    application.
+** the natural patterns that 'bind'/'connect'
+   The side which we expect to "be there" *binds*: it'll be 
+   + a server
+   + a broker
+   + a publisher
+   + a collector.
+
+   The side that "comes and goes" *connects*: it'll be 
+   + clients
+   + workers
+** 需要多重复看哪些章节?
+   与 identity 相关的:
+   + [[http://zguide.zeromq.org/page:all#The-Simple-Reply-Envelope][The Simple Reply Envelope]]
+   + [[http://zguide.zeromq.org/page:all#The-Extended-Reply-Envelope][The Extended Reply Envelope]]
+   + [[http://zguide.zeromq.org/page:all#Identities-and-Addresses][Identities and Addresses]]
+
+   Request-Reply Combinations:
+   + [[http://zguide.zeromq.org/page:all#Request-Reply-Combinations][Request-Reply Combinations]]
+** send()/recv() 发送/接收 的是什么？
+   是一个 frame.
