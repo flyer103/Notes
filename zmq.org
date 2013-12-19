@@ -209,6 +209,37 @@
 	+ send_multipart([FRAME0, FRAME1, FRAME2, ...])
 	+ recv_multipart()
 	  返回 [FRAME0, FRAME1, FRAME2, ...]
+** 发送和接收信息
+*** REQ
+	+ REQ/ROUTER
+	  REQ socket 会接收到两个 frame，第一个 frame 是空，第二个 frame 是信息实体.它
+	  会自动除去第一个 frame，然后将第二个 frame 交给 application.
+   	  application 只发送信息实体，REQ socket 会生成两个 frame (???这点暂时有疑问)，
+	  第一个是空的 frame，第二个是包含信息实体的 frame，然后将该信息发送给 ROUTER.
+
+	REQ socket 的工作形式：发送消息-->接收消息-->发送消息-->接收消息-->...
+	在接收消息之前必须先发送消息.
+*** ROUTER
+	+ ROUTER/REQ
+	  ROUTER application 会收到三个 frame，第一个 frame 是发送方的地址(唯一标志符)，
+	  第二个 frame 是空，第三个 frame 是信息实体.
+	  ROUTER application 发送消息时，也需要发送上述三个 frame.
+	+ ROUTER/DEALER
+	  ROUTER application 会收到两个 frame，第一个 frame 是发送方的地址(唯一标志
+      符)，第二个 frame 是信息实体.
+	  ROUTER application 发送消息时，也需要发送上述两个 frame. ROUTER socket 会
+      根据第一个 frame 确认要发送给哪个 DEALER socket，然后将第二个 frame 发送
+      给 DEALER socket.
+
+   ROUTER socket 的工作形式: 发送/接收消息的顺序可任意,也可只接收不发送或只发送
+   不接收.
+*** DEALER
+	+ DEALER/ROUTER
+	  DEALER application 发送消息时只用发送信息实体.
+	  DEALER socket 和 application 接收消息时也只接收到信息实体.
+
+   DEALER socket 的工作形式: 发送/接收消息的顺序可任意，也可只接收不发送或只发送
+   不接收.
 * Messages/Frames
 ** A useful lexicon
    + A message can be one or more parts.
@@ -290,6 +321,13 @@
      correctly deliver your messages exactly as you sent them and *PUB* does
      not distribute as *PUSH* or *DEALER* do. However, you need to configure
      the subscriber with an empty subscription, which is annoying.
+** How to interrupt child workes?
+   If you're using child threads ,they won't receive the interrupt. To tell
+   them to shutdown, you can either:
+   + Destroy the context, if they are sharing the same context, in which case
+     any blocking calls they are waiting on will end with *ETREM*
+   + Send them shutdown messages, if they are using their own contexts. For
+     this you'll need some socket plumbing.
 * High-Water Marks
   它解决的是消息 发送/接收 两方速度不匹配的问题，即 *flow-control* 问题.通过
   + 丢掉消息
@@ -432,3 +470,28 @@
    + [[http://zguide.zeromq.org/page:all#Request-Reply-Combinations][Request-Reply Combinations]]
 ** send()/recv() 发送/接收 的是什么？
    是一个 frame.
+   
+** send_multipart/recv_multipart() 发送/接收 的是什么?
+   addr_worker = router.recv()
+   empty = router.recv()
+   body = router.recv()
+   等同于:
+   addr_worker, empty, body = router.recv_multipart()
+
+   router.send(addr_worker, zmq.SNDMORE)
+   router.send('', zmq.SNDMORE)
+   router.send('END')
+   等同于:
+   router.send_multipart([addr_worker, '', 'END'])
+* BEST PRACTICE
+** 建立连接时设立同步机制
+   由于 zmq 发送消息很快，可能在多个 client 建立连接过程中就已经把消息发送完，而
+   此时 client 因并未建立好连接造成没有接收到消息，故需要一定的同步机制.
+
+   最简单的同步设立机制是在 client 启动后让 server 等待一段时间后再发送消息.
+** send()/recv() 和 send_multipart()/recv_multipart() 的选择
+   要根据是使用场景进行选择:
+   + 未知消息中 frame 个数时
+	 最好选择 send()/recv()
+   + 已知消息中 frame 个数时
+	 可选择 send_multipart()/recv_multipart()

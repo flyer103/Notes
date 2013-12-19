@@ -309,6 +309,16 @@
   打包成 tar:
   $ git archive master --prefix='project/' --format=tar > project.tar
 
+* 常用操作
+  只查看与某个文件相关的 commit:
+  $ git log --follow 文件
+
+  查看做了哪些改动:
+  $ git whatchanged 
+  $ git whatchanged --summary
+
+  显示 git 管理的文件:
+  $ git ls-files
 * BEST PRACTICE
 ** 初始化工程前
    先建立好 README、.gitignore 文件后再 *git init* ，这样可以免去一些不必要的操
