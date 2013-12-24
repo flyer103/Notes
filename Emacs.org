@@ -119,7 +119,7 @@
    可以经常在 M-x 输入命令时通过 Tab 补全查看下可用的命令，这个很有帮
    助。
 * cedet 
-*** 1、简介
+** 1、简介
     The Cedet package is a collection of serveral libraries,
     implementing differen commands, but used for one task —— provide
     functionality for work with source code written in different
@@ -154,17 +154,22 @@
         Object System) infrastructure for Emacs Lisp.
      8) /Cogre/ is a library for drawing of UML-like diagrams in Emacs
         buffer, with basic integration with Semantic.
-*** 2、安装
+** 2、安装
    先从 SourceForge 上下载源码（CVS 版本），解压后通过
    $ emacs -Q -l cedet-build.el -f cedet-build
    或
    $ Emacs -Q -nw -l cedet-build.el -f cedet-build -f save-buffers-kill-terminal
-*** 3、技巧
+** 3、技巧
 **** 1、跳转到函数定义
      把光标移动某个函数开头字符，然后执行
      M-x semantic-ia-fast-jump
      这就会自动跳转到函数的定义处，若想返回，则执行
      C-x B
+** cpu 占用 100%
+   把 PATH/TO/CEDET/semantic/semantic-idle.el 中与
+   + semantic-idle-scheduler-kill-timer
+   + semantic-idle-scheduler-setup-timer
+   出现的地方注释掉.
 * ecb
    启动时用 M-x ecb-activate 或 M-x ecb-minor-mode 或 M-x
    ecb-byte-compile 或 M-x ecb-show-help

@@ -430,6 +430,50 @@
 
    Think of *REQ* and *DEALER* sockets as "clients" and *REP* and *ROUTER*
    sockets as "servers".*
+** ways to connect clients to servers
+   There're roughly three ways to connect clients to servers. Each needs a
+   specific approach to reliability:
+   + Multiple clients talking directly to a single server.
+	 - Use case
+       a single well-known server to which clients need to talk.
+	 - Types of failure
+	   server crashes and restarts, and network disconnects.
+   + Multiple clients talking to a broker proxy that distributes work to
+     multiple workers.
+	 - User case
+	   service-oriented transaction processing.
+	 - Types of failure
+	   worker crashes and restarts, worker busy looping, worker overload, queue
+       crashes and restarts, and network disconnects.
+   + Multiple clients talking to multiple servers with no intermediary proxies.
+	 - Use case
+	   distributed services such as name resolution
+	 - Types of failure
+	   service crashes and restarts, service busy looping, service overload,
+       and network disconnects.
+** reliability
+*** client-side reliabity (lazy pirate pattern)
+	Rather than doing a blocking receive, we:
+	+ Poll the REQ socket and receive from it only when it's sure a reply has
+      arrived.
+	+ Resend a request, if no reply has arrived within a timeout period.
+	+ Abandon the transaction if there is still no reply after several requests.
+
+	If you try to use a REQ socket in anything other than a strict send/receive
+	fashion, you'll get an error (technically, the REQ socket implement a small
+	finite-state machine to enforce the send/receive ping-pong, and so the error
+	is called "EFSM").
+
+	The pretty good brute force solution is to close and reopen the REQ socket
+	after an error.
+
+	Pros and cons:
+	+ Pros
+	  - simple to understand and implement
+	  - works easily with existing client and server application code
+	  - ZMQ automatically retries the actual reconnection until it works
+	+ Cons
+	  - doesn't failover to backup or alternate servers.
 * Difference between REQ and DEALER
    Anywhere you can use *REQ*, you can use *DEALER*. There are two specific
    difference:
@@ -483,6 +527,50 @@
    router.send('END')
    等同于:
    router.send_multipart([addr_worker, '', 'END'])
+* Reliability
+** Some probabilities:
+   + Application code is the worse offender. It can crash and exit, freeze, and
+     stop responding to input, run too slowly for its input, exhaust all
+     momeory, and so on.
+   + System code -- such as brokers written using ZMQ -- can die for same
+     reasons as application code. System code should be more reliable than
+     application code, but it can still crash and burn, and especially run out
+     of memory if it tries to queue messages for slow clients.
+   + Message queues can overflow, typically in system code that has learned to
+     deal brutally with slow clients. When a queue overflow, it starts to
+     discard messages.
+   + Networks can fail (e.g., WiFi gets switched off or goes out of range). ZMQ
+     will automatically reconnect in such cases, but in the meantime, messages
+     may get lost.
+   + Hardware can fail and take with it all the processes running on that box.
+   + Networks can fail in exotic ways, e.g., some ports on a switch may die and
+     those parts of the network become inaccessible.
+   + Entire data centers can be struck by lightening, earthquakes, fire, or
+     more mundane power or cooling failure.
+** Some patterns
+   + Request-reply
+	 If the server dies (while processing a request), the client can figure
+     that out because it won't get an answer back. Then it can give up, wait
+     and try again later, find another server, and so on. 
+     As for the client dying, we can brush that off as "someone else's problem"
+     for now. 
+   + Pub-sub
+	 If the client dies (having gotten some data), the server doesn't know
+     about it. Pub-sub doesn't send any information back from client to
+     server. But the client can contact the server out-of-band, e.g., via
+     request-reply, and ask, "please resend everything I missed".
+	 Subscribers can also self-verify that they're not running too slowly, and
+     take action (e.g., warn the operator and die) if they are.
+   + Pipeline
+	 If a worker dies (while working), the ventilator doesn't know about
+     it. Pipelines, liek the grinding gears of time, only work in one
+     direction. But the downstream collector can detect that one task didn't
+     get done, and send a message back to the ventilator saying, "hey, resend
+     task 324!".
+	 If the ventilator or collector dies, whatever upstream client originally
+     sent the work batch can get tired of waiting and resend the whole
+     lot. It's not elegant, but system code should really not die oftern enough
+     to matter.
 * BEST PRACTICE
 ** 建立连接时设立同步机制
    由于 zmq 发送消息很快，可能在多个 client 建立连接过程中就已经把消息发送完，而
@@ -495,3 +583,4 @@
 	 最好选择 send()/recv()
    + 已知消息中 frame 个数时
 	 可选择 send_multipart()/recv_multipart()
+

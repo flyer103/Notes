@@ -1599,7 +1599,58 @@
   Strings are always Unicode.
 
   Reference:
-  + [[http://stackoverflow.com/questions/20510929/difference-between-ustring-and-unicodestring][Difference between u'string' and unicode(string)]]
+  +
+    [[http://stackoverflow.com/questions/20510929/difference-between-ustring-and-unicodestring][Difference between u'string' and unicode(string)]]
+* Array
+** 类型受限的数组
+   array.array() 提供构造数据类型受限的数组的方法.
+** 数据个数受限的数组
+   可以构造一个 class，采用 list 存储数据，但增删改查数据时，检查是否越界.
+   还可以通过 ctypes.py_object 存储单个数据，构造数据个数受限的数组, 如
+
+   class MyArray(object):
+
+    def __init__(self, size):
+        assert size > 0, "Array size must be greater than 0"
+        
+        self._size = size
+        PyArrayType = ctypes.py_object * self._size
+        self._elements = PyArrayType()
+
+        self._indicator = 0
+
+        self.clear(None)
+
+    def __len__(self):
+        return self._size
+
+    def __getitem__(self, index):
+        assert index >= 0 and index < len(self), "Array subscript out of range"
+        return self._elements[index]
+
+    def __setitem__(self, index, value):
+        assert index >=0 and index < len(self), "Array subscript out of range"
+        self._elements[index] = value
+
+    def __delitem__(self, index):
+        assert index >=0 and index < len(self), "Array subscript out of range"
+        self._elements[index] = None
+        
+    def __iter__(self):
+        return self
+
+    def next(self):
+        try:
+            elem = self._elements[self._indicator]
+            self._indicator += 1
+            return elem
+        except IndexError:
+            self._indicator = 0
+            raise StopIteration
+        
+    def clear(self, value=None):
+        for i in range(len(self)):
+            self._elements[i] = value
 * Best Practice
 ** 处理有对应关系的两个 list
    如有两个 list:
@@ -1712,3 +1763,38 @@
        while True:
            print('flyer')
 
+** iterator 的实现
+   若想把类的对象变成 iterator，定义 class 时需要同时定义 __iter__() 和 next()
+   方法，或者只定义 __iter__() 方法.
+
+   对于第一种方法，e.g.:
+   
+   class Test(object):
+
+       def __init__(self, alist):
+	       self._alist = alist
+		   self._indicator = 0
+		   
+       def __iter__(self):
+	       return self
+
+	   def next(self):
+	       try:
+		       elem = self._alist[self._indicator]
+			   self._indicator += 1
+			   return elem
+           except IndexError:
+		       self._indicator = 0
+			   raise StopIteration
+
+   对于第二种方法, e.g.:
+
+   class Test(object):
+
+       def __init__(self, alist):
+	       self._alist = alist
+		   
+       def __iter__(self):
+	       return iter(self._alist)
+** 表示无穷大
+   float('inf')
