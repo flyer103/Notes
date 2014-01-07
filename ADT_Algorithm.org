@@ -1,0 +1,23 @@
+* Common Examples of Asymptotic Running Times
+  | Complexity | Name        | Examples, Comments                                   |
+  |------------+-------------+------------------------------------------------------|
+  | O(1)       | Constant    | Hash table lookup and modification                   |
+  | O(lgn)     | Logarithmic | Binary search. Logarithm base unimportant            |
+  | O(n)       | Linear      | Iterating over a list                                |
+  | O(nlgn)    | Loglinear   | Optimal sorting of arbitrary values. Same as O(lgn!) |
+  | O(n^2)     | Quadratic   | Comparing n objects to each other                    |
+  | O(n^3)     | Cubic       | Floyd and Warshall's algorithms                      |
+  | O(n^k)     | Polynomial  | k nested for loops over n (if k is pos. interger).   |
+  | O(k^n)     | Exponential | Producing every subset of n items (k=2). Any k>1     |
+  | O(n!)      | Factorial   | Producing every ordering of n values.                    |
+* Some Basic Recurrences with Solutions
+  | Recurrence     | Solution | Example Applications                            |
+  |----------------+----------+-------------------------------------------------|
+  | T(n)=T(n-1)+1  | O(n)     | Processing a sequence, for example, with reduce |
+  | T(n)=T(n-1)+n  | O(n^2)   | Handshake problem                               |
+  | T(n)=2T(n-1)+1 | O(2^n)   | Towers of Hanoi                                 |
+  | T(n)=2T(n-1)+n | O(2^n)   |                                                 |
+  | T(n)=T(n/2)+1  | O(lgn)   | Binary search                                   |
+  | T(n)=T(n/2)+n  | O(n)     | Randomized Select, average case                 |
+  | T(n)=2T(n/2)+1 | O(n)     | Tree traversal                                  |
+  | T(n)=2T(n/2)+n | O(nlgn)  | Sorting by divide and conquer                   |

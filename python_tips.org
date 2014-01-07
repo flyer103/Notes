@@ -1651,6 +1651,94 @@
     def clear(self, value=None):
         for i in range(len(self)):
             self._elements[i] = value
+* Cheat Sheet
+** Built-in Exceptions
+   + SystemExit
+   + KeyboardInterrupt
+   + GeneratorExit
+   + Exception
+	 - StopIteration
+	 - StandardError
+	   - BufferError
+	   - ArithmethicError
+		 - FloatingPointError
+		 - OverflowError
+		 - ZeroDivisionError
+	   - AssertionError
+	   - AttributeError
+	   - EnvironmentError
+		 - IOError
+		 - OSError
+		   - WindowsError (Windows)
+		   - VMSError (VMS)
+	   - EOFError
+	   - ImportError
+	   - LookupError
+		 - IndexError
+		 - KeyError
+	   - MemoryError
+	   - NameError
+		 - UnboundLocalError
+	   - ReferenceError
+	   - RuntimeError
+		 - NotImplementedError
+	   - SyntaxError
+		 - IndentationError
+		   -TabError
+	   - SystemError
+	   - TypeError
+	   - ValueError
+		 - UnicodeError
+		   - UnicodeDecodeError
+		   - UnicodeEncodeError
+		   - UnicodeTranslateError
+   + Warning
+	 - DeprecationWarning
+	 - PendingDeprecationWarning
+	 - RuntimWarning
+	 - SyntaxWarning
+	 - UserWarning
+	 - FutureWarning
+	 - ImportWarning
+	 - UnicodeWarning
+	 - BytesWarning
+** unittest.TestCase methods
+   + setUp
+   + tearDown
+   + assertEqual(a, b)
+   + assertNotEqual(a, b)
+   + assertTrue(x)
+   + assertFalse(x)
+   + assertIs(a, b)
+   + assertIsNot(a, b)
+   + assertIsNone(x)
+   + assertNotNone(x)
+   + assertIn(a, b)
+   + assertNotIn(a, b)
+   + assertIsInstance(a, b)
+   + assertNotIsInstance(a, b)
+   + assertRaises(excption, func, *args, **kwargs)
+   + assertRaisesRegexp(excption, re, func, *args, **kwargs)
+   + assertAlmostEqual(a, b)
+   + assertNotAlmostEqual(a, b)
+   + assertGreater(a, b)
+   + assertGreaterEqual(a, b)
+   + assertLess(a, b)
+   + assertLessEqual(a, b)
+   + assertRegexpMatches(s, re)
+	 regex.search(s)
+   + assertNotRegexpMatches(s, re)
+	 not regex.search(s)
+   + assertItemsEqual(a, b)
+	 sorted(a) == sorted(b)
+   + assertDictContainsSubset(a, b)
+	 all the key/value pairs in _a_ exist in _b_
+   + assertMultiLineEqual(a, b)
+   + assertSequenceEqual(a, b)
+   + assertListEqual(a, b)
+   + assertTupleEqual(a, b)
+   + assertSetEqual(a, b)
+   + assertDictEqual(a, b)
 * Best Practice
 ** 处理有对应关系的两个 list
    如有两个 list:
