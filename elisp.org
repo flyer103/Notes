@@ -18,6 +18,8 @@
    的函数，则要先在函数定义后按
    C-x C-e
    然后再执行自定义的函数。
+
+   还可通过 M-x ielm 进入一个交互的 elisp 环境执行 elisp 语句.
 * 三种模式
 ** 1、emacs-lisp-mode
    Used for editing Emacs Lisp code (filename .emacs or suffix .el).
@@ -78,10 +80,64 @@
    functions. Sometimes it is important to refer to the name of something
    instead of its value, and this is done by preceding the name with a single
    quote (').  (类似于其它语言中的变量名)
+* scope
+  Elisp uses _dynamic scoping_. When a variable is referenced, it looks for the
+  most recently created instance of the variable and use it. If a variable being
+  set with *setq* doesn't exist, it is created.
+* form
+  A Lisp expression that you can evaluate is called a _form_ . Evaluating a form
+  always produces a result, which is a _Lisp object_ .
+  从这句话可以理解为何 (car (1 2 3)) 是错误的，因为 Lisp 先计算 (1 2 3)，返回一
+  个 Lisp object，然后 (car) 作用于这个 object 上，故报错.
+
+  When a _form_ is a _macro call_ , it expands into a new form for Lisp to
+  evaluate.
+  即对于 macro 来说，先展开后计算.
+* lisp primitive functions
+** Arithmetic
+	+, -, *, /, %, 1+, 1-, max, min
+** Comparison
+	>, <, >=, <=, 
+	/= (not equal), 
+	= (for numbers and characters), 
+	equal (for strings and other complex objects)
+** Logic
+   and, or, not
 * 一些函数和变量   
+** (car) (cdr)
+  (car) 打印列表的第一个元素
+  (cdr) 打印列表除第一个元素外的其余元素
+  cdr 念作 "could-er"
+  ‘list’ 由两部分组成，即 head 和 tail，head 即是 list 的第一个元素，tail 是
+  list 除第一个元素外的其它所有元素。
+  
+  Footnote: The names "car" and "cdr" are said to have originated with the
+  initial Lisp implementation, on an IBM 7090. "CAR" stands for "Contents of
+  Address part of Register" and "CDR" stands for "Contents of Decrement part of
+  Register" .
+** (setq)
+   设置变量.
+** (cons)
+  The *cons* function creates a list from a head and a tail.
+  If the second argument of *cons* is not a list, a /dotted/ pair is created. 这
+  个标点只是表示分隔 head 和 tail.
+** (defun)
+  The special form *defun* is used to define functions. The general form is
+  this:
+  
+  (defun name arguments documentation expr1 expr2 ... exprN)
+
+  The result of /exprN/ is the return value of the function.
+  A function is to calculate the area of a circle.
+  *defun* is called a special form because it doesn't evaluate all of its
+  arguments.
+  The documentation for a function can be accessed with /describe-function/,
+  e.g.:
+  
+  (describe-function 'cdr)
 ** (let)
    (let ((var1 value1) (var2 value2) ...)
-   statement-block)
+        statement-block)
    
    The first thing *let* does is define the variable /var1, var2, etc.../ and set
    them to the initial values /value1, value2, etc.../. Then *let* executes the
@@ -96,16 +152,29 @@
    variable as much as possible because this names might confilct with those of
    existing global variabls and therefore your changes might have unexpected and
    inexplicable side effects later on.
-** (save-excursion)
-   Calling *save-excursion* tells Emacs to remember the location of cursor at the
-   beginning of the function, and go back there after executing any statements in
-   its body. 
-** point
-   *point* is Emacs's internal name for the position fo the cursor.
-   常用的有:
-   (point) : 返回当前光标位置
-   (point-min) : 返回光标最开始的位置，一般为 1
-   (point-max) : 返回在当前 buffer 中，光标可能的最大位置
+** (while)
+  语法:
+  
+  (while test-expr expr1 ... exprN)
+  
+  test-expr is evaluated and if it yields a non-nil value, expr1 through
+  exprN are evaluated. It iterates until test-expr yields *nil*.
+** (cond)
+   它类似于 C 中的 'switch...case...' 语句.
+
+   (cond
+     (/condition1/ /statement-block/)
+     (/condition2/ /statement-block/)
+     (/condition3/ /statement-block/)
+     ...)
+
+   例:
+   (defun how-many (count)
+     (cond
+       ((zerop count) "zero")
+       ((= count 1) "one")
+       ((= count 2) "two")
+       (t "many")))
 ** (message)
    它有很多函数用来显示信息，可在 minibuffer 中显示，也可用弹出框显示。显示信息的
    格式与 C 中 printf 函数的格式一样，常用的有 %s、%c、%d、%e、%f、%g，意义和 C
@@ -113,6 +182,47 @@
    例:
    (message "\"%s\" is a string, %d is a number, and %c is a character"
    "hi there" 142 ?q)
+** 字符串处理相关
+*** (split-string)
+	分割字符串
+** buffer 相关
+*** (buffer-name)
+	获取 buffer 的名字
+*** (buffer-size)
+	获取 buffer 中的字符个数
+*** (buffer-string)
+	字符串形式返回 buffer 中的内容.
+*** (insert-string)
+	insert any number of arguments (strings or characters) into the buffer after
+	point.
+*** (beginning-of-buffer)
+	转到 buffer 的第一个字符.
+*** (end-of-buffer)
+	转到 buffer 的末尾.
+
+	Note:
+	+ Don't use this command in Lisp programs!
+	  (goto-char (point-max)) is faster.
+*** (beginng-of-line)
+	转到行首.
+*** (end-of-line)
+	转到行尾。
+*** (goto-char)
+	跳转到指定的字符位置.
+*** (backward-word)
+	向后跳转到一个单词的位置.
+*** (forward-word)
+	向前跳转一个单词的位置.
+*** point
+	The term *point* refers to the current position in a buffer.
+	常用的有:
+	(point) : 返回当前光标位置，范围 [1, (buffer-size)+1]
+	(point-min) : 返回光标最开始的位置，一般为 1
+	(point-max) : 返回在当前 buffer 中，光标可能的最大位置
+** (save-excursion)
+   Calling *save-excursion* tells Emacs to remember the location of cursor at the
+   beginning of the function, and go back there after executing any statements in
+   its body. 
 ** 注册自定义函数
    对于自定义的函数，向 Emacs 注册后，可以通过 M-x 来调用。格式是:
    
@@ -142,16 +252,6 @@
    表示最初输入的参数。
    也可在 *defun* 和 (interactive) 之间的一行添加注释，用双引号引着，这样可作为该
    函数的帮助信息。
-** lisp primitive functions
-*** Arithmetic
-	+, -, *, /, %, 1+, 1-, max, min
-*** Comparison
-	>, <, >=, <=, 
-	/= (not equal), 
-	= (for numbers and characters), 
-	equal (for strings and other complex objects)
-*** Logic
-   and, or, not
 ** Statement Blocks
 *** (progn)
 	(progn
@@ -189,7 +289,7 @@
    
    例:
    (defun pluralize (word count &optional plural)
-      (if (= count 1)
+      (if (		= count 1)
         word
 	(if (null plural)
 	   (concat word "s")
@@ -201,22 +301,6 @@
    (pluralize "mouse" 3 "mice")
 *** (concat)
    连接后面的 list，返回一个 string。
-*** (cond)
-   它类似于 C 中的 'switch...case...' 语句.
-
-   (cond
-     (/condition1/ /statement-block/)
-     (/condition2/ /statement-block/)
-     (/condition3/ /statement-block/)
-     ...)
-
-   例:
-   (defun how-many (count)
-     (cond
-       ((zerop count) "zero")
-       ((= count 1) "one")
-       ((= count 2) "two")
-       (t "many")))
 *** (zerop)
    It's pronounced "zero-pee" and is short for "zero predicate".
    In the realm of mathematical logic from which Lisp evolved, a predicate is a
@@ -237,8 +321,6 @@
    whether point is at the beginning of the buffer
 ** (eobp)
    whether point is at the end of the buffer
-** (insert)
-   insert any number of arguments (strings or characters) into the buffer after point
 ** (number-to-string)
    convert a numerical argument to a string
 ** (string-to-number)
@@ -252,36 +334,6 @@
    strings; take an integer argument and returns the character as an integer,
    using the ASCII code (on most machines).
 
-** (car) (cdr)
-  (car) 打印列表的第一个元素
-  (cdr) 打印列表除第一个元素外的其余元素
-  cdr 念作 "could-er"
-  ‘list’ 由两部分组成，即 head 和 tail，head 即是 list 的第一个元素，tail 是
-  list 除第一个元素外的其它所有元素。
-  
-  Footnote: The names "car" and "cdr" are said to have originated with the
-  initial Lisp implementation, on an IBM 7090. "CAR" stands for "Contents of
-  Address part of Register" and "CDR" stands for "Contents of Decrement part of
-  Register" .
-
-** (cons)
-  The *cons* function creates a list from a head and a tail.
-  If the second argument of *cons* is not a list, a /dotted/ pair is created. 这
-  个标点只是表示分隔 head 和 tail.
-** (defun)
-  The special form *defun* is used to define functions. The general form is
-  this:
-  
-  (defun /name/ /arguments/ /documentation/ /expr1 expr2 ... exprN/)
-
-  The result of /exprN/ is the return value of the function.
-  A function is to calculate the area of a circle.
-  *defun* is called a special form because it doesn't evaluate all of its
-  arguments.
-  The documentation for a function can be accessed with /describe-function/,
-  e.g.:
-  
-  (describe-function 'cdr)
 ** (load-file)
   载入文件
 
@@ -289,36 +341,6 @@
    e.g. (booleanp object)
    Return *non-nil* if /object/ is one of the two canonical boolean values: *t*
    or *nil*
-** 格式化输出 (format) (message)
-  类似于 C 中的 printf()
-** (let)
-  它相当于 C 中的 {}，表示一段代码块。
-  语法
-  
-  (let (varExpr1 varExpr2 ...) expr1 expr2 ... exprN)
-
-  Each /varExpr/ is either a variable or a list containing a variable and an
-  initializing expression.
-  The special form *let* creates variable bindings that have a limited lifetime.
-  the specified variables are created and initialized, possbily hiding existing
-  variable bindings. /expr1/ through /exprN/ is evaluated. The value of the
-  *let* is the value of /exprN/. When the *let* is complete, the variable
-  bindings are erased, making any previous bindings visible again.
-  可以理解为，(varExpr1 varExpr2 ...) 中定义的变量只在 (let) 代码块中生存，计算
-  时，若该变量不存在，则创建，否则，在代码块中查找最新赋给该变量的值。在 expr1、
-  expr2...exprN 中定义的变量仍然全局可见。
-  (varExpr1 varExpr2 ..) 在 (let) 内可见，在 (let) 外不可见。
-** (while)
-  语法:
-  
-  (while /test-expr/ /expr1 ... exprN/)
-  
-  /test-expr/ is evaluated and if it yields a non-nil value, /expr1/ through
-  /exprN/ are evaluated. It iterates until /test-expr/ yields *nil*.
-** 变量范围
-  Elisp uses dynamic scoping. When a variable is referenced, it looks for the
-  most recently created instance of the variable and use it. If a variable being
-  set with *setq* doesn't exist, it is created.
 * Regular Expressions
 ** basic
    .               matches any character
@@ -369,6 +391,8 @@
   可在 buffer 中打出函数，这时会自动有提示。也可按
   C-h f
   然后输入函数名来查看。
+* 查看函数定义
+  (symbol-function '函数名)
 * 描述组合键对应的函数
   C-h k
   也可
@@ -377,13 +401,11 @@
   C-h a
 * 比较函数的返回值
   为真时返回 t,为假时返回 nil
-
 * variable
   通过 (setq) 函数来赋值，如
   (setq sum 0)
   (setq <x> 7)          ; 给 <x> 赋值为 7
   (setq x\ x "abc")     ; 给 x\ x 赋值为 "abc"
-
 * ' 的作用
   Quoting a list suppresses evaluation, e.g.
   (setq x '(1 2 3 4))
@@ -394,17 +416,6 @@
   themselves. This is so that you do not need to quote them to use them as
   constants in a program. An attempt to change their values results in a
   /setting-constant/ error.
-
-* form
-  A Lisp expression that you can evaluate is called a _form_ . Evaluating a form
-  always produces a result, which is a _Lisp object_ .
-  从这句话可以理解为何 (car (1 2 3)) 是错误的，因为 Lisp 先计算 (1 2 3)，返回一
-  个 Lisp object，然后 (car) 作用于这个 object 上，故报错.
-
-  When a _form_ is a _macro call_ , it expands into a new form for Lisp to
-  evaluate.
-  即对于 macro 来说，先展开后计算.
-
 * Function
 ** function description
    In a function description, the name of the function being described appears
@@ -432,3 +443,9 @@
    In some sections, features common to the arguments of several functions are
    described at the beginning.
    
+* 与 Emacs 有关的概念和函数
+** buffer
+   A _buffer_ is Lisp object that holds text.
+** window
+** keymap
+** marker
