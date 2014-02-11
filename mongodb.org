@@ -28,3 +28,15 @@
 * Query Selectors
   A selector is a JSON object, the simplest of which is *{}* which matches all
   documents (*null* works too).
+* object id
+  共 12 位:
+  + 0~3: utc time
+  + 4~6: machine
+  + 7~8: pid
+  + 9~11: inc/random
+* 不能解决的问题
+  + 数据库事务一致性需求
+  + 数据库的写实时性和读实时性的需求
+  + 对复杂的 SQL 查询，特别是多表关联查询的需求
+* Mongo 模式设计中的问题
+  + 是值得为这个对象创建一个集合，还是把这个对象嵌入到其它的集合中?

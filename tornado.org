@@ -1,0 +1,17 @@
+* workflow of web.RequestHandler
+  On every request, the following sequence of calls takes place:
+  + A new RequestHandler object is created on each request
+  + *initialize()* is called with keyword arguments from the *Application*
+    configuration. *initialize* should typically just save the arguments passed
+    into member variable; it may not produce any ouput or call methods
+    like *send_error*
+  + *prepare()* is called. This is most useful in a base class shared by all of
+    your handler subclass, as *prepare* is called no matter which HTTP method
+    is used. *prepare* may produce output; if it calls *finish*
+    (or *send_error*, etc.), processing stops here.
+  + One of the HTTP methods is called: *get()*, *put()*, etc. If the URL
+    regular expression contains capturing groups, they are passed as arguments
+    to this method.
+  + When the request is finished, *on_finish()* is called. For synchronous
+    handlers, this is immediately after *get()* (etc.) return; for asynchronous
+    handlers, it is after the call to *finish()*.

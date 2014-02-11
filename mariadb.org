@@ -1,0 +1,223 @@
+* Arch 中启动/重启/关闭 MariaDB
+  # systemctl start mysqld
+  # systemctl restart mysqld
+  # systemctl stop mysqld
+* MariaDB 与 MySQL
+  MariaDB 目的是完全兼容 MySQL，包括 API 和命令行，能够轻松成为 MySQL 替代品.
+  采用 XtraDB 替代 InnoDB.
+  MariaDB 能够直接与现有 MySQL 实例中的数据文件及表定义顺利协作.
+
+  [[https://mariadb.com/kb/en/mariadb-versus-mysql-features/][MariaDB 优势]]:
+  + More Storage Engines
+  + Speed improvements
+  + Extensions & new features
+	- Dynamic Columns
+  + Better Testing
+  + Fewer warnings and bugs
+  + Truly Open Source
+* 检查并修复所有数据表
+  # mysqlcheck -A --auto-repair -u root -p
+* SQL 分类
+  + DDL (数据定义语言)
+	DDL 使我们有能力创建或删除表格，也可定义索引 (键)，规定表之间的链接，及施加
+    在表间的约束.
+
+	最重要的 DDL 语句:
+	- CREATE DATABASE
+	- ALTER DATABASE
+	- CREATE TABLE
+	- ALTER TABLE
+	- DROP TABLE
+	- CREATE INDEX
+	- DROP INDEX
+  + DML (数据操作语言)
+	查询和更新指令构成了 SQL 中的 DML 部分:
+	- SELECT
+	- UPDATE
+	- DELETE
+	- INSERT INTO
+* ACID
+  它是指 DBMS 在写入/改动资料过程中，为保证交易 (transaction，由一系列数据库操作
+  组成的一个完整的逻辑过程) 是正确可靠的，所必须具备的四个特性:
+  + 原子性 (atomicity，不可分割性)
+	一个事务 (transaction) 中的所有操作，要么全部完成，要么全部不完成，不会结束
+    在中间某个环节。事务在执行过程中发生错误，会被回滚 (rollback) 到事务开始之前
+    的状态，就像这个事务从来没有执行过一样.
+  + 一致性 (consistency)
+	在事务开始之前和事务结束之后，数据库的完整性没有被破坏。这表示写入的资料必须
+    完全符合所有的预设规则，这包含资料的精确度、串联性及后续数据库可以自发性地完
+    成预定的工作.
+  + 隔离性 (isolation, 独立性)
+	当两个或多个事务并发访问 (此处 '访问' 指查询和修改操作) 数据库的同一数据时所
+    表现出的相互关系。事务隔离分为不同级别，包括
+	- 读未提交 (read uncommitted)
+	- 读提交 (read committed)
+	- 可重复读 (repeatable read)
+	- 串行化 (serializable)
+  + 持久性 (durability)
+	在事务完成后，该事务对数据库所作的更改便持久保存在数据库中，并且是完全的.
+* InnoDB
+** 优势
+   + 支持 ACID
+   + 支持行锁，以及类似 Oracle 的一致性读，多用户并发
+   + 独有的聚集索引主键设计方式，可大幅提升并发读写性能
+   + 支持外键
+   + 支持崩溃数据自修复
+** BEST PRACTICE
+   + 所有 InnoDB 数据表都创建一个与业务无关的自增数字型作为主键，对保证性能很有
+     帮助
+   + 杜绝使用 text/blob，确实需要使用时，尽可能拆分出去一个独立的表
+   + 时间戳建议使用 TIMESTAMP 类型存储
+   + IPv4 地址建议用 INT UNSIGNED 类型存储
+   + 性别等布尔逻辑，建议采用 TINYINT 存储，而不是 CHAR(1)
+   + 存储较长文本内容时，建议采用 JSON/BSON 格式存储
+* 常用的 SQL 语句及操作
+  + 取消当前语句操作
+	\c
+  + 输出结果可读性更强
+	SQL 语句后加上 \G
+  + 查看当前所在的数据库
+	mysql > select database();
+  + 查看当前用户
+	mysql > select user();
+  + 查看数据库状态
+	mysql > status;
+  + 对数据库操作
+	- 查看所有数据库
+	  mysql > show databases;
+	- 创建数据库
+	  mysql > create database 数据库名;
+	- 删除数据库
+	  mysql > drop database;
+	- 使用某个数据库
+	  mysql > use 数据库名;
+  + 对表进行操作
+	- 查看当前所在的数据库中的表
+	  mysql > show tables;
+	- 查看表结构
+	  mysql > describe 表名;
+	- 创建表
+	  mysql > create table 表名 (字段名 类型[, ...])
+	- 删除表
+	  mysql > drop table 表名;
+	- 修改表名
+	  mysql > alter table 原表名 rename as 新表名;
+  + 对行进行操作
+	- 插入记录
+	  mysql > insert into 表名 values (与字段对应的数值);
+	  mysql > insert into 表名 (字段[, 字段]) values (与字段对应的数值);
+	- 删除记录
+	  mysql > delete from 表名 where 字段=数值;
+	- 修改记录
+	  mysql > update 表名 set 字段名=数值 where 字段名=数值;
+  + 对列进行操作
+	- 增加字段
+	  mysql > alter table 表名 add 字段 类型;
+	- 删除字段
+	  mysql > alter table 表名 drop 字段;
+	- 修改字段
+	  mysql > alter table 表名 modify 字段名 类型;
+  + 对索引操作
+    - 查看索引
+	  mysql > show index from 表名;
+	- 创建索引
+	  允许使用重复值的索引:
+	  mysql > create index 索引名 on 表名 (列名[,列名]);
+	  创建唯一索引，两个行不能有相同的索引值:
+	  mysql > create unique index 索引名 on 表名 (列名[, 列名]);
+	- 删除索引
+	  mysql > drop index 索引名 on 表名;
+  + 范围查询&模糊查询
+	- in
+	  e.g.:
+	  mysql > select * from students where native in ('湖南', '四川');
+	- between ... and ...
+	  e.g.:
+	  mysql > select * from students where age between 20 and 30;
+	- 比较测试符
+	  =, <>, <, <=, >, >=
+	- []
+	  e.g.:
+	  mysql > select * from courses where cno like '[AC]math';
+	  mysql > select * from courses where cno like '[A-G]math';
+	  mysql > select * from courses where cno like '[^A-G]math'; (除此范围)
+	- %
+	  代替一个或多个字符.
+	- _
+	  代替一个字符.
+  + 常用的函数
+	- count()
+	  mysql > select count(*) from students;
+	- avg()
+	  mysql > select avg(列名) from students;
+	- max()
+	  mysql > select max(列名) from students;
+	- min()
+	  mysql > select min(列名) from students;
+  + 优化
+	- 最佳类型建议
+	  在每条 SQL 语句后加上 'procedure analyse()'
+	- 分析索引效率
+	  在每条 SQL 语句前加上 'explain'
+* 常见字段类型
+  + datetime
+	YYYY-MM-DD HH:MM:SS
+  + date
+	YYYY-MM-DD
+  + timestamp
+* 索引相关
+** 缺点
+   + 减慢增删改的速度
+   + 占用磁盘空间
+   + 增加查询优化器的负担
+	 当查询优化器生成执行计划时，会考虑索引，太多的索引会给查询优化器增加工作量，
+     导致无法选择最优的查询方案.
+* 优化
+** 应用
+   + 数据库只负责数据，不管逻辑，把复杂的判断和逻辑留给应用层代码
+   + 谨慎使用存储过程和触发器
+   + 缓存
+   + 减少硬盘操作
+   + 读写分离
+** 配置参数，存储引擎
+   + innodb_buffer_pool_size
+     缓存 InnoDB 的索引和数据
+   + innodb_log_buffer_size/innodb_log_file_size
+	 对写操作频繁的数据库很重要.
+	 innodb_log_buffer_size 设置为每秒的数据量,
+	 innodb_log_file_size 设置为半个小时的数据量.
+   + innodb_flush_log_at_trx_commit
+	 写事务日志的频率
+   + innodb_flush_method
+	 InnoDB 刷新数据到磁盘的方法.
+	 默认是 fsync()，操作系统和数据库会缓存两份数据.
+	 O_DIRECT，绕过操作系统的缓存，若是大量随机写，O_DIRECT 会提高效率，但顺序写
+     和读效率会降低，故使用 O_DIRECT 时需要根据需求测试.
+   + query_cache_size
+   + sort_buffer_size
+   + record_buffer
+   + table_cache
+   + skip-name-resolve
+   + interactive_timeout
+   + default-charater-set
+   + max_connections
+   + thread_concurrency
+** SQL 语句
+   + 考虑扩充的情况下用最省的类型
+   + ip 类型
+	 inet_aton 和 inet_ntoa 函数
+   + 表的设计，范式，反范式
+   + explain 每条 sql 语句，确认是否用到索引
+   + 不要在 innodb 引擎的表上使用 count(*)
+   + 批量写，减少磁盘 IO
+   + 开启慢查询日志
+** 索引
+   + 主键占空间越小越好
+   + 不要用随机值做主键
+   + 根据主键查询速度最快
+   + 不做不必要的索引
+   + 只有几个值的字段不必索引
+** 操作系统/硬件
+   + Linux
+   + 文件系统: XFS
+   + 硬盘调优
