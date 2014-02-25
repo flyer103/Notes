@@ -411,6 +411,7 @@
   (setq x '(1 2 3 4))
 * 空列表
   In Lisp, the empty list is called *nil* and can be named with /()/ or /nil/.
+  () 既是空 list 又是 atom.
 * /nil/ and /t/
   In Emacs Lisp, *nil* and *t* are special symbols that always evaluate to
   themselves. This is so that you do not need to quote them to use them as
@@ -449,3 +450,39 @@
 ** window
 ** keymap
 ** marker
+* ' 的作用
+  它是 (quote) 函数的简洁方式，以下两种方式等同:
+  '(this is a test)
+  (quote (this is a test))
+* elisp 的执行
+  The single apostrophe, *'* , is called a *quote*; when it precedes a list, it
+  tells Lisp to do nothing with the list, other than take it is written. But if
+  there is no quote preceding a list, the first item of the list is special: it
+  is a command for the computer to obey (in lisp, these commands are
+  called *functions*).
+
+  First, it looks to see whether there is a quote before the list; if there is,
+  the interpreter just gives us the list. On the other hand, if there is no
+  quote, the interpreter looks at the first element in the list and sees
+  whether it has a functionn definition. If it does, the interpreter carries
+  out the instructions in the function definition. Otherwise,the interpreter
+  prints an error message.
+* 一些特别的地方
+  A symbol can have both a function definition and a value attached to it at
+  the same time. Or it can have just one or the other. The two are separate.
+
+  Another way to think about this is to imagine a symbol as being a chest of
+  drawers. The function definition is put in one drawer, the value in another,
+  and so on. What is put in the drawer holding the value can be changed without
+  affecting the contents of the drawer holding the function definition,and
+  vice-verse.
+* 以 'p' 结尾的函数
+  The 'p' of functions such as *number-or-marker-p* is the embodiment of a
+  practice started in the early days of Lisp programming. The 'p' stands for
+  'predicate'. In the jargon used by the early Lisp researchers, a predicate
+  refers to a function to determine whether some property is true or false. So
+  the 'p' tells us that *number-or-marker-p* is the name of a function that
+  determines whether it is true or false taht the argument supplied is a number
+  or a marker. Other Lisp symbols that end in 'p' include *zerop*, a function
+  that tests whether its argument has the value of zero, and *listp*, a
+  function that tests whether its argument is a list.
