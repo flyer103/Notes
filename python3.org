@@ -1,0 +1,6 @@
+* 字符串
+** 概述
+   手写入的是 str 类型，通过 IO 获得的是 bytes 类型.
+** 转换
+   str --> bytes 用 encode.
+   bytes --> str 用 decode.

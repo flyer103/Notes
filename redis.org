@@ -36,3 +36,6 @@
 ** Sorted Sets
    If *hashes* are like *strings* but with fields, then *sorted sets* are like
    *sets* but with a score. The score provides sorting and ranking capabilities.
+* FAQ
+** thread safety
+   是线程安全，因为 Redis 是单线程的.

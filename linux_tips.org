@@ -1071,3 +1071,10 @@
   208.67.220.220
   [2620:0:ccc::2]
   [2620:0:ccd::2]
+* apache
+** ab 工具问题
+*** socket 数限制问题
+	通过如下方式提高:
+	$ ulimit -n 10000
+*** apr_socket_recv: Connection reset by peer (54)
+	安装 apache-2.3.16 之上的版本或使用时加上 -r 参数.
