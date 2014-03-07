@@ -4,3 +4,19 @@
 ** 转换
    str --> bytes 用 encode.
    bytes --> str 用 decode.
+* concurrent 标准库模块
+** 综述
+   它引入了线程池/进程池，方便进行并发管理.
+** 与线程池有关的问题
+*** daemon 线程
+	ThreadPoolExecutor 中的线程都是 daemon 线程 (意味着主线程不用等待其他线程的
+	完成才能退出)，虽然该类所在的源码中提到这种情况下 daemon 进程会出现问题，可
+	能造成主线程退出时其他线程还在运行，造成任务的中断。有种便利的避免方法是采
+	用 ThreadPoolExecutor 实例默认的 shutdown() 参数，即 wait=True，这样在
+	ThreadPoolExecutor 实例准备 shutdown 时，会等待当前正在运行的任务结束后才能
+	退出。
+
+	NOTE:
+	+ 通过 with 使用该类时，默认保证了这种 shutdown 配置.
+	+ 若手动控制 ThreadPoolExecutor 实例的结束，最佳实践是不修改 shutdown() 方法
+      的参数，不然需要一些复杂的逻辑判断当前的任务是否完成.
