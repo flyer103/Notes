@@ -39,3 +39,5 @@
 * FAQ
 ** thread safety
    是线程安全，因为 Redis 是单线程的.
+** 删除表
+   通过 del 命令.
