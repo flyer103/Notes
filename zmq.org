@@ -65,14 +65,14 @@
     Can we send replies back to an original requester?
   + How do we write an API for another language? 
     Do we re-implement a wire-level protocol or do we repackage a library? If
-    the former, how can we guarantee  efficient and stable stacks? If the
+    the former, how can we guarantee efficient and stable stacks? If the
     latter, how can be guarantee interoperability?
   + How do we represent data so that it can be read between different
     architectures? Do we enforce a particular encoding for data types? How far
     is this the job of the messaging system rather than a higher layer?
   + How do we handle network errors? Do we wait and retry, ignore them
     silently, or abort?
-* 'socket' in zmq
+* 'socket' in zmq (IMPORTANT)
 ** concept
    Traditional network programming is built on the general assumption that one
    socket talks to one connection, one peer. There are multicast protocols, but
@@ -116,7 +116,7 @@
    Sockets have types. The socket type defines the semantics of the socket, its
    policies for routing messages inwards and outwards, queuing, etc.
 
-   It's the ability to onnect sockets in different ways that gives ZMQ its
+   It's the ability to connect sockets in different ways that gives ZMQ its
    basic power as a message queuing system.
 * Transports
 ** summary
@@ -143,7 +143,7 @@
    compared to *tcp* and *icp*: the server must issue a bind before any client
    issues a connect. We create and bind one socket and start the child threads,
    which create and connect the other sockets.
-* Patterns
+* Patterns (IMPORTANT)
 ** summary
    ZMQ patterns are implemented by pairs of sockets with matching types.
    
@@ -157,7 +157,7 @@
    + *Pipeline*
 	 It connects nodes in a fan-out/fan-in pattern that can have multiple steps
      and loops.
-	 _This is a parallel task distribution adn collection pattern_
+	 _This is a parallel task distribution and collection pattern_
    + *Exclusive Pair*
 	 It connects two sockets exclusively.
 	 _This is a pattern for connecting two threads in a process, not to be_
@@ -240,7 +240,7 @@
 
    DEALER socket 的工作形式: 发送/接收消息的顺序可任意，也可只接收不发送或只发送
    不接收.
-* Messages/Frames
+* Messages/Frames (IMPORTANT)
 ** A useful lexicon
    + A message can be one or more parts.
    + These parts are also called 'frames'.
@@ -258,7 +258,7 @@
      files of arbitrary sizes, you should break them into pieces and send each
      piece as separate single-part messages. Using multipart data will not
      reduce memory consumption
-   + You must call *zmq_msg_close()* wehn finished with a received message, in
+   + You must call *zmq_msg_close()* when finished with a received message, in
      languages that don't automatically destroy objects when a scope
      closes. You don't call this method after sending a message.
 * Handling multiple sockets
@@ -295,7 +295,7 @@
      stand-alone processes without changing the code significally.
    + All interaction between threads happens as ZMQ messages, which you can
      define more or less formally.
-   + Dont' share ZMQ sockets between threads. ZMQ sockets are not
+   + Don't share ZMQ sockets between threads. ZMQ sockets are not
      threadsafe. Technically it's possible to migrate a socket from one thread
      to another but it demands skill. The only place where it's remotely sane
      to share sockets between threads are in language bindings that need to do
@@ -305,13 +305,13 @@
    The best practice is to use *zmq.PAIR*. Here's the reason:
    + You can use *PUSH* for the sender and *PULL* for the receiver. This looks
      simple and will work, but remeber that *PUSH* will distribute messages to
-     all available receive. If you by accident start two receivers (e.g., you
+     all available receivers. If you by accident start two receivers (e.g., you
      already have one running and you start a second), you'll "lose" half of
      your signals. *PAIR* has the advantage of refusing more than one
      connection; the pair is exclusive.
    + You can use *DEALER* for the sender and *ROUTER* for the
      receiver. *ROUTER*, however, wraps your message in an "envelope", meaning
-     yoru zero-size signal turns into a multipart message. If you don't care
+     your zero-size signal turns into a multipart message. If you don't care
      about the data and treat anything as a valid signal, and if you don't read
      more than once from the socket, that won't matter. If, however, you decide
      to send real data, you will suddenly find *ROUTER* providing you with
@@ -328,7 +328,7 @@
      any blocking calls they are waiting on will end with *ETREM*
    + Send them shutdown messages, if they are using their own contexts. For
      this you'll need some socket plumbing.
-* High-Water Marks
+* High-Water Marks (IMPORTANT)
   它解决的是消息 发送/接收 两方速度不匹配的问题，即 *flow-control* 问题.通过
   + 丢掉消息
   + 阻塞发送方
@@ -336,7 +336,7 @@
   对于不同的 pattern，对过量的消息有不同的处理方法:
   + PUB and ROUTER sockets will drop data if they reach their HWM
   + Other socket types will block.
-* Missing Message Problem Solver
+* Missing Message Problem Solver (IMPORTANT)
   参考这篇文档中的图:
   + [[http://zguide.zeromq.org/page:all#Missing-Message-Problem-Solver][Missing-Message-Problem-Solver]]
 
