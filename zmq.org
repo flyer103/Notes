@@ -154,7 +154,7 @@
    + *Pub-Sub*
 	 It connects a set of publishers to a set of subscribers.
 	 _This is a data distribution pattern_
-   + *Pipeline*
+   + *Pipeline* (PUSH/PULL)
 	 It connects nodes in a fan-out/fan-in pattern that can have multiple steps
      and loops.
 	 _This is a parallel task distribution and collection pattern_
@@ -584,3 +584,97 @@
    + 已知消息中 frame 个数时
 	 可选择 send_multipart()/recv_multipart()
 
+
+* message patterns
+** 概述
+   In distributed architecture, different parts of system interconnect and
+   communicate with each other. These interconnecting systems viewed graphically
+   represents a network topology.
+
+   Messaging patterns are network oriented architectural pattern that describes
+   the flow of communication between interconnecting systems. ØMQ provides
+   pre-optimized sockets which enables you to take advantage of these patterns.
+
+   Each pattern in ØMQ defines the constraints on the network topology. What
+   systems can connect to each other and flow of communication between
+   them. These patterns are designed to scale.
+** PAIR
+   It provides sockets that are close in behavior to conventional sockets.
+
+   Conventional sockets allow:
+   + only strict one-to-one (two peers)
+   + many-to-one (many clients, one server)
+   + one-to-many (multicast) relationships
+
+   Paired sockets are very similar to regular sockets:
+   + The communication is bidirectional.
+   + There is no specific state stored within the socket.
+   + There can only be one connected peer.
+   + The server listens on a certain port and a client connects to it.
+
+   采用的 pattern 都是 zmq.PAIR.
+** Client/Server
+   它是 "多 clients-->一个 server" 的形式，其中每个 'client-->server' 类似于
+   PAIR pattern，区别在于：
+   + ZMQ REQ sockets can connect to many servers.
+   + The requests will be interleaved or distributed to both the servers.
+   + socket zmq.REQ will block on send unless it has successfully received a
+     reply back.
+   + socket zmq.REP will block on recv unless it has received a request.
+
+   Each Request/Reply is paired and has to be successful.
+** Publisher/Subscriber
+   Publish/Subscribe is another classic pattern where senders of messages,
+   called publishers, do not program the messages to be sent directly to
+   specific receivers, called subscribers. Messages are published without the
+   knowledge of what or if any subscriber of that knowledge exists.
+
+   The pattern is intended for event and data distribution, usually from a small
+   number of publishers to a large number of subscribers, but also from many
+   publishers to a few subscribers. For many-to-many use-cases the pattern
+   provides raw socket types (XPUB, XSUB) to construct distribution proxies,
+   also called brokers.
+** Push/Pull
+   Push and Pull sockets let you distribute messages to multiple workers,
+   arranged in a pipeline. A Push socket will distribute sent messages to its
+   Pull clients evenly. This is equivalent to producer/consumer model but the
+   results computed by consumer are not sent upstream but downstream to another
+   pull/consumer socket.
+
+   Data always flows down the pipeline, and each stage of the pipeline is
+   connected to at least one node. When a pipeline stage is connected to
+   multiple nodes data is load-balanced among all connected nodes.
+
+   The pattern is intended for task distribution, typically in a multi-stage
+   pipeline where one or a few nodes push work to many workers, and they in turn
+   push results to one or a few collectors. The pattern is mostly reliable
+   insofar as it will not discard messages unless a node disconnects
+   unexpectedly. It is scalable in that nodes can join at any time.
+
+   + push socket 如何管理消息
+     - 只发送消息 
+	 - 当没有可用的 pull socket 时, push socket 在 send 时阻塞
+	 - 'pull socket 是否可用' 是通过相应的 outgoing queue 是否满来判断
+	 - 对于每个 pull socket 的连接，都会建立并维护一个 outgoing queue 来管理 push
+       socket 向 pull socket 发送的信息 
+	 - 每个 outgoing queue 的容量有限
+	 - 当 pull socket 断开连接后，相应的 outgoing queue 中缓冲的消息会被丢弃
+	 - 对于没有放到 outgoing queue 中的消息, push socket 不能丢弃
+	 - 分发消息时，是 round-robin 的形式，依次向可用的 pull socket 发送消息 
+   + pull socket 如何管理消息
+	 - 只接收消息
+	 - 对 push socket 的连接，都会建立并维护一个的 incoming queue 管理 push socket
+       发送的消息 (不管连接是否建立成功都会维护一个 incoming queue)
+	 - 若对应的 push socket 失去连接时，该 incoming queue 会被销毁，其中的信息会被
+       丢弃
+	 - 每个 incoming queue 的容量有限
+	 - 通过 fair-queuing 的形式接收消息，类似于 round-robin 形式 
+* 多 socket 问题
+  常会有多个同类的 socket 和另一种 socket 进行交互，这时需要 poller 对数据进行轮
+  混处理，否则用 socket 的 recv() 方法时会阻塞当前的进程.
+* poller 解决的问题
+  主要解决多个 socket 在同一个逻辑块内时，防止调用任一个 socket 的 recv() 方法时
+  阻塞整个进程的问题. 
+* 信息的流动过程
+  socket-->outgoing queue-->kernel buffer-->wire-->kernel buffer-->incoming
+  queue-->socket

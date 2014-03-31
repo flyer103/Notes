@@ -1,0 +1,158 @@
+* Overview
+  Elasticsearch is a flexible and powerful open source, distributed, real-time
+  search and analytics engine. 
+  
+  有个技术栈是:
+  + elasticsearch
+	- 提供分布式搜索服务.
+	- real time data
+	- real time analytics
+	- distributed
+	- high availability
+	- multi-tenancy
+	- full text search
+	- document oriented
+	- conflict management
+	- schema free
+	- restful api
+	- per-operation persistence
+	- build on top of apache lucene
+  + logstash
+	提供实时日志分析服务.
+  + kibana
+	提供数据可视化服务. 
+* 搜索引擎结构
+  + 搜索信息 (web crawling)
+	爬虫爬取大量信息.
+  + 整理信息 (indexing)
+	建立索引, 便于快速查询.
+  + 接受查询 (searching)
+	根据用户的需求返回用户感兴趣的信息.
+* 搜索引擎分类
+  + 全文搜索引擎 (Full Text Search Engine)
+	搜索并返回的是全文的信息
+  + 垂直搜索引擎 (Vertical Search Engine)
+	搜索某个领域的信息, 如图片、新闻等, 返回的结果可能只与该细分领域有关 
+  + 元搜索引擎 (Meta Search Engine)
+	结合多个搜索引擎的结果
+* REST 查询选项
+** 通用选项
+   + pretty results
+	 - 'pretty=true'  (for debugging only)
+	   美化输出的 json 格式数据.
+	 - 'format=yaml'
+	   会通过 yaml 格式输出.
+   + human readable output
+	 可添加 'human=true' 形式使得输出 human-readable, 默认值是 false.
+   + flat settings
+	 The *flat_settings* flag affects rendering of the lists of settings.
+** refer
+   + [[http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/common-options.html][common options]]
+   + [[http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/docs.html][document apis]]
+* 索引 mongo 中的数据
+** overview
+   可参考 [[https://coderwall.com/p/sy1qcw][这篇文章]]
+** 注意点
+   + 要使用 mongo replica set
+   + 安装 elasticsearch-river-mongodb 后需要重启 ES
+   + 可通过 elasticsearch-river-head 查看 ES 建立的索引 
+* API
+** 添加索引和数据
+** 删除索引
+   如:
+   $ curl -XDELETE 'http://localhost:9200/person'
+** 删除数据
+** 查询
+* 索引
+  ES 会对全文进行索引.
+* 分词
+  默认的中文分词是把切分每个中文字, 然后在文档中搜索这些字.
+* 搜索分类
+  + 搜索某个具体的字段 (精确搜索)
+	a structured query on concrete fields like *gender* or *age* , sorted by
+    *join_date* , similar to a query that you could construct in SQL.
+  + 搜索全文中的某个词 (模糊搜索)
+	a full text query, which finds all documents matching the search keywords,
+    and returns them sorted by relevance.
+  + 以上两者的结合
+    or a combination of the two.
+* 与搜索相关的三个主题
+** Mapping (如何进行索引)
+   How the data in each field is interpreted.
+
+   查看 mapping, 如
+   $ curl 'http://localhost:9200/twitter/_mapping/tweet'
+** Analysis (对查询语句进行分词)
+   How full text is processed to make it searchable.
+** Query DSL (查询的规则)
+   The flexible, powerful query language used by ES.
+* 一些特殊变量
+** 用于查询方面的
+*** _all
+   表示所有信息, 如
+   + curl -XGET 'http://localhost:9200/_all/_search=referer:"http://www.baidu.com"'
+	 查询所有的索引 
+   + curl -XGET 'http://localhost:9200/twitter/_all/_search=refer:"http://www.baidu.com"'
+	 查询索引名为 'twitter' 的所有类型的文档
+*** _search
+   在 HTTP API 中表示查询条件.
+*** explain
+	对查询过程进行解释. 
+** 用于解释方面的
+*** _index
+	表征索引名
+*** _type
+	表征类型名 
+*** _id
+	在该 index 和 type 下唯一表征该文档.
+*** _shard
+	表征分片. 
+*** _node
+	表征所在的节点. 
+*** _score
+   在 full-text search 中, 用来表征相关性的强弱, 它是根据具体的查询条件计算出来
+   的.
+   详情可查看 [[http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/relevance-intro.html][这篇文章]].
+*** _explanation
+	对查询进行解释
+*** _source
+	文档的具体内容.
+* 一些特殊的查询条件
+** bool 查询
+   通过 '+'、'-' 和 'not' 来表示.
+* FAQ
+** index 含义
+   对数据建立索引, 是抽取出数据中的关键词汇, 然后建立这些词汇和数据的映射关系,
+   便于根据关键词快速查找相关数据. 
+** doc_type 含义
+   不同类型的数据有不同的类型, 如 html、png、text 等，通过指明 doc_type 可以缩小
+   在 index 查找的范围.
+** id 含义
+   精确查找某个 index 中某个 doc_type 中的 id 为多少的一个数据. 
+** 精确查找
+   根据 index 中的数据的具体字段进行精确查询, 不涉及到结果返回的相关性和评分问题.
+** 模糊查找
+   根据关键词进行全文查询. 
+** 什么是 "单文档查找"
+** 什么是 "多文档查找"
+** ES 如何建立索引
+   In Elasticsearch, all data in every field is indexed by default.That is,
+   every field has a dedicated inverted index for fast retrieval. And, unlike
+   most other databases, it can use all of those inverted indices in the same
+   query, to return results at breathtaking speed.
+
+   Every field in a document is indexed and can be queried. 
+
+   即 ES 对全文进行索引.
+** ES 如何处理中文分词
+   自带的中文分词是把搜索词拆分成一个个中文字, 然后匹配这些字.
+** ES 如何处理搜索条件
+   通过 DSL，可查看
+   [[http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl.html][query
+   dsl]] 、
+   [[http://okfnlabs.org/blog/2013/07/01/elasticsearch-query-tutorial.html#query-dsl-overview][elasticsearch-query-tutorial]]
+   和
+   [[https://github.com/elasticsearch/elasticsearch-py/blob/master/example/queries.py][queries.py]]
+** ES 的插件机制是什么
+** 如何使用 ES 分布式特性
+** 直接使用二进制的 ES 和安装 ES 的差别在哪儿

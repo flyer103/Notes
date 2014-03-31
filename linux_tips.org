@@ -1078,3 +1078,7 @@
 	$ ulimit -n 10000
 *** apr_socket_recv: Connection reset by peer (54)
 	安装 apache-2.3.16 之上的版本或使用时加上 -r 参数.
+* 查看端口占用
+  可通过：
+  $ losf -i:端口号
+  查看对应的占用端口的应用的 pid.
