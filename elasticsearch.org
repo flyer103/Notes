@@ -120,6 +120,18 @@
 * 一些特殊的查询条件
 ** bool 查询
    通过 '+'、'-' 和 'not' 来表示.
+* 需要深入的 plugins
+  + elasticsearch-mapper-attachment
+  + elasticsearch-river-mongodb
+* 名词解释
+** mapper
+   与建索引有关.
+** analysis
+   与查询时的分词有关.
+** river
+   数据源
+** transport
+   使用 ES 的方式.
 * FAQ
 ** index 含义
    对数据建立索引, 是抽取出数据中的关键词汇, 然后建立这些词汇和数据的映射关系,
