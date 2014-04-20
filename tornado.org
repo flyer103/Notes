@@ -15,3 +15,6 @@
   + When the request is finished, *on_finish()* is called. For synchronous
     handlers, this is immediately after *get()* (etc.) return; for asynchronous
     handlers, it is after the call to *finish()*.
+* templates
+** block
+   模板中这个表示模板继承中复用的部分.

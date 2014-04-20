@@ -20,3 +20,5 @@
 	+ 通过 with 使用该类时，默认保证了这种 shutdown 配置.
 	+ 若手动控制 ThreadPoolExecutor 实例的结束，最佳实践是不修改 shutdown() 方法
       的参数，不然需要一些复杂的逻辑判断当前的任务是否完成.
+* 解码 html-encoded 的数据
+  通过 html.parser.HTMLParser().unescape() 方法.

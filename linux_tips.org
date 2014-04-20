@@ -1082,3 +1082,13 @@
   可通过：
   $ losf -i:端口号
   查看对应的占用端口的应用的 pid.
+* scp
+** ssh 通, 但 scp 拒绝
+   可能是没有指定 scp 端口造成的. 
+* 一个 fork 炸弹
+  $ :(){ :|:& };:
+* linux 中的 "线程" 和 "进程"
+  threads are essentially just processes with a shared address space on Linux.
+  
+  Refer:
+  + [[http://stackoverflow.com/questions/344203/maximum-number-of-threads-per-process-in-linux/344292#344292][Maximum number of threads per process in Linux?]]

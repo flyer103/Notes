@@ -1,5 +1,5 @@
 * 不重启更新emacs设置
-   在 .emacs 中， C-x C-e 执行光标前面的一条语句
+  在 .emacs 中， C-x C-e 执行光标前面的一条语句
    还可 M-x load-file ~/.emacs
    M-x eval-buffer
 * 不能使用 fcitx
@@ -74,7 +74,6 @@
     (global-font-lock-mode t)
     来永久打开这种模式。
     可通过
-    M-x list-faces-display
     来查看 Emacs 提供的各种界面，然后可通过
     M-x modify-face 或 M-x customize-face
     来选择。
@@ -462,3 +461,36 @@
   C-M-\
 * Emacs 自带的教程
   C-h t
+* magit
+** 综述
+   进入 status 窗口后，操作大多通过一个按键完成.
+
+   这有一份 [[http://daemianmack.com/magit-cheatsheet.html][cheat sheet]].
+** 跳转到不同的 section
+   通过 n 或 p 在不同的 section 间跳转
+** 跳出某个会话
+   点 'q'
+** 查看某个 git 管理的项目
+   M-x magit-status
+** staging 阶段
+   常用按键，s, u, k:
+ 
+   + 在 'Untracked files' 上点 's'
+	 git add 所有文件.
+   + 在 'Untracked files' 里的某个文件上点 's'
+	 git add 该文件
+   + 在 'Staged changes' 里某个文件上点 'u'
+	 不 git add 该文件，将该文件转到 'Untracked files'
+   + 在文件上点 'k'
+	 删除某个文件. 
+** commit 阶段
+   常用按键, c, C-c C-c, 
+
+   + commit，点 'c'
+	 git commit
+	 
+** 查看 log
+   常用按键, l,
+   
+   + 查看 log, 点 'l'
+	 git log

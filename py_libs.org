@@ -1,0 +1,9 @@
+* requests
+** best practice
+   对于抓回来的数据，最好按如下方式先处理下转换成 unicode:
+
+   res = requests.get(url)
+   try:
+     text = res.content.decode('utf-8')
+   except Exception as e:
+     text = res.text
