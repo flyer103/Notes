@@ -536,3 +536,9 @@
 ** 向其他 mode 添加 auto-complete-mode
    如:
    (add-to-list 'ac-modes 'go-mode)
+** 添加 hs-minor-mode
+   如：
+   (add-hook 'python-mode-hook #'hs-minor-mode)
+   
+   如果想对所有的编程模式都应用 hs-minor-mode，可用这样的形式
+   (add-hook 'prog-mode-hook #'hs-minor-mode)
