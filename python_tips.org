@@ -1739,6 +1739,8 @@
    + assertTupleEqual(a, b)
    + assertSetEqual(a, b)
    + assertDictEqual(a, b)
+* 获取 generator 的值
+  next(generator表达式)
 * Best Practice
 ** 处理有对应关系的两个 list
    如有两个 list:
