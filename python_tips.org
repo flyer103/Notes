@@ -1741,6 +1741,9 @@
    + assertDictEqual(a, b)
 * 获取 generator 的值
   next(generator表达式)
+* pip 安装软件失败
+  可能是 setuptools 的原因造成的，先更新一下试试:
+  $ sudo pip install --upgrade setuptools
 * Best Practice
 ** 处理有对应关系的两个 list
    如有两个 list:
