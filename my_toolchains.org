@@ -2,3 +2,15 @@
   [[http://mmonit.com/monit/][monit]]
 * 邮件服务器
   [[http://www.postfix.org/docs.html][Postfix]]
+* 配置文件
+** 格式
+   采用 yaml 格式.
+* 编辑器
+** 通用
+   Emacs
+* 浏览器
+** 通用
+   chrome
+* API
+** 设计
+   通过 [[http://raml.org/][raml]] 设计 API.
