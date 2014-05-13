@@ -33,3 +33,7 @@
     header 数据
   + 通过代理实现抓取，这样可以提高抓取频率 (可以拿一个独立 IP 尝试下知乎所能允许
     的最大抓取频率)
+* 不寻常的网站
+  http://www.proxytm.com/free-http-proxy-server-lists/type-anonymous-1.html
+  这个网站会在第一次访问时设置 cookie，返回一个只包含一段 js 代码的页面指导跳转。
+  之后每次再访问时，若加了相应的 cookie，则不再跳转. 
