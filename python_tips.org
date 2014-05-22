@@ -1900,3 +1900,11 @@
 
    thedate = '2014-05-11 01'
    int(time.mktime(datetime.datetime.strptime(thedate, "%Y-%m-%d %H").timetuple()))
+** 时间戳转字符串
+   参考 [[http://stackoverflow.com/questions/3682748/converting-unix-timestamp-string-to-readable-date-in-python][Converting unix timestamp string to readable date in Python]] :
+   
+   import datetime
+   
+   print(datetime.datetime.fromtimestamp(int("1284101485")).strftime('%Y-%m-%d %H:%M:%S'))
+* urllib.parse.urljoin()
+  注意作为 base_url 的部分要保证以 '/' 结尾.
