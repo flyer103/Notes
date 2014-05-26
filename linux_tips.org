@@ -1098,3 +1098,11 @@
 	检查两点:
 	+ "include fastcgi_params;" 在所有的 "fastcgi_param *" 之前
     + "fastcgi_param" 中的 "SCRIPT_FILENAME" 是否正确 
+* sentry
+** Unable to reach Sentry log server: timed out (url: http://sentry.example.com:9100/api/2/store/)
+   在 sentry 的配置文件中加入如下语句:
+
+   SENTRY_SERVERS = ['http://0.0.0.0:9100/store/']
+
+   NOTE:
+   + 注意 ip:port 的对应 
