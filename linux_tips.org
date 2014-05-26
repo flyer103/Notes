@@ -1092,3 +1092,9 @@
   
   Refer:
   + [[http://stackoverflow.com/questions/344203/maximum-number-of-threads-per-process-in-linux/344292#344292][Maximum number of threads per process in Linux?]]
+* nginx
+** php
+*** 提示所有的 php 文件找不到
+	检查两点:
+	+ "include fastcgi_params;" 在所有的 "fastcgi_param *" 之前
+    + "fastcgi_param" 中的 "SCRIPT_FILENAME" 是否正确 
