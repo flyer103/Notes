@@ -20,3 +20,15 @@
 	<label for="female">Female</label>
 	<input type="radio" name="sex" id="female">
   </form>
+* <meta name="format-detection" content="telephone=no">
+  可参考 [[https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html][这篇文档]] 和 [[http://www.html-5.com/metatags/#format-detection-meta-tag][这篇文档]]
+  
+  When running in a browser on a mobile phone, <meta name="format-detection"/>
+  determines whether or not telephone numbers in the HTML content will appear as
+  hypertext links. The user can click a link with a telephone number to initiate
+  a phone call to that phone number.
+
+  By default, Safari on iOS detects any string formatted like a phone number and
+  makes it a link that calls the number. Specifying telephone=no disables this
+  feature.
+
