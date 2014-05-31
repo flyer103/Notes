@@ -1015,6 +1015,18 @@
    退出该模式，按下如下键执行粘贴操作:
 
    命令前缀 ]
+** tips   
+   start new with session name:
+   $ tmux new -s 名称
+   
+   attach to named:
+   $ tmux attach -t 名称
+
+   list sessions:
+   $ tmux ls
+
+   kill session:
+   $ tmux kill-session -t 名称
 * 在远程机器中上传和下载文件
   一般可通过 scp 来实现，但在公司中，可能不能使用这条命令。
   Windows 下可通过 secureCRT 的 rz 和 sz 命令实现文件的上传和下载功能。
