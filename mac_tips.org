@@ -1,3 +1,32 @@
 * 禁止内置的键盘
   有一种简单的方法是禁止大多数的内置键盘按键:
   "系统偏好设置"-->"鼠标与触控板"-->"启用鼠标键"
+* homebrew 用法
+  查找软件包
+  $ brew search 软件名
+
+  安装软件包
+  $ brew install 软件名
+
+  列出已安装的软件包
+  $ brew list
+
+  删除软件包
+  $ brew remove 软件名
+
+  查看软件包信息
+  $ brew info 软件名
+
+  列出软件包依赖
+  $ brew deps 软件名
+
+  更新 brew
+  $ brew update
+
+  列出过时的软件包
+  $ brew outdated
+
+  更新过时的软件包
+  $ brew upgrade
+  或 
+  $ brew upgrade 软件名

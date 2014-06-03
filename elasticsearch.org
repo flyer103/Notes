@@ -170,3 +170,6 @@
 ** 直接使用二进制的 ES 和安装 ES 的差别在哪儿
 ** 默认搜索展示的数目
    默认只展示 10 个，可修改参数展示所有的结果.
+* 常见问题
+** 1.2 之后不再支持 Java1.6  
+   可参考 [[http://www.elasticsearch.org/blog/elasticsearch-1-2-0-released/][这篇文档]]
