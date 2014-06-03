@@ -132,6 +132,100 @@
    数据源
 ** transport
    使用 ES 的方式.
+** gateway (???)
+   The gateway allows for persisting the cluster state between full cluster
+   restarts. Every change to the state (such as adding an index) will be stored
+   in the gateway, and when the cluster starts up for the first time, it will
+   read its state from the gateway.
+** 官方的文档
+   [[http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/_basic_concepts.html][basic concepts]]
+   
+   + near realtime (nrt)
+	 Elasticsearch is a near real time search platform. What this means is a
+     slight latency (normally 1 second) from the time you index a document
+     until the time it becomes searchable.
+   + cluster
+	 A cluster is a collection of one or more nodes (servers) that together
+     holds your entire data and provides federated indexing and search
+     capabilities across all nodes. A cluster is identified by a unique name
+     which by default is "elasticsearch". This name is important because a node
+     can only be part of cluster if the node is set up to join the cluster by
+     its name. It is a good practice to explicitly set the cluster name in
+     production, but it is fine to use the default for testing/development purposes.
+   + node
+	 A node is a single server that is part of your cluster, stores your data,
+     and participates in the cluster's indexing and search capabilities. 
+	 Just like a cluster, a node is identified by a name which by default is a
+     random Marvel character name that is assigned to the node at startup.
+	 A node can be configured to join a specific cluster by the cluster
+     name. By default, each node is set up to join a cluster
+     named *"elasticsearch"* which means that if you start up a number of nodes
+     on your network and assuming they can discover each other, they will
+     automatically form and join a single cluster named *"elasticsearch."*.
+   + index
+	 An index is a collection of documents that have somewhat similar
+     characteristics.
+	 An index is identified by a name (*that must be all lowercase*) and this
+     name is used to refer to the index when performing indexing, search,
+     update, and delete operations against the documents in it .
+
+	 In a single cluster, you can define as many indexes as you want.
+   + type
+	 Within an index, you can define one or more types. A type is a logical
+     category/partition of your index whose semantics is completely up to
+     you. In general, a type is defined for documents that have a set of common
+     fields.
+   + document
+	 A document is a basic unit of information that can be indexed. This
+     document is expressed in JSON.
+	 
+	 Within an index/type, you can store as many documents as you want. Note
+     that although a document physically resides in an index, a document
+     actually must be indexed/assigned to a type inside an index.
+   + shards & replicas
+	 An index can potentially store a large amount of data that can exceed the
+     hardware limits of a single node.
+	 To solve this problem, Elasticsearch provides the ability to subdivide
+     your index into multiple pieces called shards. When you create an index,
+     you can simply define the number of shards that you want. Each shard is in
+     itself a fully-funcitonal and independent "index" that can be hosted on
+     any node in the cluster.
+	 
+	 Sharding is important for two primary reasons:
+	 - It allows you to horizontally split/scale your content volume
+	 - It allows you distribute and paralleize operations across shards
+       (potentially on multiple nodes) thus increasing performance/throughput.
+
+     The mechanics of how a shard is distributed and also how its documents
+     are aggregated back into search requests are completely managed by
+     Elasticsearch and is transparent to you as the user.
+
+	 In a network/cloud environment where failures can be expected anytime, it
+     is very useful and highly recommended to have a failover mechanism in case
+     a shard/node somehow goes offline or disappears for whatever reason. To
+     this end, Elasticsearch allows you to make one or more copies of your
+     index’s shards into what are called replica shards, or replicas for short.
+
+     Replication is important for two primary reasons:
+	 - It provides high availability in case a shard/node fails. For this
+       reason, it is important to note that a replica shard is never allocated
+       on the same node as the original/primary shard that it was copied from.
+	 - It allows you to scale out your search volume/throughput since searches
+       can be executed on all replicas in parallel.
+
+     To summarize, each index can be split into multiple shards. An index can
+     also be replicated zero (meaning no replicas) or more times. Once
+     replicated, each index will have primary shards (the original shards that
+     were replicated from) and replica shards (the copies of the primary
+     shards). The number of shards and replicas can be defined per index at the
+     time the index is created. After the index is created, you may change the
+     number of replicas dynamically anytime but you cannot change the number
+     shards after-the-fact.
+
+	 By default, each index in Elasticsearch is allocated 5 primary shards and 1
+     replica which means that if you have at least two nodes in your cluster,
+     your index will have 5 primary shards and another 5 replica shards (1
+     complete replica) for a total of 10 shards per index.
 * FAQ
 ** index 含义
    对数据建立索引, 是抽取出数据中的关键词汇, 然后建立这些词汇和数据的映射关系,
@@ -170,6 +264,54 @@
 ** 直接使用二进制的 ES 和安装 ES 的差别在哪儿
 ** 默认搜索展示的数目
    默认只展示 10 个，可修改参数展示所有的结果.
+** ES 中的 shard 和 replica 配置
+   来自 ES 的 README.textile:
+
+   By default, an index is created with 5 shards and 1 replica per shard
+   (5/1). There are many topologies that can be used, including 1/10 (improve
+   search performance), or 20/1 (improve indexing performance, with search
+   executed in a map reduce fashion across shards).
+
+   从上述中可以知道:
+   + shard 多时，可以提高 index 性能
+   + replica 多时，可以提高 search 性能 
+
+   The rule of thumb is:
+   + Having more *shards* enhances the _indexing_ performance and allows to
+     _distribute_ a big index across machines.
+   + Having more *replicas* enhances the _search_ performance and improves the
+     cluster _availability_.
+
+  NOTE:
+  + The "number_of_shards" is a one-time setting for an index.
+  + The "number_of_replicas" can be increased or decreased anytime, by using the
+    Index Update Settings API.
+** 如何查看集群状态
+   如:
+   $ curl -XGET http://localhost:9200/_cluster/health?pretty=true
+** 如何查看索引状态
+   如:
+   $ curl -XGET http://localhost:9200/索引名/_status?pretty=true
 * 常见问题
 ** 1.2 之后不再支持 Java1.6  
    可参考 [[http://www.elasticsearch.org/blog/elasticsearch-1-2-0-released/][这篇文档]]
+** ES 对 ip:port 的使用
+   Elasticsearch, by default, binds itself to the 0.0.0.0 address, and listens
+   on port [9200-9300] for HTTP traffic and on port [9300-9400] for
+   node-to-node communication. (the range means that if the port is busy, it
+   will automatically try the next port).
+** ES 的 http api 每个 {} 中的最后一项后面不要加 ','
+* 影响 ES 性能的因素
+** JVM swap
+   Elasticsearch performs poorly when JVM starts swapping: you should ensure
+   that it _never_ swaps.
+
+   Make sure that the ES_MIN_MEM and ES_MAX_MEM environment variables are set to
+   the same value, and that the machine has enough memory to allocate for
+   Elasticsearch, leaving enough memory for the operating system itself.
+
+   You should also make sure that the Elasticsearch process is allowed to lock
+   the memory, eg. by using `ulimit -l unlimited`.
+   
+   RESOLVE:
+   + (解决问题 1) 修改 ES 配置文件中的参数.
