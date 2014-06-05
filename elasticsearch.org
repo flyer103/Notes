@@ -56,13 +56,196 @@
    + 要使用 mongo replica set
    + 安装 elasticsearch-river-mongodb 后需要重启 ES
    + 可通过 elasticsearch-river-head 查看 ES 建立的索引 
-* API
+* ES 相关操作
+  + Check your cluster, node, and index health, status, and statistics
+  + Administer your cluster, node, and index data and metadata
+  + Perform CRUD (Create, Read, Update, and Delete) and search operations against your indexes
+  + Execute advanced search opertions such as paging, sorting, filtering,
+    scripting, faceting, aggregations, and many others
+* 常用操作
 ** 添加索引和数据
+   有两种形式添加数据 (ES 会自动创建索引):
+   + 指明 id
+	 如 (可用 PUT 或 POST 方法):
+	 $ curl -XPUT http://localhost:9200/test/person/1?pretty -d '
+	   {
+         "name": "flyer"
+       }'
+   + 不指名 id
+	 只能用 POST 方法，此时 ES 会自动为该条数据创建一个 id:
+	 $ curl -XPOST http://localhost:9200/test/person?pretty -d '
+	   {
+	     "name": "flyer"
+       }'
 ** 删除索引
    如:
    $ curl -XDELETE 'http://localhost:9200/person'
 ** 删除数据
+   + 精确删除
+     如:
+     $ curl -XDELETE http://localhost:9200/test/person/1?pretty
+   + 匹配删除
+	 如:
+	 $ curl -XDELETE http://localhost/test/person/_query?pretty -d '
+	   {
+         "query": {"match": {"age": 25}}
+       }'
+** 更新数据
+   Note that Elasticsearch does not actually do in-place updates under the
+   hood. Whenever we do an update, Elasticsearch deletes the old document and
+   then indexes a new document with the update applied to it in one shot.
+
+   有三种形式的更新:
+   + 类似于插入新数据的形式
+   + 用 _update 参数
+	 如:
+	 $ curl -XPOST http://localhost:9200/test/person/1/_update?pretty -d '
+	   {
+         "doc": {"name": "Jane Doe", "age": 20}
+	   }'
+   + 通过脚本
+	 如:
+	 $ curl -XPOST http://localhost:9200/test/person/1/_update?pretty -d '
+	   {
+	     "script": "ctx._source.age += 5"
+       }'
 ** 查询
+*** 只返回部分结果
+	如:
+	$ curl -XPOST http://localhost:9200/bank/_search?pretty -d '{
+	    "query": {"match_all": {}},
+        "_source": ["account_number", "balance"]
+	  }'
+*** 通过 match 匹配
+	$ curl -XPOST 'localhost:9200/bank/_search?pretty' -d '
+	  {
+	    "query": { "match": { "account_number": 20 } }
+      }'
+*** 匹配其中任一个
+	This example returns all accounts containing the term "mill" or "lane" in
+	the address:
+	$ curl -XPOST 'localhost:9200/bank/_search?pretty' -d '
+	  {
+	    "query": { "match": { "address": "mill lane" } }
+      }'	
+*** 匹配某个短语
+	This example returns all accounts containing the phrase "mill lane" in the
+	address:
+	$ curl -XPOST 'localhost:9200/bank/_search?pretty' -d '
+	  {
+	    "query": { "match_phrase": { "address": "mill lane" } }
+	  }'
+*** bool
+	文档参考 [[http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html][这里]]
+
+    | Occur    | Description                 |
+    |----------+-----------------------------|
+    | must     | 必须全部满足，相当于 AND    |
+    | should   | 必须至少一个满足，相当于 OR |
+    | must_not | 必须都不能满足，相当于 NOT  |
+
+	如:
+	$ curl -XPOST 'localhost:9200/bank/_search?pretty' -d '
+	{
+	  "query": {
+        "bool": {
+		  "must": [
+            { "match": { "age": "40" } }
+		  ],
+		  "must_not": [
+            { "match": { "state": "ID" } }
+		  ]
+	  }
+	}
+   }'
+** 批量操作
+   In addition to being able to index, update, and delete individual documents,
+   Elasticsearch also provides the ability to perform any of the above
+   operations in batches using the *_bulk* API.
+   This functionality is important in that it provides a very efficient
+   mechanism to do multiple operations as fast as possible with as little
+   network roundtrips as possible.
+   如:
+   The following call indexes two documents in one bulk operation:
+   $ curl -XPOST http://localhost:9200/customer/external/_bulk?pretty -d '
+     {
+	   {"index":{"_id":"1"}}
+	   {"name": "John Doe" }
+	   {"index":{"_id":"2"}}
+	   {"name": "Jane Doe" }	   
+     }'
+   Tis example updates the first document and then deletes the second document
+   in one bulk operation:
+   $ curl -XPOST http://localhost:9200/customer/external/_bulk?pretty -d '
+     {
+	   {"update":{"_id":"1"}}
+	   {"doc": { "name": "John Doe becomes Jane Doe" } }
+	   {"delete":{"_id":"2"}}	 
+     }'
+** _cat
+*** 综述
+	All the cat commands accept a query string parameter *help* to see all the
+	headers and info they provide, and the */_cat* command alone lists all the
+	available commands.
+*** help
+   Each of the commands accepts a query string parameter *help* which will
+   output its available columns.
+   如:
+   $ curl -XGET http://localhost:9200/_cat?help
+   $ curl -XGET http://localhost:9200/_cat/master?help
+*** verbose
+   Each of the commands accepts a query string parameter *v* to turn on verbose
+   output.
+   如:
+   $ curl -XGET http://localhost:9200/_cat/master?v
+*** headers
+	Each of the commands accepts a query string parameter *h* which forces only
+	those columns to appear.
+	如:
+	$ curl http://localhost:9200/_cat/nodes?h=ip,port,heapPercent,name
+*** numeric formats
+	如:
+	$ curl http://localhost:9200/_cat/indices?bytes=b
+** 查看 cluster 状态
+   如:
+   $ curl http://localhost:9200/_cat/health?v
+   或
+   $ curl http://localhost:9200/_cluster/health?pretty=true
+** 查看 cluster 中所有 nodes
+   如:
+   $ curl http://localhost:9200/_cat/nodes?v
+** 查看 cluster 中所有 indices
+   如:
+   $ curl http://localhost:9200/_cat/indices?v
+** 查看 cluster 中 master node
+   如
+   $ curl http://localhost:9200/_cat/master?v
+** 查看 node 的状态
+   如:
+   $ curl http://localhost:9200/_stats?pretty=true
+** 查看某个 index 的状态
+   如:
+   $ curl http://localhost:9200/索引名/_stats?pretty=true
+** 查看某个 index 下的所有 mapping
+   如:
+   $ curl http://localhost:9200/索引名/_mapping?pretty=true
+** 查看某个 index 下的某个 type 的 mapping
+   如:
+   $ curl http://localhost:9200/索引名/type名/_mapping?pretty=true
+** 查看所有的 mapping (同时可以查出某个 index 下的所有 type)
+   如 
+   $ curl http://localhost:9200/_mapping?pretty=true
+* cluster 的三种状态
+  + green
+	*Green* means everything is good (cluster is fully functional).
+  + yellow
+	*Yellow* means all data is available but some replicas are not yet alloated
+    (cluster is fully funtional).
+  + red
+	*Red* means some data is not available for whatever reason. Note that even
+    if a cluster is red, it still is partially functional (i.e. it will continue
+    to serve search requests from the available shards) but you will likely
+    need to fix it ASAP since you have missing data.
 * 索引
   ES 会对全文进行索引.
 * 分词
@@ -117,12 +300,50 @@
 	对查询进行解释
 *** _source
 	文档的具体内容.
+** 查询条件中的变量
+   + query
+   + match_all
+   + size
+   + from (0-based)
+   + to
+   + sort
+	 如:
+	 $ curl -XPOST http://localhost:9200/bank/_search?pretty -d '{
+       "query": {
+         "match_all": {}
+       },
+       "sort":{
+         "balance": {"order": "asce"}
+       }
+     }'
+
+	 其中可按 "desc" 或 "asce" 排序
+   + bool
+
+   NOTE:
+   + *from* and *size*
+	 This feature is useful when implementing paging of search
+     results. If *from* is not specified, it defaults to 0.
 * 一些特殊的查询条件
 ** bool 查询
    通过 '+'、'-' 和 'not' 来表示.
 * 需要深入的 plugins
   + elasticsearch-mapper-attachment
   + elasticsearch-river-mongodb
+* 查询结果的一些字段
+  + took
+	time in milliseconds for Elasticsearch to execute the search
+  + time_out
+	tells us if the search timed out or not
+  + _shards
+	tells us how many shards were searched, as well as a count of the
+    successful/failed searched shards
+  + hits
+	search results
+  + hits.total
+	total number of documents matching our search criteria
+  + hits.hits
+	actual array of search results (default to first 10 documents)
 * 名词解释
 ** mapper
    与建索引有关.
@@ -144,6 +365,13 @@
 	 Elasticsearch is a near real time search platform. What this means is a
      slight latency (normally 1 second) from the time you index a document
      until the time it becomes searchable.
+
+	 Elasticsearch provides data manipulation and search capabilities in near
+	 real time. By default, you can expect a *one second* delay (refresh
+     interval) from the time you index/update/delete your data until the time
+     that it appears in your search results. This is an important distinction
+     from other platforms like SQL wherein data is immediately available after
+     a transaction is completed.
    + cluster
 	 A cluster is a collection of one or more nodes (servers) that together
      holds your entire data and provides federated indexing and search
@@ -292,7 +520,39 @@
 ** 如何查看索引状态
    如:
    $ curl -XGET http://localhost:9200/索引名/_status?pretty=true
-* 常见问题
+** 如何查询某个 index 中的所有数据
+   如:
+   $ curl -XPOST http://localhost:9200/person/_search?pretty -d '
+     {
+	   "query": {
+	     "match_all": {}
+	   }
+	 }'
+   或
+   $ curl -XPOST http://localhost:9200/person/_all/_search?pretty -d '
+     {
+	   "query": {
+	     "match_all": {}
+	   }
+	 }'
+** 如何查询某个 type 中的素有数据 
+   如:
+   $ curl -XPOST http://localhost:9200/persons/person/_search?pretty -d '
+     {
+	   "query": {
+	     "match_all": {}
+	   }
+	 }'
+** 单机节点的 health 为 yellow
+   Since we only have one node running at the moment, that one replica cannot
+   yet be allocated (for high availability) until a later point in time when
+   another node joins the cluster. Once that replica gets allocated onto a
+   second node, the health status for this index will turn to green.
+** ES1.2 (包括之前的版本) 是否支持批量更新
+   不支持。
+   Updates can only be performed on a single document at a time. In the future,
+   Elasticsearch will provide the ability to update multiple documents given a
+   query condition (like an SQL UPDATE-WHERE statement).
 ** 1.2 之后不再支持 Java1.6  
    可参考 [[http://www.elasticsearch.org/blog/elasticsearch-1-2-0-released/][这篇文档]]
 ** ES 对 ip:port 的使用
@@ -301,6 +561,37 @@
    node-to-node communication. (the range means that if the port is busy, it
    will automatically try the next port).
 ** ES 的 http api 每个 {} 中的最后一项后面不要加 ','
+** ES 一次查询后是否还保留这次查询的状态?
+   No.
+   It's important to understand that once you get your search results back,
+   Elasticsearch is completely done with the request and does not maintain any
+   kind of server-side resources or open cursors into your results.
+** 最佳的 master 数如何设置
+   根据 [[http://asquera.de/opensource/2012/11/25/elasticsearch-pre-flight-checklist/][这篇文档]] , discovery.zen.minimum_master_nodes 至少是 N/2+1，其中 N 是
+   node 数.
+** ES 中的 "master node" 作用是什么?
+   参考 [[http://stackoverflow.com/questions/15019821/what-differents-between-master-node-gateway-and-other-node-gateway-in-elasticsea][这篇文档]]:
+
+   The master node is the same as any other node in the cluster, except that it
+   has been elected to be the master.
+   
+   It is responsible for coordinating any cluster-wide changes, such as as the
+   addition or removal of a node, creation, deletion or change of state (ie
+   open/close) of an index, and the allocation of shards to nodes. When any of
+   these changes occur, the "cluster state" is updated by the master and
+   published to all other nodes in the cluster. It is the only node that may
+   publish a new cluster state.
+
+   The tasks that a master performs are lightweight. Any tasks that deal with
+   data (eg indexing, searching etc) do not need to involve the master. If you
+   choose to run the master as a non-data node (ie a node that acts as master
+   and as a router, but doesn't contain any data) then the master can run
+   happily on a smallish box.
+   
+   It's responsibility of the master node to allocate the shards equally among
+   the nodes.
+** split-brain problem
+   参考 [[http://blog.trifork.com/2013/10/24/how-to-avoid-the-split-brain-problem-in-elasticsearch/][HOW TO AVOID THE SPLIT-BRAIN PROBLEM IN ELASTICSEARCH]]
 * 影响 ES 性能的因素
 ** JVM swap
    Elasticsearch performs poorly when JVM starts swapping: you should ensure
