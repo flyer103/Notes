@@ -220,6 +220,16 @@
 ** 查看 cluster 中 master node
    如
    $ curl http://localhost:9200/_cat/master?v
+** 查看 cluster 的配置
+   $ curl http://localhost:9200/_cluster/settings?pretty=true
+** 修改 cluster 的配置
+   既可在 elasticsearch.yml 中修改，也可以在 ES 运行后，通过类似如下的方式修改:
+
+   $ curl -XPUT http://localhost:9200/_cluster/settings?pretty -d '{
+       "persistent": {
+	     "discovery.zen.minimum_master_nodes": 1
+	   }
+     }'
 ** 查看 node 的状态
    如:
    $ curl http://localhost:9200/_stats?pretty=true
@@ -592,6 +602,19 @@
    the nodes.
 ** split-brain problem
    参考 [[http://blog.trifork.com/2013/10/24/how-to-avoid-the-split-brain-problem-in-elasticsearch/][HOW TO AVOID THE SPLIT-BRAIN PROBLEM IN ELASTICSEARCH]]
+** ES 的查询过程是什么?
+    可参考 [[http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/_query_phase.html][query phrase]]:
+	1. ES 的某个 node 接受 request，然后将该 request 广播到指定的 index 的
+       primary/replica shard 上
+	2. 每个 shard 执行 search 操作，将查询结果放入一个 priority queue 中 (根据查
+       询到的 doc 的 score 排序)
+	3. 接受 request 的 node 将查询结果收集起来，放入到一个 priority queue 中，然
+       后根据 request 的其它参数做些操作，如排序、取哪段数据等，然后将结果返回
+       给 user.
+
+    NOTE:
+	+ 假设 request 中指定 from: 90、size: 10，则对应的每个 shard 上需要返回
+      90+10 个数据给接受 request 的 node
 * 影响 ES 性能的因素
 ** JVM swap
    Elasticsearch performs poorly when JVM starts swapping: you should ensure
