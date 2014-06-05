@@ -629,3 +629,14 @@
    
    RESOLVE:
    + (解决问题 1) 修改 ES 配置文件中的参数.
+* CentOS 上管理 elasticsearch
+  通过 yum 安装 ES 后，通过 service 运行 ES:
+  
+  启动 ES:
+  $ sudo service elasticsearch start
+
+  停止 ES:
+  $ sudo service elasticsearch stop
+
+  重启 ES:
+  $ sudo service elasticsearch restart
