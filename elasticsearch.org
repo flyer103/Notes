@@ -310,6 +310,8 @@
 	对查询进行解释
 *** _source
 	文档的具体内容.
+*** _settings
+	查看配置
 ** 查询条件中的变量
    + query
    + match_all
@@ -464,6 +466,36 @@
      replica which means that if you have at least two nodes in your cluster,
      your index will have 5 primary shards and another 5 replica shards (1
      complete replica) for a total of 10 shards per index.
+* document
+  每个 document 必须包含 index、type、id 
+* ES 的查询过程
+** query phase
+   参考 [[http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/_query_phase.html][query phase]].
+
+   这个过程是从 shards 上取出相关 documents 的特征值 (如 id)，如果可能，需要做些
+   排序工作，最后确定哪些是用户需要的.
+** fetch phase
+   参考 [[http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/_fetch_phase.html][fetch phase]].
+
+   根据 query phase 的结果，再从 shards 上取具体的数据，整合后返回给 user.
+** 查询的两种形式
+*** query
+	相比 filer 是重量级的，会计算每个 doc 的 score.
+*** filter
+	相比 query 是轻量级的，不计算每个 doc 的 score.
+* ES 中的 network module
+** transport module
+   参考 [[http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/modules-transport.html][transport]].
+
+   transport module 用于 cluster 中的 nodes 间通信.这种通信是异步的，好处:
+   + 解决 C10k 问题 (即高并发)
+   + 会提高 scatter/gather 的效率
+** http module
+   参考 [[http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/modules-http.html][http]].
+
+   它允许通过 HTTP API 的形式访问 ES 的服务.
+   
+   这种 http 机制是异步的，主要是为了解决 C10k 问题.
 * FAQ
 ** index 含义
    对数据建立索引, 是抽取出数据中的关键词汇, 然后建立这些词汇和数据的映射关系,
@@ -615,6 +647,13 @@
     NOTE:
 	+ 假设 request 中指定 from: 90、size: 10，则对应的每个 shard 上需要返回
       90+10 个数据给接受 request 的 node
+** ES 中 node.data 设为 false 时，shard 是否会分配在该 node 上？
+   不会。
+
+   参考 [[http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/modules-node.html][node]]:
+   elasticsearch allows to configure a node to either be allowed to store data
+   locally or not. Storing data locally basically means that shards of different
+   indices are allowed to be allocated on that node.
 * 影响 ES 性能的因素
 ** JVM swap
    Elasticsearch performs poorly when JVM starts swapping: you should ensure
@@ -628,7 +667,8 @@
    the memory, eg. by using `ulimit -l unlimited`.
    
    RESOLVE:
-   + (解决问题 1) 修改 ES 配置文件中的参数.
+   + (解决问题 1) 修改 ES 配置文件中的参数:
+	 - 修改 bootstrap.mlockall: true
 * CentOS 上管理 elasticsearch
   通过 yum 安装 ES 后，通过 service 运行 ES:
   
@@ -640,3 +680,9 @@
 
   重启 ES:
   $ sudo service elasticsearch restart
+* 思考
+** 对 port 的分配
+   设计分布式服务时，通常会涉及到 port 的分配。若在配置文件中只能指定一个 port，
+   则容易出现端口占用的情况。
+   ES 的设计有个比较好的敌方，它指定一个 port 范围，依次尝试绑定到某个 port 上，
+   直至成功。
