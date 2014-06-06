@@ -669,6 +669,8 @@
    RESOLVE:
    + (解决问题 1) 修改 ES 配置文件中的参数:
 	 - 修改 bootstrap.mlockall: true
+	 - NOTE:
+	   + 最好不要设置为 true，否则内存不会释放，造成大量内存被占用
 * CentOS 上管理 elasticsearch
   通过 yum 安装 ES 后，通过 service 运行 ES:
   
