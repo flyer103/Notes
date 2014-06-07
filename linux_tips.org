@@ -202,16 +202,19 @@
   in /etc/kde/kdm/kdmrc to solve it.
 * 32、dia 画图软件
 * 33、Virtualbox
-** 1、VirtualBox设置共享文件夹
+** VirtualBox设置共享文件夹
   虚拟系统是 linux ,则在虚拟的系统下输入
   $ sudo mount -t vboxsf 主系统下共享文件夹 /mnt
   (前提是要装好Virtualbox Guest Additions，若提示vboxsf参数错误，改下"
   主系统下共享文件夹"的大小写)
-** 2、添加支持 USB、PXE扩展
+** 添加支持 USB、PXE 扩展
     先去 Virutalbox 官网下载 Virtualbox_extension_pack,然后打开
     Virtualbox，File->Preferences->Extensions，然后按提示安装即可。有
     时安装失败是因为权限不够，可以 root 身份打开 Virtualbox 来安装扩展。
     Virtualbox 有很多扩展，可以学学看。
+** 虚拟系统支持 host-only 网络模式
+   在安装系统前设置好采用 host-only 模式，然后安装系统.
+   可参考 [[http://webees.me/installing-centos-6-4-in-virtualbox-and-setting-up-host-only-networking/][Installing CentOS 6.4 in VirtualBox and Setting up Host-only Networking]]
 * 34、修改 Linux 环境变量
 ** 1、永久修改
     修改 /etc/profile 或 ~/.profile，采用如下格式 

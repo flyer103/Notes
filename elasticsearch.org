@@ -63,6 +63,8 @@
   + Execute advanced search opertions such as paging, sorting, filtering,
     scripting, faceting, aggregations, and many others
 * 常用操作
+** 查看当前 node 的 ES 版本
+   $ curl http://localhost:9200
 ** 添加索引和数据
    有两种形式添加数据 (ES 会自动创建索引):
    + 指明 id
@@ -654,6 +656,14 @@
    elasticsearch allows to configure a node to either be allowed to store data
    locally or not. Storing data locally basically means that shards of different
    indices are allowed to be allocated on that node.
+** 假设 node_0 的 index 设置为 5 个 shard， 集群 cluster_test 的 shard 数为 10，如何将 node_0 加入该集群？
+   可参考下 [[http://elasticsearch-users.115913.n3.nabble.com/Changing-cluster-name-on-2-node-cluster-causes-IndexMissingException-td4035300.html][Changing cluster name on 2-node cluster causes IndexMissingException]]
+
+   将 node_0 配置中的 cluster.name 改为目标集群的名字，然后将 node_0 的 ES 存储
+   数据的目录从原来的集群名改为目标集群名，重启下 node_0 上的 ES 服务即可。
+   
+   此后，node_0 原有的 index 依然保持 5 个 shard，该集群新建的 index 保持 10 个
+   shard。
 * 影响 ES 性能的因素
 ** JVM swap
    Elasticsearch performs poorly when JVM starts swapping: you should ensure
