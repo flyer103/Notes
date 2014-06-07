@@ -215,6 +215,13 @@
 ** 虚拟系统支持 host-only 网络模式
    在安装系统前设置好采用 host-only 模式，然后安装系统.
    可参考 [[http://webees.me/installing-centos-6-4-in-virtualbox-and-setting-up-host-only-networking/][Installing CentOS 6.4 in VirtualBox and Setting up Host-only Networking]]
+** clone 系统时的网络问题
+   参考 [[https://www.centos.org/forums/viewtopic.php?t=7684][virtualbox centos6 guest - Device eth0 does not seem to be present]]
+   可能会出现找不到网卡的问题.
+   以 CentOS 为例:
+   在 /etc/udev/rules.d/ 中找到网络配置，修改相应的 MAC.
+   在 /etc/sysconfig/network-scripts/ 下修改相应的网卡.
+   重启.
 * 34、修改 Linux 环境变量
 ** 1、永久修改
     修改 /etc/profile 或 ~/.profile，采用如下格式 
