@@ -686,6 +686,23 @@
    using "publish_host" all nodes and clients can be sure they can connect to
    this node. Declaring this single unique address to the outside can be
    interpreted as "publishing", so it is called "publish_host".
+** ES 是否可以灵活控制哪些 index 可以放在哪些 shard 上?
+   可以，参考 [[http://blog.sematext.com/2012/05/29/elasticsearch-shard-placement-control/][ElasticSearch Shard Placement Control]]
+
+   两种方式:
+   + 指定 node.zone
+	 1. 配置 node.zone
+	 2. 建 index 时设置 "index.routing.allocation.include.zone" 或
+        "index.routing.allocation.exclude.zone" 参数
+   + 建 index 时指定目标 node 的 ip
+	 两种途径:
+	 - 建 index 时
+	   配置 "cluster.routing.allocation.exclude._ip" 参数
+	 - cluster 动态运行时
+	   为单个 index 配置 "index.routing.allocation.include._ip" 或为整个
+       cluster 配置 "cluster.routing.allocation.include._ip".
+** ES 在 nodes 上分配 shards 考虑的是数量还是 shard 大小?
+   是数量，不考虑 shard 大小，但可以手动移动 shard.
 * 影响 ES 性能的因素
 ** JVM swap
    Elasticsearch performs poorly when JVM starts swapping: you should ensure
