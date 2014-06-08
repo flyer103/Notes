@@ -703,6 +703,12 @@
        cluster 配置 "cluster.routing.allocation.include._ip".
 ** ES 在 nodes 上分配 shards 考虑的是数量还是 shard 大小?
    是数量，不考虑 shard 大小，但可以手动移动 shard.
+** ES 的配置修改级别常见有哪些?
+   + cluster level
+   + index level
+** 提示 "java.net.NoRouteToHostException: No route to host"
+   可能是系统 firewall 的原因造成的。以 CentOS 为例，关闭 iptables:
+   # service iptables stop
 * 影响 ES 性能的因素
 ** JVM swap
    Elasticsearch performs poorly when JVM starts swapping: you should ensure
@@ -737,3 +743,7 @@
    则容易出现端口占用的情况。
    ES 的设计有个比较好的敌方，它指定一个 port 范围，依次尝试绑定到某个 port 上，
    直至成功。
+* virtualbox 安装 centos 节点后需要注意的
+  1. 检查 firewall 是否运行，如 iptables 之类的，关掉
+  2. 若同时有 NAT 和 Host-Only 两种网络模式，需要显式指定 network.publish_host
+     为 Host-Only 分配的 IP 
