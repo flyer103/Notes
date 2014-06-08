@@ -213,6 +213,8 @@
     时安装失败是因为权限不够，可以 root 身份打开 Virtualbox 来安装扩展。
     Virtualbox 有很多扩展，可以学学看。
 ** 虚拟系统支持 host-only 网络模式
+   先检查 "偏好设置"-->"网络"-->"仅主机(Host-Only)网络" 中是否有虚拟网络，若没有，
+   先添加.
    在安装系统前设置好采用 host-only 模式，然后安装系统.
    可参考 [[http://webees.me/installing-centos-6-4-in-virtualbox-and-setting-up-host-only-networking/][Installing CentOS 6.4 in VirtualBox and Setting up Host-only Networking]]
 ** clone 系统时的网络问题
