@@ -709,6 +709,8 @@
 ** 提示 "java.net.NoRouteToHostException: No route to host"
    可能是系统 firewall 的原因造成的。以 CentOS 为例，关闭 iptables:
    # service iptables stop
+** non-data node 是否会分配到 shard?
+   不会.
 * 影响 ES 性能的因素
 ** JVM swap
    Elasticsearch performs poorly when JVM starts swapping: you should ensure
