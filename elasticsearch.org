@@ -664,6 +664,24 @@
    
    此后，node_0 原有的 index 依然保持 5 个 shard，该集群新建的 index 保持 10 个
    shard。
+** bind_host 与 publish host 的区别
+   这对应着 ES 网络通信中的 client-server 模型.
+   **bind_host** 是 node 中 server 部分使用的 host，**publish_host** 是 node 中
+   client 连接其它 server 时使用 的 host.
+
+   "bind_host" is the host that an Elasticsearch node uses in the socket bind
+   call when starting the network. Due to socket programming model, you can
+   "bind" to an address. By referencing an "address", the socket allows access
+   to one or all underlying network devices. There are several addresses with
+   predefined semantics, e.g. 0.0.0.0 is reserved for "bind to all network
+   devices". So the "bind_host" address does not necessarily reflect a single
+   unique address.
+
+   "publish_host" must be a single unique network address. It is used for
+   connect calls by other nodes, not for socket bind call by the node itself. By
+   using "publish_host" all nodes and clients can be sure they can connect to
+   this node. Declaring this single unique address to the outside can be
+   interpreted as "publishing", so it is called "publish_host".
 * 影响 ES 性能的因素
 ** JVM swap
    Elasticsearch performs poorly when JVM starts swapping: you should ensure
