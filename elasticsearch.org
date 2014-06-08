@@ -666,6 +666,10 @@
    shard。
 ** bind_host 与 publish host 的区别
    这对应着 ES 网络通信中的 client-server 模型.
+
+   ES cluster 中的 node 需要感知到其他 node 的存在，同时也需要让其他 node 知道自
+   己的存在，因此在一个 node 中需要同时有 client 和 server 功能。client 功能用来
+   探索其他 nodes 和与其他 node 通信，server 功能用来响应其他 nodes 的请求。 
    **bind_host** 是 node 中 server 部分使用的 host，**publish_host** 是 node 中
    client 连接其它 server 时使用 的 host.
 
