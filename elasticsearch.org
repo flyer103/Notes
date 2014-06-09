@@ -498,6 +498,45 @@
    它允许通过 HTTP API 的形式访问 ES 的服务.
    
    这种 http 机制是异步的，主要是为了解决 C10k 问题.
+* discovery
+** 综述
+   The discovery module is responsible for discovering nodes within a cluster,
+   as well as electing a master node.
+
+   Elasticsearch is a peer to peer based system, nodes communicate with one
+   another directly if operations are delegated/broadcast.
+   All the main APIs (index, delete, search) do not communicate with the master
+   node.
+** zen discovery
+*** 综述
+	The zen discovery is the built in discovery module for elasticsearch and the
+	default. It provides both multicast and unicast discovery as well being
+	easily extended to support cloud environments.
+
+	All communication between nodes is done using the transport module.
+*** ping
+	This is the process where a node uses the discovery mechanisms to find
+	other nodes.
+	There is support for both multicast and unicast based discovery (can be used
+	in conjunction as well).
+
+	+ multicast
+	  Multicast ping discovery of other nodes is done by sending one or more
+      multicast requests where existing nodes that exists will receive and
+      respond to.
+	+ unicast
+	  The unicast discovery allows to perform the discovery when multicast is
+      not enabled. It basically requires a list of hosts to use that will act
+      as gossip routers.
+	  The unicast discovery uses the *transport* module to perform the
+      discovery.
+*** master election
+*** fault detection
+	There are two fault detection processes running:
+	+ The first is by the master, to ping all the other nodes in the cluster
+      and verify that they are alive.
+	+ Each node pings to master to verify if it's still alive or an election
+      process needs to be initiated.
 * FAQ
 ** index 含义
    对数据建立索引, 是抽取出数据中的关键词汇, 然后建立这些词汇和数据的映射关系,
@@ -615,6 +654,13 @@
    node 数.
 ** ES 中的 "master node" 作用是什么?
    参考 [[http://stackoverflow.com/questions/15019821/what-differents-between-master-node-gateway-and-other-node-gateway-in-elasticsea][这篇文档]]:
+   
+   两个主要功能:
+   + 维护 cluster 的全局状态
+	 Each time a cluster state is changed, the state is made known to the other
+     nodes in the cluster (the manner depends on the actual discovery
+     implementation).
+   + node 变更时重新分配 shards
 
    The master node is the same as any other node in the cluster, except that it
    has been elected to be the master.
@@ -634,6 +680,14 @@
    
    It's responsibility of the master node to allocate the shards equally among
    the nodes.
+
+   The master node is the olny node in the cluster that can make changes to the
+   cluster state. The master node processes one cluster state update at a time,
+   applies the required changes and publishes to the updated cluster state to
+   all the other nodes in the cluster. Each node receives the publish message,
+   updates its own cluster state and replies to the master node, which waits
+   for all nodes to respond, up to a timeout, before going ahead processing the
+   next updates in the queue.
 ** split-brain problem
    参考 [[http://blog.trifork.com/2013/10/24/how-to-avoid-the-split-brain-problem-in-elasticsearch/][HOW TO AVOID THE SPLIT-BRAIN PROBLEM IN ELASTICSEARCH]]
 ** ES 的查询过程是什么?
