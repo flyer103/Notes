@@ -30,3 +30,5 @@
   $ brew upgrade
   或 
   $ brew upgrade 软件名
+* 外设 (u 盘/移动硬盘) 挂载位置
+  一般在 /Volumes/ 下
