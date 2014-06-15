@@ -1913,3 +1913,9 @@
   All variables found outside of the innermost scope are read-only (an attempt
   to write to such a variable will simply create a new local variable in the
   innermost scope, leaving the identically named outer variable unchanged).
+* python 解释器退出时对 globals() 中 objects 的处理
+  在 python3.4 之前，会将 globals() 中的 objects 按序置为 **None** ，而
+  globals() 中 objects 的顺序是随机的，因此可能会造成一些不可预知的现象，尤其是
+  在 class 的 __del__() 方法中会遇到。可参考 [[https://gist.github.com/flyer103/053d446cc2bf69de6e9e][这个例子]] .
+  详细的解释可参考 [[http://stackoverflow.com/questions/18058730/python-attributeerror-on-del][Python attributeError on __del__]] 和 
+  [[http://stackoverflow.com/questions/22864764/can-a-simple-difference-in-python3-variable-names-alter-the-way-code-runs][Can a simple difference in Python3 variable names alter the way code runs? ]]
