@@ -1132,3 +1132,8 @@
 
    NOTE:
    + 注意 ip:port 的对应 
+* Centos
+** 启停 mongod 服务
+   $ sudo service mongod start
+   $ sudo service mongod stop
+   $ sudo service mongod restart
