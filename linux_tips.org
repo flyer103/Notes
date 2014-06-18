@@ -1137,3 +1137,9 @@
    $ sudo service mongod start
    $ sudo service mongod stop
    $ sudo service mongod restart
+* 查看端口用情况
+  $ sudo lsof -i
+  $ sudo lsof -i | grep TCP
+  $ sudo lsof -i :80 | grep LISTEN
+  $ sudo netstat -lptu
+  $ sudo netstat -tulpn
