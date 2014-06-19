@@ -1,0 +1,65 @@
+* 标准库
+** built-in
+*** types
+*** constants
+*** functions
+*** exceptions
+** OS 层面
+*** generic operating system services
+*** concurrent execution
+*** file and directory access
+*** file formats
+** 数据处理层面
+*** 二进制数据
+**** binary data services
+**** multimedia services
+*** 文本数据 
+**** text processing services
+*** 数值数据
+**** numeric and mathematical modules
+*** 结构化数据
+**** structured markup processing tools
+*** 网络数据 
+**** internet data handling
+*** 通用数据操作
+**** data persistence
+**** data compression and archiving
+*** 其他
+**** data types
+** 网络层面
+*** 协议
+**** internet protocols and support
+*** 通信
+**** interprocess communication and networking
+** GUI 层面
+*** 基于 Tk
+**** graphic user interfaces with Tk
+** 开发层面
+*** 并发模型
+**** concurrent execution
+*** 编程模型
+**** functional programming modules
+*** 调试和优化
+**** debugging and profiling
+*** 框架
+**** program frameworks
+*** 其他
+**** development tools
+**** python runtime services
+** python 自身
+*** 包相关
+**** importing modules
+**** software packaging and distribution
+*** 解析器 
+**** custom python interpreters
+**** python language services
+** 安全层面
+*** 加密
+**** cryptographic services
+** other
+*** internationalization
+*** miscellaneous services
+*** ms windows specific services
+*** unix specific services
+*** undocumented modules
+* 我的理解
