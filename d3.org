@@ -1,0 +1,4 @@
+* selector
+  D3 中的 selector 是 data-node pair.
+* enter() 和 exit() 方法
+  作用于 selector，也就是说作用于绑定了 data 的 node，若没绑定 data，则会报错.

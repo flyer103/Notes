@@ -1143,3 +1143,7 @@
   $ sudo lsof -i :80 | grep LISTEN
   $ sudo netstat -lptu
   $ sudo netstat -tulpn
+* vagrant
+** 常用命令
+   $ vagrant up  # 启动环境
+   $ vagrant ssh  # 进入对应的虚拟机
