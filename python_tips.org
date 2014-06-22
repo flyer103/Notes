@@ -1919,3 +1919,14 @@
   在 class 的 __del__() 方法中会遇到。可参考 [[https://gist.github.com/flyer103/053d446cc2bf69de6e9e][这个例子]] .
   详细的解释可参考 [[http://stackoverflow.com/questions/18058730/python-attributeerror-on-del][Python attributeError on __del__]] 和 
   [[http://stackoverflow.com/questions/22864764/can-a-simple-difference-in-python3-variable-names-alter-the-way-code-runs][Can a simple difference in Python3 variable names alter the way code runs? ]]
+* 文件编码
+  python2 默认文件编码是 ASCII。
+  当从磁盘中读取文件的二进制数据时，python2 会默认采用 ASCII 对读取到的二进制数
+  据进行解码。若在文件第一行或第二行指定文件编码，则会按照指定的编码形式进行解码。
+
+  python3 默认文件编码是 utf-8。 
+  当从磁盘中读取文件的二进制数据时，python3 会默认采用 utf-8 对读取到的二进制数
+  据进行解码。若在文件第一行或第二行指定文件编码，则会按照指定的编码形式进行解码。
+
+  References:
+  + [[http://legacy.python.org/dev/peps/pep-3120/][PEP-3120]]
