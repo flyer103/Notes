@@ -6,3 +6,7 @@
 
   这样用 utf-8 编码字符时，每个字符都是以小于 128 的字节开头，这样就可以知道
   byte order 了. 
+* utf-8 编码的 BOM 有何作用
+  可以直接指明该文件编码是 utf-8。
+
+  参考 [[http://stackoverflow.com/questions/2223882/whats-different-between-utf-8-and-utf-8-without-bom][What's different between utf-8 and utf-8 without BOM?]]
