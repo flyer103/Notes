@@ -1930,3 +1930,6 @@
 
   References:
   + [[http://legacy.python.org/dev/peps/pep-3120/][PEP-3120]]
+* pip
+** 查看所有已经安装的包
+   $ pip freeze
