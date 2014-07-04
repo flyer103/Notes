@@ -1,0 +1,3 @@
+* c 文件编译为 shared lib
+  例:
+  $ gcc -shared -o 库名 源文件.c
