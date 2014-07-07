@@ -1950,3 +1950,16 @@
   ctypes.CDLL('库名').函数名(参数)
   或
   ctypes.CDLL('库名')['函数名'](参数)
+* 计时
+  可调用 python 中的 timeit 模块，给出几个例子:
+  
+  1) 从命令行调用
+	 $ python -m timeit -s "需要执行的语句"
+  2) 从交互式环境中调用 (以 ipython 为例)
+	 两种形式:
+	 1. 通过 magic 方法
+		%timeit 需要测试的语句 
+	 2. 通过 timeit 模块 (计算出的是总时间)
+		import timeit
+		timeit.timeit("需要执行的语句"或函数名, setup="需要设置的一些环境",
+        number=次数)
