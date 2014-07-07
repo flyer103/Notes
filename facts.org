@@ -1,0 +1,4 @@
+* python
+** python 读取 yaml 配置文件
+   在 python2.7 和 python3.4 下测试读取一个 4KiB 大小左右的配置文件，大概需要
+   12ms 左右的时间.
