@@ -1942,14 +1942,58 @@
    在建立连接时不会判断是否连接成功，会在执行操作时进行判断，故需要在连接建立后
    通过 ping() 判断下对 redis-server 的连接是否建立成功. 
 * 调用 C 库
-  通过 ctypes 库，简单例子:
-
-  import ctypes
+** 最简单的例子
+   通过 ctypes 库，简单例子:
+   
+   import ctypes
   
-  # 调用 C 函数 (linux 下)
-  ctypes.CDLL('库名').函数名(参数)
-  或
-  ctypes.CDLL('库名')['函数名'](参数)
+   # 调用 C 函数 (linux 下)
+   ctypes.CDLL('库名').函数名(参数)
+   或
+   ctypes.CDLL('库名')['函数名'](参数)
+** 获取 C 函数返回的字符串
+   参考:
+   + [[http://stackoverflow.com/questions/5081875/ctypes-beginner][ctypes - Beginner]]
+   + [[http://stackoverflow.com/questions/14883853/ctypes-return-a-string-from-c-function][ctypes return a string from c function]]
+
+   简单的示例 (注意在 linux 运行正常，在 mac 上会出现 segment fault):
+
+   testlib.c 文件:
+
+   #include <stdio.h>
+   #include <stdlib.h>
+   #include <string.h>
+
+   char* hello(char* name)
+   { 
+   char hello[] = "Hello ";
+   char excla[] = "!\n";
+   char *greeting = malloc(sizeof(char)*(strlen(name)+strlen(hello)+strlen(excla)+1));
+   if( greeting == NULL) exit(1);
+   strcpy( greeting , hello);
+   strcat(greeting, name);
+   strcat(greeting, excla);
+  
+   return greeting;
+   }
+
+   编译:
+   $ gcc -shared -Wl,-soname,testlib -o testlib.so -fPIC testlib.c
+
+   test.py 文件:
+
+   import ctypes
+
+   hello = ctypes.cdll.LoadLibrary('./testlib.so')
+   name = 'baixing'
+   c_name = ctypes.c_char_p(name.encode('utf-8'))
+   foo = hello.hello(c_name)
+
+   print(c_name.value)
+   print(ctypes.c_char_p(foo).value)
+
+   在 testlib.so 所在目录下执行:
+   $ python3 test.py
 * 计时
   可调用 python 中的 timeit 模块，给出几个例子:
   

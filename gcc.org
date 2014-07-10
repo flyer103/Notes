@@ -1,3 +1,8 @@
 * c 文件编译为 shared lib
-  例:
   $ gcc -shared -o 库名 源文件.c
+
+  或
+  linux 下:
+  $ gcc -shared -Wl,-soname,testlib -o testlib.so -fPIC testlib.c
+  mac 下:
+  $ gcc -shared -Wl,-install_name,testlib.so -o testlib.so -fPIC testlib.c
