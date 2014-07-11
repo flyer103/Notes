@@ -2007,3 +2007,12 @@
 		import timeit
 		timeit.timeit("需要执行的语句"或函数名, setup="需要设置的一些环境",
         number=次数)
+* 下载图片
+  简单的例子:
+
+  import requests
+
+  url = 'xxx'
+  res = requests.get(url, timeout=10)
+  with open('test.png', 'wb') as fp:
+      fp.write(res.content)
