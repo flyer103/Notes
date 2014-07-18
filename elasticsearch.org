@@ -4,7 +4,7 @@
   
   有个技术栈是:
   + elasticsearch
-	- 提供分布式搜索服务.
+	- 提供分布式搜索服务
 	- real time data
 	- real time analytics
 	- distributed
@@ -190,16 +190,16 @@
 	headers and info they provide, and the */_cat* command alone lists all the
 	available commands.
 *** help
-   Each of the commands accepts a query string parameter *help* which will
-   output its available columns.
-   如:
-   $ curl -XGET http://localhost:9200/_cat?help
-   $ curl -XGET http://localhost:9200/_cat/master?help
+	Each of the commands accepts a query string parameter *help* which will
+	output its available columns.
+	如:
+	$ curl -XGET http://localhost:9200/_cat?help
+	$ curl -XGET http://localhost:9200/_cat/master?help
 *** verbose
-   Each of the commands accepts a query string parameter *v* to turn on verbose
-   output.
-   如:
-   $ curl -XGET http://localhost:9200/_cat/master?v
+	Each of the commands accepts a query string parameter *v* to turn on verbose
+	output.
+	如:
+	$ curl -XGET http://localhost:9200/_cat/master?v
 *** headers
 	Each of the commands accepts a query string parameter *h* which forces only
 	those columns to appear.

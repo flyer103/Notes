@@ -32,3 +32,19 @@
   $ brew upgrade 软件名
 * 外设 (u 盘/移动硬盘) 挂载位置
   一般在 /Volumes/ 下
+* syslog 记录日志的位置
+  /var/log/system.log
+* 启动 syslog 监听 514 端口
+  参考 [[http://superuser.com/questions/131578/how-do-you-enable-syslogd-to-accept-incoming-connections-on-snow-leopard-from-re][这篇文档]], 具体步骤:
+  
+  $ sudo /usr/libexec/PlistBuddy /System/Library/LaunchDaemons/com.apple.syslogd.plist
+    add :Sockets:NetworkListener dict
+	add :Sockets:NetworkListener:SockServiceName string syslog
+	add :Sockets:NetworkListener:SockType string dgram
+	save
+	quit
+  $ sudo launchctl unload com.apple.syslogd.plist 
+  $ sudo launchctl load com.apple.syslogd.plist 
+
+  再通过如下命令查看 syslog 是否已经监听 514 端口:
+  $ sudo lsof -i:514
