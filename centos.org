@@ -1,0 +1,15 @@
+* centos6 和 centos7 上安装 python3.x
+  $ sudo yum groupinstall "Development tools"
+  $ sudo yum install zlib-devel bzip2-devel openssl-devel ncurses-devel
+  sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel
+  xz-devel
+  下载 python3 源码，解压后:
+  $ ./configure --prefix=/usr/local --enable-shared --with-threads
+  $ sudo make altinstall
+  $ add python3.4.conf item to /etc/ld.so.conf.d/ with line "/usr/local/lib"
+  $ sudo ldconfig
+
+  $ cd /usr/bin
+  $ sudo ln -s /usr/local/bin/python3.4 py3
+  $ sudo ln -s /usr/local/bin/pip3.4 pip3
+  $ sudo ln -s /usr/local/bin/easy_install-3.4 easy_install3

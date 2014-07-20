@@ -47,3 +47,8 @@
 	
   第三方:
   + mms
+* 查看 mongo 的位数
+  $ mongo
+  进入后依次执行:
+  > use admin
+  > db.runCommand("buildInfo")
