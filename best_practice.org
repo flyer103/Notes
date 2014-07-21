@@ -50,3 +50,6 @@
   时，需要考虑数据库连接数的限制，可能需要考虑通过 connection pool 来控制。但用
   到 connection pool 时，需要考虑到多线程的情景，需要确保 connection pool 是线程
   安全的.
+* python 中 json.dumps() utf-8 数据
+  必须显式指定参数 'ensure_ascii=False'，否则可能不会与 redis-py 这样的客户端正
+  确交互.
