@@ -1905,7 +1905,7 @@
    
    import datetime
    
-   print(datetime.datetime.fromtimestamp(int("1284101485")).strftime('%Y-%m-%d %H:%M:%S'))
+   print(datetime.datetime.fromtimestamp(时间戳或整型时间).strftime('%Y-%m-%d %H:%M:%S'))
 * urllib.parse.urljoin()
   注意作为 base_url 的部分要保证以 '/' 结尾.
 * 某个 scope 外的变量对该 scope 而言都是 read-only

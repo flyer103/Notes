@@ -1,0 +1,4 @@
+* 将 logstash 做日志收集用
+  先建立一个 redis server，所有的日志都写到该 redis server 的队列中，然后在不同
+  的机器上部署 logstash，通过 input 读取所在机器上的 log 信息，然后通过 output
+  汇总到 redis server 上. 
