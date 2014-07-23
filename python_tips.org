@@ -2016,3 +2016,45 @@
   res = requests.get(url, timeout=10)
   with open('test.png', 'wb') as fp:
       fp.write(res.content)
+* 函数中变量范围
+  可参考 [[http://stackoverflow.com/questions/370357/python-variable-scope-error][Python variable scope error]]:
+  
+  以这个为例:
+
+  def test_immutable():
+      a = 1
+      b = 2
+
+      def _test():
+          print(a)
+          print(b)
+
+          a += 1
+          print(a)
+
+      _test()
+
+  def test_mutable():
+      _dict = {}
+
+      def _test():
+          _dict['name'] = 'flyer'
+
+          print('in _test: {0}'.format(_dict['name']))
+
+      _test()
+
+      print(_dict['name'])
+
+
+  if __name__ == '__main__':
+      # test_immutable()
+      test_mutable()
+
+
+  python 解释器查找变量时，都是在当前对象的 __dict__  中查找.
+  在 test_immutable() 的 _test() 中，在 print(a) 时，在当前的 scope 中查找不到，
+  然后在上层函数的 scope 中查找到，可以正常打印。而当 'a += 1' 时，因为要赋值，
+  此时是把 a 当作了当前 scope 中的变量，因为找不到，所以会抛异常.
+  在 test_mutable() 的 _test() 中，对 _dict 的操作都是调用 dict 的方法来实现的，
+  所以没被当作当前 scope 的变量.
