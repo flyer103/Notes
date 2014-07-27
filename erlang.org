@@ -1,0 +1,10 @@
+* mac 上配置 Emacs 的 erlang 环境
+  可参考 [[http://chrsve.tumblr.com/post/52863898771/howto-install-and-get-erlang-up-and-running-on-mac-os][这篇文章]].
+* erlang 进程
+  它不是 OS 中的进程，而是一个由 Erlang 系统管理的轻量级进程。
+  一个 Erlang 进程就是一个小小的虚拟机，可以执行单个 Erlang 函数。
+* 一些概念
+** 容错性
+   容错的关键是 *独立性* 和 *硬件冗余* 。 
+** "并发" 和 "并行"
+   "并发性" 与 *软件结构* 有关，"并行性" 与 *硬件* 有关。

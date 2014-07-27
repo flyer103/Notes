@@ -48,3 +48,6 @@
 
   再通过如下命令查看 syslog 是否已经监听 514 端口:
   $ sudo lsof -i:514
+* 通过 brew 安装 R
+  $ brew tap homebrew/science
+  $ brew install r
