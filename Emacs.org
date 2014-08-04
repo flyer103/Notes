@@ -207,6 +207,7 @@
 * 查找替换字符串
    M-x replace-string 这时替换是替换完全匹配的。
    M-x replace-regexp 这时可以用正则表达式匹配替换。
+   M-x query-* 这时可以交互式进行匹配替换. 
    Alt+%  交互式查找替换。
 * 另存为
    C-x C-w
