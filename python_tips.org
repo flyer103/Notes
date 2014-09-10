@@ -1906,6 +1906,9 @@
    import datetime
    
    print(datetime.datetime.fromtimestamp(时间戳或整型时间).strftime('%Y-%m-%d %H:%M:%S'))
+** 获取 '今天日期' 字符串
+   str(datetime.date.today)
+   结果如 '2014-08-04'
 * urllib.parse.urljoin()
   注意作为 base_url 的部分要保证以 '/' 结尾.
 * 某个 scope 外的变量对该 scope 而言都是 read-only
@@ -2058,3 +2061,41 @@
   此时是把 a 当作了当前 scope 中的变量，因为找不到，所以会抛异常.
   在 test_mutable() 的 _test() 中，对 _dict 的操作都是调用 dict 的方法来实现的，
   所以没被当作当前 scope 的变量.
+* 去除 html 标签
+  可参考 [[http://stackoverflow.com/questions/753052/strip-html-from-strings-in-python][Strip HTML from strings in Python]] 中的例子，有三种形式很不错:
+
+  第一种，使用 html.parser.HTMLParser (推荐):
+  
+  from html.parser import HTMLParser
+  
+  class MyStripper(HTMLParser):
+      def __init__(self):
+	      super(MyStripper, self).__init__()
+		  self.reset()
+		  self.fed = []
+	  def handle_data(self, d):
+	      self.fed.append(d)
+	  def get_data(self):
+	      return ''.join(self.fed)
+
+  def strip_tags(content):
+      s = MyStripper()
+	  s.feed(content)
+	  return s.get_data()
+
+
+  第二种，使用 lxml.html (推荐):
+
+  import lxml.html
+  
+  print(lxml.html.fromstring(content).text_content())
+
+  第三种，使用正则 (不推荐):
+
+  import re
+  
+  print(re.sub('<[^<]+?>', '', content))
+
+  
+  NOTE:
+  + 对于第一种形式，关注下 [[http://stackoverflow.com/questions/753052/strip-html-from-strings-in-python#comment-26854154][这条评论]] 和 [[http://stackoverflow.com/questions/11061058/using-htmlparser-in-python-3-2][这个问题]].
