@@ -52,3 +52,8 @@
   进入后依次执行:
   > use admin
   > db.runCommand("buildInfo")
+* pymongo
+** 建索引
+*** 为多个字段同时建索引
+	例:
+	col.ensure_index([('url', 1), ('adData.title', -1)])

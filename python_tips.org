@@ -1397,6 +1397,10 @@
      行 *logging.basicConfig()*
    + *logging.basciConfig()* 只有在第一次调用时生效，之后再次调用修改配置时，
      *logging.basicConfig()* 不再生效，仅按第一次的配置。
+** 常见的 logging
+   logging.basicConfig(level=logging.DEBUG,
+   format='[%(asctime)s][%(levelname)s][%(filename)s][%(funcName)s][%(lineno)s] %(message)s',
+   datefmt='%Y-%m-%d %H:%M:%S')   
 * dict
 ** dict.copy and copy.deepcopy(dict)
    有三种形式:
@@ -2099,3 +2103,9 @@
   
   NOTE:
   + 对于第一种形式，关注下 [[http://stackoverflow.com/questions/753052/strip-html-from-strings-in-python#comment-26854154][这条评论]] 和 [[http://stackoverflow.com/questions/11061058/using-htmlparser-in-python-3-2][这个问题]].
+* numpy
+** python3.4 中使用 genfromtext
+   若从类 IO 的文件中读，用如下的方法:
+
+   np.genfromtext(io.ByteIO(data.encode('编码')))
+* logging
