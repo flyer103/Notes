@@ -112,3 +112,9 @@
 ** 实例标识符/类别型
    R 将 *实例标识符* 称为 _rownames_ (行名)，
    将 *类别型(包括 名义型 和 有序型) 变量* 称为 _因子_ (factors).
+* 本地安装 R 包
+  下载 R 包 (不用解压) 后，在 R 交互环境中执行:
+
+  install.packages('R包', repos=NULL, type="source")
+
+  即可.
