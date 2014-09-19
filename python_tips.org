@@ -114,6 +114,7 @@
   如:
   
   $ sudo pip install -i http://e.pypi.python.org/simple 软件
+  $ sudo pip install -i http://pypi.douban.com/simple 软件
 * 获得 26 个英文字母的 list
   import string
   
@@ -1400,7 +1401,7 @@
 ** 常见的 logging
    logging.basicConfig(level=logging.DEBUG,
    format='[%(asctime)s][%(levelname)s][%(filename)s][%(funcName)s][%(lineno)s] %(message)s',
-   datefmt='%Y-%m-%d %H:%M:%S')   
+   datefmt='%Y-%m-%d %H:%M:%S')
 * dict
 ** dict.copy and copy.deepcopy(dict)
    有三种形式:
@@ -2108,4 +2109,18 @@
    若从类 IO 的文件中读，用如下的方法:
 
    np.genfromtext(io.ByteIO(data.encode('编码')))
-* logging
+* url
+** url decode
+   import urllib.parse
+   
+   urllib.parse.unquote("https%3a%2f%2fbbk.800app.com%2findex_main.jsp%3fmenu%3d1")
+* 通过 ftpext 上传数据
+  例子:
+
+  import ftpext
+
+  ftp = ftpext.FTPExt(host='xxx', port=xxx, user='xxx', password='xxx')
+  with open('test.txt', 'rb') as fp:
+    ftp.storbinary('STOR ./upload.txt', fp)
+* python 与 R 结合
+  通过 python 下的 rpy2 模块.
