@@ -118,3 +118,5 @@
   install.packages('R包', repos=NULL, type="source")
 
   即可.
+* 命令行执行 R 脚本
+  $ Rscript R脚本
