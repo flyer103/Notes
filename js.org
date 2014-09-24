@@ -400,3 +400,8 @@
 	</script>
 	</body>
 	</html>
+* 获取 object 的所有属性名
+  通过如下方法:
+
+  Object.keys(对象)
+  

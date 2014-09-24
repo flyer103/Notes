@@ -112,6 +112,14 @@
   这是因为语法错误造成的，一方面要认真检查 sql 语句中的表名、字段名是否与 MySQL
   表中一致，另一方面检查表名、字段名是否是 MySQL 的关键字，这是比较难检查出的错
   误。
+* 查询数据库密码
+  用如下 SQL 语句:
+
+  select host,user,password from mysql.user
+* 查看 mysql 的一些变量
+  可通过如下 SQL 语句:
+
+  show variables;
 * Best Practice
   + 运行 sql 语句时，最好用反引号包围表名、字段名，这样可防止因为表名、字段名取
     了 MySQL 的关键字出现问题.
