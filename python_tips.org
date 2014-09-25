@@ -2124,3 +2124,7 @@
     ftp.storbinary('STOR ./upload.txt', fp)
 * python 与 R 结合
   通过 python 下的 rpy2 模块.
+* python3.4 安装 rpy2 失败
+  可用如下形式:
+
+  # export CFLAGS="-std=c99"; pip3.4 install rpy2

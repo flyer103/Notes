@@ -13,3 +13,11 @@
   $ sudo ln -s /usr/local/bin/python3.4 py3
   $ sudo ln -s /usr/local/bin/pip3.4 pip3
   $ sudo ln -s /usr/local/bin/easy_install-3.4 easy_install3
+* 安装 R
+  可参考 [[http://stackoverflow.com/questions/9468164/problems-installing-r-on-linux-centos-6-2][Problems installing R on Linux CentOS 6.2]]:
+
+  按如下步骤:
+  # rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+  # yum install tcl
+  # yum clean all
+  # yum install R

@@ -60,3 +60,11 @@
 * 访问 rockmongo 时一直下载 php 文件
   注意下 rockmongo 的 user:group，如果 rockmongo 是放在 root 相关的目录下，则
   rockmongo 的 user:group 都要改为 root:root.
+* 删除某个字段
+  如:
+
+  db.example.update(
+    {},
+    { $unset: {'tags.words':1}},
+    false, true
+  )
