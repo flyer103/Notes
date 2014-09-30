@@ -68,3 +68,9 @@
     { $unset: {'tags.words':1}},
     false, true
   )
+* 导出和导入 db
+  导出库:
+  $ mongodump -d 库名 -o 备份目录名
+  
+  导入:
+  $ mongorestore 备份目录名 

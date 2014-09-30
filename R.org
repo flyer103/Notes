@@ -11,7 +11,7 @@
    | help(函数名)                    | 查看函数的帮助手册                         |
    | help.search('foo')              | 以 'foo' 为关键词搜索本地帮助文档          |
    | example(函数名)                 | 函数的使用示例                             |
-   | example(数据集名)               | 查看数据集中的例子                         |
+   | example(数据集名)              | 查看数据集中的例子                         |
    | RSiteSearch('foo')              | 以'foo' 为关键词搜索在线文档和邮件列表存档 |
    | apropos('foo', mode='function') | 列出名称中含有 'foo' 的所有可用函数        |
    | data()                          | 列出当前已加载包中所含的所有可用示例数据集 |
@@ -120,3 +120,46 @@
   即可.
 * 命令行执行 R 脚本
   $ Rscript R脚本
+* 安装 RODBC 失败
+  若提示 "configure: error: "ODBC headers sql.h and sqlext.h not found"" 错误，
+  需要先安装 "unixODBC-devel"。
+  在 centos 下，直接执行:
+
+  # yum install unixODBC-devel
+* 安装 RJDBC
+  依赖 DBI 和 rjava，这两个都可以通过 CRAN 安装。
+* R 连 Hive
+  通过 RJDBC 来连接.
+
+  在 RStudio 中按如下步骤进行:
+  
+  library('DBI')
+  library('rJava')
+  library('RJDBC')
+
+  for(l in list.files('/PATH/TO/hive/lib/')){ .jaddClassPath(paste("/PATH/TO/hive/lib/",l,sep=""))}
+  # 下面这步很重要
+  # 相同的步骤把 hadoop 的所有 jar 包全部载入进来
+  for(l in list.files('/PATH/TO/hive/lib/')){ .jaddClassPath(paste("/PATH/TO/hive/lib/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/common/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/common/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/common/lib/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/common/lib/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/common/sources/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/common/sources/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/hdfs/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/hdfs/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/hdfs/lib/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/hdfs/lib/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/hdfs/sources/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/hdfs/sources/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/httpfs/tomcat//lib')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/httpfs/tomcat//lib",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/mapreduce/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/mapreduce/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/mapreduce/lib/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/mapreduce/lib/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/tools/lib/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/tools/lib/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/tools/sources/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/tools/sources/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/yarn/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/yarn/",l,sep=""))}
+  for(l in list.files('/PATH/TO/hadoop/share/hadoop/yarn/lib/')){ .jaddClassPath(paste("/PATH/TO/hadoop/share/hadoop/yarn/lib/",l,sep=""))}  
+  
+  options( java.parameters = "-Xmx8g" )
+  drv <- JDBC("org.apache.hive.jdbc.HiveDriver", "/PATH/TO/hive/lib/hive-jdbc-0.13.1.jar")
+
+  conn <- dbConnect(drv, "jdbc:hive2://HOST:PORT", "USER", "PORT")
+* 查看所有的 jar 包路径 
+  通过如下语句:
+  
+  .jclassPath()
