@@ -123,3 +123,18 @@
 * Best Practice
   + 运行 sql 语句时，最好用反引号包围表名、字段名，这样可防止因为表名、字段名取
     了 MySQL 的关键字出现问题.
+* 常用操作
+  # 显示所有数据库
+  show databases;
+  
+  # 选择数据库
+  use 数据库名;
+
+  # 显示所有表
+  show tables;
+
+  # 描述表结构
+  describe 表名;
+
+  # pretty print
+  select * from 表 \G;

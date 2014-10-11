@@ -2128,3 +2128,14 @@
   可用如下形式:
 
   # export CFLAGS="-std=c99"; pip3.4 install rpy2
+* rpy2 执行 RJDBC 时提示无法载入 rJava.so
+  先确保 R 已经安装好 rJava 和 RJDBC 包.
+
+  然后通过如下命令查看 rJava 的依赖关系:
+  # ldd /usr/lib64/R/library/rJava/libs/rJava.so
+  
+  如果这时发现提示 libjvm.so 找不到，则进行下述的步骤:
+  # locate libjvm.so
+  找到 64 位的 libjvm.so 的位置，然后:
+  # ln -s /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.65.x86_64/jre/lib/amd64/server/libjvm.so /usr/lib64/
+  然后再确认下 rJava.so 的依赖. 
