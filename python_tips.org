@@ -2139,3 +2139,9 @@
   找到 64 位的 libjvm.so 的位置，然后:
   # ln -s /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.65.x86_64/jre/lib/amd64/server/libjvm.so /usr/lib64/
   然后再确认下 rJava.so 的依赖. 
+* 替换 ^M
+  参考 [[http://stackoverflow.com/questions/11755208/how-to-remove-m-from-a-text-file-and-replace-it-with-the-next-line][How to remove ^M from a text file and replace it with the next line]]:
+
+  import re
+  
+  re_sub_newline = re.compile('\r')
