@@ -34,3 +34,6 @@
 
   然后安装:
   # yum install -y mongodb-org
+* 安装 lxml
+  # yum install libxslt-devel libxml2-devel
+  # pip3 install lxml
