@@ -1150,3 +1150,5 @@
 ** 常用命令
    $ vagrant up  # 启动环境
    $ vagrant ssh  # 进入对应的虚拟机
+* wordpress
+  若配置时提示连接数据库失败，注意把数据库的 host 从 localhost 改为 '127.0.0.1'

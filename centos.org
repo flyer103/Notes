@@ -37,3 +37,5 @@
 * 安装 lxml
   # yum install libxslt-devel libxml2-devel
   # pip3 install lxml
+* 安装 mysql
+  # sudo yum install mysql-server

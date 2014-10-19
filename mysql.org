@@ -138,3 +138,10 @@
 
   # pretty print
   select * from 表 \G;
+* 常用函数
+  # 查看某个最大字段
+  max() 函数
+* 修改密码
+  $ mysqladmin -u root password 'new-password'
+* 参考:
+  [[http://www.rackspace.com/knowledge_center/article/installing-mysql-server-on-centos][Installing MySQL Server on CentOS]]
