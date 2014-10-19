@@ -2146,7 +2146,9 @@
   
   re_sub_newline = re.compile('\r')
 * Jinja2 传参数给 js
-  参考 [[http://stackoverflow.com/questions/21626048/unable-to-pass-jinja2-variables-into-javascript-snippet][Unable to pass jinja2 variables into javascript snippet]]:
+  参考 
+  + [[http://stackoverflow.com/questions/21626048/unable-to-pass-jinja2-variables-into-javascript-snippet][Unable to pass jinja2 variables into javascript snippet]]
+  + [[http://stackoverflow.com/questions/15321431/how-to-pass-a-list-from-python-by-jinja2-to-javascript][How to pass a list from python , by jinja2 to javascript]]
 
   最佳实践:
   把 HTML 当作代理，数据传给 HTML，然后 js 从 HTML 中获得数据.
