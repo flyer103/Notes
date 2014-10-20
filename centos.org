@@ -39,3 +39,13 @@
   # pip3 install lxml
 * 安装 mysql
   # sudo yum install mysql-server
+* 修改系统时间
+  参考:
+  + [[https://www.fir3net.com/UNIX/Linux/how-to-set-the-time-date-and-timezone-in-centos.html][How to set the Time / Date and Timezone in CentOS]]
+  + [[http://serverfault.com/questions/558354/correcting-centos-system-clock][Correcting CentOS System Clock]]
+
+  步骤:
+  # rm /etc/localtime
+  # cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+  # date MMDDhhmmYYYY  # 改成想要的时间
+  # hwclock --systohc
