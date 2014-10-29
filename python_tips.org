@@ -2152,3 +2152,7 @@
 
   最佳实践:
   把 HTML 当作代理，数据传给 HTML，然后 js 从 HTML 中获得数据.
+* 获取文件大小
+  import os
+
+  os.path.getszie(文件名)
