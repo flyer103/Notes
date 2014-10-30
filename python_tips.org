@@ -2156,3 +2156,12 @@
   import os
 
   os.path.getszie(文件名)
+* mac 下在 ipython 中通过 matplotlib 画图看不到 GUI
+  两种解决方法:
+
+  法一: 
+  通过如下方法打开 ipython:
+  $ ipython --pylab
+
+  法二:
+  参考 [[http://stackoverflow.com/questions/2512225/matplotlib-not-showing-up-in-mac-osx][Matplotlib not showing up in Mac OSX]]
