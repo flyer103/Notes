@@ -49,3 +49,16 @@
   # cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
   # date MMDDhhmmYYYY  # 改成想要的时间
   # hwclock --systohc
+* 安装 php5.5
+  参考: [[https://webtatic.com/packages/php55/][PHP 5.5 on CentOS/RHEL 7.0, 6.5 and 5.10 via Yum]]
+  
+  在 centos7.x:
+  # rpm -Uvh https://mirror.webtatic.com/yum/el7/epel-release.rpm
+  # rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+
+  在 centos6.x:
+  # rpm -Uvh https://mirror.webtatic.com/yum/el6/latest.rpm
+
+  然后:
+  # yum install php55w php55w-fpm
+  
