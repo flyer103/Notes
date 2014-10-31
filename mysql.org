@@ -145,3 +145,13 @@
   $ mysqladmin -u root password 'new-password'
 * 参考:
   [[http://www.rackspace.com/knowledge_center/article/installing-mysql-server-on-centos][Installing MySQL Server on CentOS]]
+* 表 crash
+  遇到表 crash 时，先通过如下命令检查:
+  $ myisamchk -r
+
+  在 mysql 中，先通过如下命令判断是否恢复好:
+  > CHECK TABLE 表名
+  若失败，通过下述命令修复表:
+  > REPAIR TABLE 表名
+
+  参考: [[http://stackoverflow.com/questions/11073982/recovering-from-mysql-error-144-via-phpmyadmin][Recovering from MySQL Error 144 via phpMyAdmin]]
