@@ -2165,3 +2165,19 @@
 
   法二:
   参考 [[http://stackoverflow.com/questions/2512225/matplotlib-not-showing-up-in-mac-osx][Matplotlib not showing up in Mac OSX]]
+* ipython
+** 粘贴外部的代码
+   通过 %paste 或 %cpaste magic function.
+** 计时
+   通过 %time 或 %timeit magic funtion.
+** 清除当前环境中的所有环境变量
+   通过 %reset magic function.
+** 查看所有的 magic functions
+   通过 %quickref 或 %magic
+* profiling
+** 通过 cProfile 模块
+   可通过如下的形式:
+
+   $ python -m cProfile -s cumulative 文件
+* 使用 ipython notebook
+  $ ipython notebook --pylab=inline
