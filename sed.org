@@ -11,3 +11,6 @@
   $ sed 's/\b[a-z]/\U&/g' test.txt
   # 文本中每行第一个单词首字母大写
   $ sed 's/\b[a-z]/\U&/' test.txt
+* 替换文本中的字符串
+  如:
+  $ sed 's/NA/0/g' origin.csv > new.csv
