@@ -407,3 +407,5 @@
   参见 
   http://www.rosoo.net/a/201102/10956.html
   http://blog.csdn.net/wirror800/article/details/5189564
+* 清除之前的操作
+  $ git reset --hard

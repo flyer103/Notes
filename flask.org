@@ -126,5 +126,47 @@
     态生成的 url 就是第二种形式的 url
 
 Q:
-* g 和 session 的区别
-* blueprint
+* contexts
+  There are two contexts in FLask: the *application context* and the *request
+  context*.
+
+  + application context
+	- current_app
+	  The application instance for the active application.
+	- g
+	  An object that the application can use for temporary storage during the
+      handling of a request. This variable is reset with each request.
+  + request context
+	- request
+	  The request object, which encapsulates the contents of a HTTP request
+      sent by the client.
+	- session
+	  The user session, a dictionary that the application can use to store
+      values that are "remebered" between requests.
+
+  Flask actives (or pushes) the application and request contexts before
+  dispatching a request and then removes them when the request is handled. When
+  the application context is pushed, the *current_app* and *g* variable become
+  available to the thread; likewise, when the request context is
+  pushed, *request* and *session* become available as well. If any of these
+  variables are accessed without an active application or request context, an
+  error is generated.
+* 查看所有的 url mapping
+  app.url_map()
+* flask 中常见的 function 形式
+  + view function
+	与 url 对应的函数
+  + hook function
+	工具函数，一般在 view function 执行前后进行. 
+* 4 个 hook function
+  + before_first_request
+	Register a function to run before the first request is handled.
+  + before_request
+	Register a function to run before each request.
+  + after_request
+	Register a function to run after each request, if no unhandled exceptions occurred.
+  + teardown_request
+	Register a function to run after each request, even if unhandled exceptions
+    occurred.
+* share data between request hook functions and view functions
+  Use the *g* context global.
