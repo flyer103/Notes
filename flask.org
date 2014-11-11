@@ -170,3 +170,14 @@ Q:
     occurred.
 * share data between request hook functions and view functions
   Use the *g* context global.
+* 获取 client ip
+  参考:
+  + [[http://stackoverflow.com/questions/3759981/get-ip-address-of-visitors-using-python-flask][Get IP address of visitors using Python + Flask]]
+  + [[http://stackoverflow.com/questions/21649688/how-do-i-safely-get-the-users-ip-address-in-flask-that-has-a-proxy][How do I safely get the user's ip address in Flask that has a proxy?]]
+
+  获得来自服务器端的 IP:
+  request.remote_addr
+  
+  获取 client 真实 IP:
+  request.environ['REMOTE_ADDR']
+  或 request.headers.get('X-Real-IP')  # 与前端的 server 有关
