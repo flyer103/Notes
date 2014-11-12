@@ -1152,3 +1152,9 @@
    $ vagrant ssh  # 进入对应的虚拟机
 * wordpress
   若配置时提示连接数据库失败，注意把数据库的 host 从 localhost 改为 '127.0.0.1'
+* 无法 umount device
+  参考 [[http://stackoverflow.com/questions/7878707/umount-a-busy-device][Umount a busy device]]
+
+  可尝试:
+  # fuser -km 设备路径
+  # umount -km 设备路径 

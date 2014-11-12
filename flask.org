@@ -181,3 +181,11 @@ Q:
   获取 client 真实 IP:
   request.environ['REMOTE_ADDR']
   或 request.headers.get('X-Real-IP')  # 与前端的 server 有关
+* repsonse 的两种逻辑
+  包括:
+  + presentation logic
+	不改变 app 的状态.
+  + business logic
+	改变了 app 的状态，如对数据库的变更等.
+
+  view function 中混杂这两种逻辑会降低可维护性.
