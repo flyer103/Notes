@@ -55,3 +55,7 @@
 * python 中 json.dumps() utf-8 数据
   必须显式指定参数 'ensure_ascii=False'，否则可能不会与 redis-py 这样的客户端正
   确交互.
+* mongo 索引
+  _id 用有意义的形式，且把可能常用的查询构造成字符串放在 _id 的首部，这样可在尽
+  量少建索引的情况下提高查询速度.
+  尽量不要用 mongo 自己生成的 _id.
