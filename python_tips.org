@@ -2206,3 +2206,11 @@
    $ python -m cProfile -s cumulative 文件
 * 使用 ipython notebook
   $ ipython notebook --pylab=inline
+* 从 dict 中获得 value 最大的 key 的值
+  参考 [[http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary][Getting key with maximum value in dictionary?]]
+
+  假设 data 是 dict 类型，如 {'test0': 1, 'test1': 1, 'test2': 2}，则
+
+  import operator
+
+  max_key = max(data.items, key=operator.itemgetter(1))[0]
