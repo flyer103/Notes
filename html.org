@@ -1,0 +1,117 @@
+* basics
+  HTML stands for Hyper Text Markup Language.
+  A markup language is a set of markup tags.
+  HTML documents are described by HTML tags.
+  Each HTML tag describes different document content.
+
+  The text between <HTML> and </HTML> describes an HTML document.
+  The text between <head> and </head> provides information about the document.
+  The text between <body> and </body> describes the visible page content.
+
+  HTML tags are keywords (tag names) surrounded by angle brackets.
+
+  The browser does not display the HTML tags, but uses them to determine how to
+  display the document.
+
+  The <!DOCTYPE> declaration helps the browser to display a web page correctly.
+  To display a document correctly, the browser must know both type and version.
+  The doctype declaration is not case sensitive.
+
+  HTML tags are not case sensitive.
+* HTML element
+  HTML documents are made up by HTML elements.
+
+  HTML elements are written with a start tag, with an end tag, with the content
+  in between.
+  The HTML element is everything from the start tag to the end tag.
+  Some HTML elements do not have an end tag.
+  HTML elements can be nested (elements can contain elements).
+  All HTML documents consist of nested HTML elements.
+
+  The *<HTML>* element defines the *whole document*.
+  It has a *start* tag <HTML> and an *end* tag </HTML>.
+  The element *content* is another HTML element.
+
+  HTML elements with not content are called *empty elements*.
+  Empty element can be "closed" in the opening tag like this: <br />.
+* HTML attributes
+  HTML elements can have attributes.
+  Attributes provide additional information about an element.
+  Attributes are always specified in the start tag.
+  Attributes come in name/value pairs like: name="value".
+* interesting tags
+  + <hr>
+	The *<hr>* tag creates a horizontal line in an HTML page.
+	The hr element can be used to separate content.
+  + <style>
+	The HTML *<style>* element is used to define internal CSS style sheets.
+  + <link>
+	The HTML *<link>* element is used to define external CSS style sheets.
+  + <p>
+	Browsers automatically add an empty line before and after a paragraph.
+  + <br>
+	Use <br> if you want a line break (a new line) without starting a new
+    paragraph.
+  + <pre>
+	The HTML *<pre>* element defines a block of *pre-formatted* text, with
+    structured spaces and lines.
+	To display anything, with right spacing and line-breaks, you must wrap the
+    text in a *<pre>* element.
+  + <mark>
+	The HTML *<mark>* element defines marked or highlighted text.
+  + <del>
+	The HTML *<del>* element defines deleted(removed) of text.
+  + <ins>
+	The HTML *<ins>* element defines inserted (added) text.
+  + <sub>
+	The HTML *<sub>* element defines *subscripted* text.
+  + <sup>
+	The HTML *<sup>* element defines *superscripted* text.
+  + <q>
+	The HTML *<q>* element defines a short quotation.
+	Browsers usually insert *quotation marks* around the <q> element.
+  + <blockquote>
+	The HTML *<blockquote>* element defines a quoted section.
+	Browsers usually indent <blockquote> elements.
+  + <abbr>
+	The HTML *<abbr>* element defines an abbreviation or an acronym.
+	Marking abbreviations can give useful information to browsers, translation
+    systems and search-engines.
+  + <address>
+	The HTML *<address>* element defines contact information (author/owner) of
+    a document or article.
+	The element is usually displayed in *italic*. Most browsers will add a line
+    break before and after the element.
+  + <cite>
+	The HTML *<cite>* element defines the *title of a work*.
+	Browsers usually displays <cite> elements in italic.
+  + <kbd>
+	The HTML *<kbd>* element defines *keyboard input*.
+  + <samp>
+	The HTML *<samp>* element defines a computer output sample.
+  + <code>
+	The HTML *<code>* element defines programming code sample.
+	The *<code>* element does not preserve extra whitespace and line-breaks.
+  + <var>
+	The HTML *<var>* element defines a mathematical variable.
+
+	例:
+	<p>Einstein wrote:</p>
+	<p><var>E=mc<sup>2</sup></var></p>
+* HTML Display
+  With HTML, you cannot change the output by adding extra spaces or extra lines
+  in your HTML code.
+  The browser will remove extra spaces and extra lines when the page is
+  displayed.
+  Any number of spaces, and any number of new lines, count as only one space.
+* HTML Styling
+  Every HTML element has a default style.
+  Changing the default style of an HTML element, can be done with the *style*
+  attribute.
+  
+  The HTML style attribute has the following syntax:
+    style="property:value"
+  The *property* is a CSS property. The *value* is a CSS value.
+* references
+  + [[http://www.w3schools.com/tags/default.asp][tag]]
+  + [[http://www.w3schools.com/tags/ref_standardattributes.asp][global attributes]]
