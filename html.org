@@ -104,6 +104,74 @@
   The browser will remove extra spaces and extra lines when the page is
   displayed.
   Any number of spaces, and any number of new lines, count as only one space.
+* HTML comment
+  <!-- comment -->
+* HTML styling
+  Styling can be added to HTML elements in 3 ways:
+  + Inline
+	using a *style attribute* in HTML elements
+  + Internal
+	using a *<style> element* in the HTML <head> section
+  + External
+	using one or more *external CSS files*.
+    It's defined in the *<head>* section of an HTML page, in the *<link>*
+    element:
+	<link rel="stylesheet" href="位置">
+
+  CSS styling has the following syntax:
+  
+  element {
+    property: value;
+	property: value;
+  }
+* CSS Box Model
+  Every visible HTML element has a box around it, even if you cannot see it.
+  The CSS *border* property defines a visible border around an HTML element.
+  The CSS *padding* property defines a padding (space) inside the border.
+  The CSS *margin* property defines a margin (space) outside the border.
+* HTML links
+  A hyperlink is an element, a text, or an image that you can click on, and
+  jump to another document.
+
+  The link text does not have to be text. It can be an HTML image or any other
+  HTML element.
+  
+  The *target* attribute specifies where to open the linked document.
+  常见的形式:
+
+  <!-- 通过新的页面打开该链接 -->
+  <a href="链接" target="_blank">内容</a>
+
+  The *id* attribute can be used to create *bookmarks* inside HTML documents.
+  Bookmarks are not displayed in any special way. They are invisible to the
+  reader.
+
+  例:
+  <a id="tips">Useful Tips Section</a>
+  <a herf="#tips">Visit the Useful Tips Section</a>
+  Or
+  <a href="http://xxx/xx.html#tips">Visit the Useful Tips Seciton</a>
+* HTML img
+  Always specify image size. If the size is unknown, the page will flicker
+  while the image loads.
+
+  The *<img>* tag is empty, it contains attributes only, and does not have a
+  closing tag.
+  
+  The value of the *alt* attribute should describe the image in
+  words. The *alt* attribute is *required*. A web page will not validate
+  correctly without it.
+
+  Screen readers can read the *alt* attribute.
+
+  If a browser cannot find an image, it will display a broken link icon.
+* HTML Screen Readers
+  Screen readers are software programs that can read what is displayed on a
+  screen.
+  Used on the web, screen readers can "reproduce" HTML as text-to-speech, sound
+  icons, or braille output.
+  Screen readers are used by people who are blind, visually impaired, or
+  learing disabled.
 * HTML Styling
   Every HTML element has a default style.
   Changing the default style of an HTML element, can be done with the *style*
