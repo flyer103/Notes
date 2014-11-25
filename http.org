@@ -2,3 +2,20 @@
   + 202
   + 405
 	
+* Why redirects?
+  Redirection is a fact of life in the modern Web because HTTP applications
+  always want to do three things:
+
+  + Perform HTTP transaction reliably
+  + Minimize delay
+  + Conserve network bandwidth
+
+  For these reasons, web content often is distributed in multiple locations.
+  This is done for reliability, so that if one location fails, another is
+  avaiable.
+  It is done to lower response time, because if clients can access a nearer
+  resource, they receive their requested content faster.
+  It is done to lower network congestion, by spreading out target servers.
+
+  You can think of redirection as a set of techniques that help to find the
+  "best" distributed content.
