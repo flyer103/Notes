@@ -1,0 +1,14 @@
+* 提供类似 ftp 的功能
+  本质是用 nginx 提供静态文件的功能.
+
+  如需要展示 ftpdata/ 目录下的文件，可添加这样的配置
+
+  location /ftpdata {
+    autoindex on;
+  }
+
+  若想添加权限，可参考 [[http://www.howtoforge.com/basic-http-authentication-with-nginx][Basic HTTP Authentication With Nginx]] .
+* nginx 返回静态文件默认的编码
+  可通过在 server 中添加类似的语句:
+
+  charset utf-8;
