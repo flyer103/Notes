@@ -62,3 +62,14 @@
   然后:
   # yum install php55w php55w-fpm
   
+* 程序开机自动启动
+  参考 [[https://www.centos.bz/2011/09/centos-setup-process-startup-boot/][CentOS设置程序开机自启动的方法]]:
+
+  法一:
+  在 /etc/rc.d/rc.local 文件中添加要开机启动的程序.
+
+  法二:
+  将写好的启动脚本添加到 /etc/rc.d/init.d/ 中，然后通过 chkconfig 设置开机启动:
+
+  # chkconfig --add 脚本名
+  # chkconfig 脚本名 on
