@@ -1,0 +1,22 @@
+* 有效连接字符串
+  例:
+  package main
+
+  import (
+    "bytes"
+    "fmt"
+  )
+
+  func main() {
+    var buffer bytes.Buffer
+
+    for i := 0; i < 1000; i++ {
+        buffer.WriteString("a")
+    }
+
+    fmt.Println(buffer.String())
+  }
+  
+  可参考 [[http://stackoverflow.com/questions/1760757/how-to-efficiently-concatenate-strings-in-go][How to efficiently concatenate strings in Go?]]
+
+  
