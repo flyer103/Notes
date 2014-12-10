@@ -1,6 +1,9 @@
 * `union` 和 `union all` 区别
   *union all* 不会对结果进行去重，*unicon all* 会对结果去重.
   另外，*union* 会比 *union all + distinct* 的效率还高.
+  
+  Note:
+  + Hive 目前不支持 *union* ，只支持 *union all* .
 
   参考:
   + [[http://stackoverflow.com/questions/49925/what-is-the-difference-between-union-and-union-all][What is the difference between UNION and UNION ALL?]]
