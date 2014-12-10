@@ -1,0 +1,11 @@
+* `union` 和 `union all` 区别
+  *union all* 不会对结果进行去重，*unicon all* 会对结果去重.
+  另外，*union* 会比 *union all + distinct* 的效率还高.
+
+  参考:
+  + [[http://stackoverflow.com/questions/49925/what-is-the-difference-between-union-and-union-all][What is the difference between UNION and UNION ALL?]]
+  + [[http://sqlwithmanoj.com/2010/12/30/why-union-all-is-faster-than-union/][Why UNION ALL is faster than UNION?]]
+* References
+  + [[https://mariadb.com/kb/en/mariadb/documentation/sql-commands/][MariaDB Knowledge Base]]
+  + [[http://sqlwithmanoj.com/][SQL with Manoj]]
+
