@@ -20,3 +20,41 @@
   可参考 [[http://stackoverflow.com/questions/1760757/how-to-efficiently-concatenate-strings-in-go][How to efficiently concatenate strings in Go?]]
 
   
+* new 和 make 区别
+  函数声明:
+  + func new(Type) *Type
+  + func make(Type, size IntegerType) Type
+
+  *new* allocates memory.
+  *make* initializes the /slice/, /map/ and /channel/ types.
+
+  /slices/, /maps/ and /channels/ are _reference types_ that do not require the
+  extra indirection of an allocation with *new*.
+  The built-in function *make* takes a type T, which must be a /slice/, /map/
+  or /channel/, optionally followed by a type-specific list of expressions. It
+  returns a value of type T (not *T).
+  *new* returns a *T.
+
+  对 /slice/, /map/, /channel/ 调用 *make* 的一个说明:
+  + slice
+	第二个参数 size 指定了它的长度，它的容量和长度相同. 也可以传入第三个参数来指
+    定不同的容量值，但不能比长度值小.
+  + map
+	根据 size 大小来初始化分配内存，不过分配后的 map 长度为 0. 若 size 被忽略了，
+    则会在初始化分配内存时分配一个小尺寸的内存.
+  + channel
+	管道缓冲区依据缓冲区容量被初始化。若容量为 0 或忽略容量，则管道是没有缓冲区
+    的. 
+* initial allocation
+  When memory is allocated to store a value, either through a declaration or a
+  call of *make* or *new*, and no explicit initialization is provided, the
+  memory is given a default initialization. Each element of such a value is set
+  to the /zero value/ for its type:
+    + *false* for booleans
+    + *0* for integers
+	+ *0.0* for floats
+	+ *""* for strings
+	+ *nil* for pointers, functions, interfaces, slices, channels and maps
+
+  This initialization is done recursively, so for instance each element of an
+  array of structs will have its fields zeroed if no value is specified.
