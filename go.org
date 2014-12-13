@@ -19,7 +19,6 @@
   
   可参考 [[http://stackoverflow.com/questions/1760757/how-to-efficiently-concatenate-strings-in-go][How to efficiently concatenate strings in Go?]]
 
-  
 * new 和 make 区别
   函数声明:
   + func new(Type) *Type
@@ -58,3 +57,30 @@
 
   This initialization is done recursively, so for instance each element of an
   array of structs will have its fields zeroed if no value is specified.
+* interface
+  An *interface* is two things:
+  + it is a set of methods
+  + it is also a type
+
+  The *interface{}* type, the /empty interface/, is the source of much
+  confusion. The *interface{}* type is the interface that has no methods. Since
+  there is no *implements* keyword, all types implement at least zero methods,
+  and satisfying an interface is done automatically, 
+  /all types satisfy the empty interface/. That means that if you write a
+  function that takes an *interface{}* value as a parameter, you can supply
+  that function with any value.
+
+  An interface value is constructed of two words of data:
+  + one word is used to point to a method table for the value's underlying type
+  + the other word is used to point to the actual data being held by that type
+
+  Ref:
+  + [[http://jordanorelli.com/post/32665860244/how-to-use-interfaces-in-go][How to use interfaces in Go]]
+  + [[http://research.swtch.com/interfaces][Go Data Structures: Interfaces]]
+* 基础概念
+** type system
+   Instead of designing our abstractions in terms of what kind of data our
+   types can hold, we design our abstractions in terms of what actions our
+   types can execute.
+** 参数传递
+   Everything in Go is passed by value.
