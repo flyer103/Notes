@@ -1,0 +1,16 @@
+* 是否存在类似 R 中的 summary 函数对 model 的效果进行评估
+  没有.
+
+  There exists no R type regression summary report in sklearn. 
+  The main reason is that sklearn is used for predictive modelling/machine
+  learning and the evaluation criteria are based on performance on previously
+  unseen data (such as predictive r^2 regression).
+
+  There does exist a summary function for classification called 
+  *sklearn.metrics.classification_report* which calculates serveral types of
+  (predictive) scores on a classification model.
+
+  For a more classic statistical approach, use *statsmodels* .
+  
+  Ref:
+  + [[http://stackoverflow.com/questions/26319259/sci-kit-and-regression-summary/26326883#26326883][Sci-kit and Regression Summary]]
