@@ -73,3 +73,26 @@
 ** 禁止空闲时写磁盘
    修改 /var/lib/postgres/data/postgresql.conf:
    stats_temp_directory = '/run/postgresql'
+* mac
+** 启动 postgres
+   $ launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
+   或 
+   $ postgres -D /usr/local/var/postgres
+* FAQ
+** psql: FATAL: database “<user>” does not exist
+   先通过如下命令创建数据库:
+   $ createdb
+   
+   然后再登陆:
+   $ psql
+   
+   Ref:
+   + [[http://stackoverflow.com/questions/17633422/psql-fatal-database-user-does-not-exist][psql: FATAL: database “<user>” does not exist]]
+** 修改密码后无效
+   修改 /PATH/TO/POSTGRE/pg_hba.conf 文件，把类似下面的:
+
+   local   all             all              trust
+   
+   改为:
+
+   local   all             all              md5
