@@ -62,10 +62,13 @@
   创建数据库:    CREATE DATABASE 数据库名 [with owner=用户名];
   创建用户:    create user 用户名;
   删除已有用户:    drop user 用户名;
+  显示当前时区: show timezone;
+  设置时区: set timezone='时区'; 
 * postgresql 日志
   在 /var/log/postgresql.log 中
 * 可视化管理工具
   + pgadmin3
+  + [[http://www.adminer.org/][adminer]]
 * BSET PRACTICE
 ** 小事务运行慢时关闭 synchronous_commit
    修改 /var/lib/postgres/data/postgresql.conf:
@@ -73,11 +76,16 @@
 ** 禁止空闲时写磁盘
    修改 /var/lib/postgres/data/postgresql.conf:
    stats_temp_directory = '/run/postgresql'
+** 时间设置
+   时间采用 'timestamp with time zone'，除非是为了根据 timestamp 来分区数据 (此
+   时使用 'timestamp without time zone').
 * mac
 ** 启动 postgres
    $ launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
    或 
    $ postgres -D /usr/local/var/postgres
+** brew 安装后 postgres 的配置文件位置
+   一般在 /usr/local/var/postgres/ 中.
 * FAQ
 ** psql: FATAL: database “<user>” does not exist
    先通过如下命令创建数据库:
@@ -96,3 +104,44 @@
    改为:
 
    local   all             all              md5
+** 'timestamp with time zone' 和 'timestamp without time zone'
+   最佳实践是使用 'timestamp with time zone'，这样取数据时会根据指定的 time
+   zone 显示时间，否则显示的时间数据会被认为是 UTC 时间. 
+
+   使用 'timestamp without time zone' 的情况是: partitioning.
+   When partitioning data on timestamps, you must not
+   use *timestamptz*. Because almost no expression involving *timestamptz*
+   comparison is immutable. Use one in a *WHERE* clause, and
+   constraint_exclusion may well be ignored and all partitions scanned.
+
+   注意理解 'absolute timestamp' 和 'relative timestamp':
+   + 'absolute timestamp' 指的是 UTC(0) 时间 (UTC 是 UTC-0 的简写)
+   + 'relative timestamp' 指的是当地时间 
+
+   区别:
+   + 以当地时间存储数据到 'timestamp with time zone' 类型的字段时，postgres 底层
+     会以 UTC 时间存储，展示时会根据 postgres 设置的 timezone 展示为当地时间.
+   + 以当地时间存储数据到 'timestamp without time zone' 类型的字段时，postgres
+     底层以输入的数据进行存储，展示时会原样展示，与 postgres 设置的时区无关.
+
+   若表 timestamp_with_timezone 中有个字段是 now (timestamp with time zone 类型)
+   ，如下方式查看时的不同结果:
+
+   # 会以 postgres 设置的 timezone 显示数据
+   select 
+     now 
+   from 
+     timestamp_with_timezone
+
+   # 会根据指定的 timezone 显示数据
+   select 
+     now at time zone '时区'
+   from
+     timestamp_with_timezone
+
+   参考:
+   + [[http://stackoverflow.com/questions/5876218/difference-between-timestamps-with-without-time-zone-in-postgresql][Difference between timestamps with/without time zone in PostgreSQL]]
+   + [[http://justatheory.com/computers/databases/postgresql/use-timestamptz.html][Always Use TIMESTAMP WITH TIME ZONE]]
+   + [[http://stackoverflow.com/questions/6151084/which-timestamp-type-to-choose-in-a-postgresql-database][which timestamp type to choose in a postgresql database?]]
+   + [[http://www.postgresql.org/docs/9.4/static/datatype-datetime.html][postgresql9.4 doc Date/Time Types]]
+   + [[http://www.worldtimezone.com/index_cn.php][世界时区]]
