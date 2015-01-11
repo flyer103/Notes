@@ -1,5 +1,5 @@
 * 说明
-  该文档针对 django1.5
+  该文档针对 django1.7
 * 创建相关
   创建一个项目
   $ django-admin.py startproject 项目名
@@ -10,21 +10,13 @@
   $ python manage.py runserver [ip:port]
   $ python manage.py runserver [port]
 * 数据库相关
-  更新数据库
-  $ python manage.py syncdb
-  The *syncdb* command runs the SQL from *sqlall* on your database for all apps
-  in *INSTALLED_APPS* that don't already exist in your database. *syncdb* can be
-  called as often as you like, and it will only ever create the tables that
-  don't exist.
+  修改 app 的 models.py 文件.
 
-  检验 model 构造中是否有错
-  $ python manage.py validate
+  执行如下命令来为 models.py 中的变更创造 migrations:
+  $ python manage.py makemigrations [app 名]
 
-  检查某个 app 的索引信息
-  $ python manage.py sqlindexes app名
-
-  查看某个 app 数据库所有相关的
-  $ python manage.py sqlall app
+  执行如下命令在 db 层面应用这些 migrations:
+  $ python manage.py migrate
 * Model
 ** Basics
    A model is the single, definitive soure of the information about your data.
@@ -2035,6 +2027,10 @@
 *** Refer
    http://django-china.cn/topic/101/
    http://django-china.cn/topic/124/
+* 权限管理
+** *authentication* 和 *authorization*
+   Authentication verifies a user is who they claim to be.
+   Authorization determines what an authenticated user is allowed to do.
 * 一些名词
 ** slug
    *Slug* is a newspaper term. 
@@ -2043,6 +2039,8 @@
 ** QuerySet
    A *QuerySet* represents a collection of objects from your database. It can
    have zero, one or many *filters*
+** authentication
+   Authentication verifies a user is who they claim to be.
 * Tips & Best Practice
 ** views 中通过 render 向模板中传入 dict 类型数据
    views 中通过 model 获得的是一个 object，可通过如下类似方法把它转化为模板能正
@@ -2082,6 +2080,17 @@
    在 template 中需要使用路径时，进行如下类似操作:
 
    <a href="{% url 'url名:app中url名' [传给app中url的参数] %}"></a>
+** 在 admin 中由用户动态添加字段
+   思路:
+   + 定义两个 model，一个 model 为字段名，另一个 model 为 value，它有两个
+     foreign key (一个指向想要关联的表，另一个指向字段名 model)
+   + 在 admin 中注册字段名 model，便于增删改新的字段
+   + 在 admin 中通过 inline 的方式把 value model 嵌入到想要关联的 model 中
+
+   Ref:
+   + [[http://stackoverflow.com/questions/4128454/user-defined-text-fields-in-django-admin][User-defined text fields in django admin]]
+** 在 model 中隐藏字段
+   设置参数 'editable=False'.
 * FAQ
 ** 如何使用项目根目录中 static file？
    1) 在 *settings.py* 的 *STATICFILES_DIRS* 中添加 static 所在的目录的绝对路径
@@ -2168,3 +2177,13 @@
 
    Ref:
    + [[https://github.com/arocks/django-blog-screencast][django-blog-screencast]]
+** 创建 admin user
+   通过如下的命令:
+   
+   $ python manage.py createsuperuser
+** model 中 *blank* 和 *null* 的区别
+   *blank* 是为了告知 django 该字段对用户呈现时，不是必填项.
+   *null* 是为了告知数据库该字段可以为空. 
+
+   Ref:
+   + [[http://www.b-list.org/weblog/2006/jun/28/django-tips-difference-between-blank-and-null/][Django tips: the difference between ‘blank’ and ‘null’]]

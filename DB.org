@@ -1,3 +1,11 @@
 * Goal
   The typical use-case for a database is to group all of an appliation's data
   together and to keep it separate from another appliation's.
+* 关系型数据库几种常见的关系
+** many to one
+   一般通过 ForeignKey 来表示.
+** many to many
+   多对多关系.
+** one to one
+   It is most useful on the primary key of an object when the object "extends"
+   another object in some way.

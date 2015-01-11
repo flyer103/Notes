@@ -8,6 +8,13 @@
   参考:
   + [[http://stackoverflow.com/questions/49925/what-is-the-difference-between-union-and-union-all][What is the difference between UNION and UNION ALL?]]
   + [[http://sqlwithmanoj.com/2010/12/30/why-union-all-is-faster-than-union/][Why UNION ALL is faster than UNION?]]
+* foreign key
+  A FOREIGN KEY in one table points to a PRIMARY KEY in another table.
+
+  FOREIGN KEY 的作用:
+  + prevent actions that would destroy links between tables
+  + prevent invalid data from being inserted into the foreign key column,
+    because it has to be one of the values contained in the table it points to
 * References
   + [[https://mariadb.com/kb/en/mariadb/documentation/sql-commands/][MariaDB Knowledge Base]]
   + [[http://sqlwithmanoj.com/][SQL with Manoj]]

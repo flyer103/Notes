@@ -64,6 +64,7 @@
   删除已有用户:    drop user 用户名;
   显示当前时区: show timezone;
   设置时区: set timezone='时区'; 
+  显示所有变量信息: show all; 
 * postgresql 日志
   在 /var/log/postgresql.log 中
 * 可视化管理工具
@@ -148,3 +149,11 @@
    + [[http://www.postgresql.org/docs/9.4/static/datatype-datetime.html][postgresql9.4 doc Date/Time Types]]
    + [[http://www.worldtimezone.com/index_cn.php][世界时区]]
    + [[http://en.wikipedia.org/wiki/Coordinated_Universal_Time][wiki UTC]]
+** 显示 postgres 版本
+   可在 postgres 中执行:
+   select version();
+   或
+   show server_version;
+
+   参考:
+   + [[http://stackoverflow.com/questions/13733719/how-can-i-find-out-which-version-of-postgresql-im-running][How can I find out which version of PostgreSQL I'm running?]]
