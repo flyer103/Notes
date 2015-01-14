@@ -1780,6 +1780,13 @@
 
    # Or with custom size (default is 'col-lg-2 col-sm-2')
    {{form | bootstrap_horizontal:'col-lg-4'}}
+** bound and unbound form instance
+   The distinction:
+   + An unbound form has no data associated with it. When rendered to the user,
+     it will be empty or will contain default values.
+   + A bound form has submitted data, and hence can be used to tell if that
+     data is valid. If an invalid bound form is rendered, it can include inline
+     error messages telling the user what data to correct.
 * Admin
 ** 概述
    The automatic admin interface reads metadata in your model to provide a

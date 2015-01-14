@@ -70,6 +70,14 @@
 * 可视化管理工具
   + pgadmin3
   + [[http://www.adminer.org/][adminer]]
+* 删除 postgres 中的所有表
+  若这些表都在一个 schema 中，可用如下方法删除 (假设 schema 名为 'public'):
+  
+  drop schema public cascade;
+  create schema public;
+
+  Ref:
+  + [[http://stackoverflow.com/questions/3327312/drop-all-tables-in-postgresql][Drop all tables in postgresql?]]
 * BSET PRACTICE
 ** 小事务运行慢时关闭 synchronous_commit
    修改 /var/lib/postgres/data/postgresql.conf:
@@ -157,3 +165,5 @@
 
    参考:
    + [[http://stackoverflow.com/questions/13733719/how-can-i-find-out-which-version-of-postgresql-im-running][How can I find out which version of PostgreSQL I'm running?]]
+** 类似 mysql 的 '\G' 功能
+   先执行 '\x' 进入到 extended mode，然后再查.
