@@ -1655,7 +1655,7 @@
         
     def clear(self, value=None):
         for i in range(len(self)):
-            self._elements[i] = value
+        self._elements[i] = value
 * Cheat Sheet
 ** Built-in Exceptions
    + SystemExit
@@ -2234,3 +2234,12 @@
       except OverflowError:
           maxInt = int(maxInt/10)
           decrement = True
+* 自动识别 csv 文件的分隔符
+  代码片段如下: 
+
+  import csv
+  
+  with open(文件名, 'r') as fp:
+     dialect = csv.Sniffer().sniff(fp.readline())
+	 fp.seek(0)
+	 csvreader = csv.DictReader(fp, delimiter=dialect.delimiter)

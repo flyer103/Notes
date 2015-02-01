@@ -495,3 +495,12 @@
    
    + 查看 log, 点 'l'
 	 git log
+* 查看所有可用的颜色
+  通过如下命令:
+
+  M-x list-colors-display
+* 常用插件
+** fill-column-indicator
+   代码参考线. 
+** auto-complete
+   自动补全.

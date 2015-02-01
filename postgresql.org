@@ -78,6 +78,11 @@
 
   Ref:
   + [[http://stackoverflow.com/questions/3327312/drop-all-tables-in-postgresql][Drop all tables in postgresql?]]
+* schema
+** 查看所有的 schema
+   select schema_name from information_schema.schemata
+** 查看当前用户的 schema
+   \dn
 * BSET PRACTICE
 ** 小事务运行慢时关闭 synchronous_commit
    修改 /var/lib/postgres/data/postgresql.conf:
@@ -95,6 +100,11 @@
    $ postgres -D /usr/local/var/postgres
 ** brew 安装后 postgres 的配置文件位置
    一般在 /usr/local/var/postgres/ 中.
+* centos
+** 位置
+   /var/lib/pgsql/9.4/data
+** 管理
+   通过 service 管理，命令是 postgresql-9.4
 * FAQ
 ** psql: FATAL: database “<user>” does not exist
    先通过如下命令创建数据库:
