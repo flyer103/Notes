@@ -1158,3 +1158,5 @@
   可尝试:
   # fuser -km 设备路径
   # umount -km 设备路径 
+* 去掉文件的 BOM 头
+  $ awk 'NR==1{sub(/^\xef\xbb\xbf/,"")}{print}' INFILE > OUTFILE

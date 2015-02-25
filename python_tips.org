@@ -1909,7 +1909,7 @@
    参考 [[http://stackoverflow.com/questions/3682748/converting-unix-timestamp-string-to-readable-date-in-python][Converting unix timestamp string to readable date in Python]] :
    
    import datetime
-   
+  
    print(datetime.datetime.fromtimestamp(时间戳或整型时间).strftime('%Y-%m-%d %H:%M:%S'))
 ** 获取 '今天日期' 字符串
    str(datetime.date.today)
@@ -2243,3 +2243,18 @@
      dialect = csv.Sniffer().sniff(fp.readline())
 	 fp.seek(0)
 	 csvreader = csv.DictReader(fp, delimiter=dialect.delimiter)
+* 字符串转换为字符数组
+  法一:
+  
+  name = list('flyer')
+
+  法二：
+
+  a = []
+  s = 'flyer'
+  a += s
+  
+  法三:
+
+  a = 'flyer'
+  s = list(map(lambda c: c, a))

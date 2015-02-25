@@ -25,3 +25,7 @@
    意，解决 Elements 和 html 源文件来确定元素路径。
 * ajax 不能提供文件下载功能
   参考 [[http://stackoverflow.com/questions/4545311/download-a-file-by-jquery-ajax/9970672][Download a file by jQuery.Ajax]]
+* html/css/js 的关系
+  + *HTML* to define the content of web pages
+  + *CSS* to speify the layout of web pages
+  + *JavaScript* to program the behavior of web pages
