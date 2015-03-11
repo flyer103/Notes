@@ -257,9 +257,8 @@
 ** 分支跳转
    $ git checkout 分支名
 ** 创建并跳转到新的分支
-   $ git branch -b 分支名
+   $ git checkout -b 分支名
    这个命令相当于是对前两个命令的合并。
-   (但似乎这个命令有问题)
 ** 合并分支
    常在 master 分支中合并其它分支，如名为 testing 的分支。先转到 master 分支下，
    然后执行
@@ -409,3 +408,46 @@
   http://blog.csdn.net/wirror800/article/details/5189564
 * 清除之前的操作
   $ git reset --hard
+* 撤销操作 
+** 只在 "工作区" 进行了修改，但没有提交到 "暂存区" (即没进行 add 操作)
+   法一:
+   手动进行修改，撤销之前的操作.
+   
+   法二:
+   通过如下命令进行撤销:
+   $ git checkout -- 文件名
+** 提交到了 "暂存区", 但没有进行 commit 操作
+   先通过如下命令将操作从 "暂存区" 去除:
+   $ git reset HEAD 文件名
+   然后用上述中的两种操作形式进行.
+** 进行了 commit 操作
+   通过如下的形式进行回退:
+   $ git reset --hard commit_id
+** 参考
+   + [[http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001374831943254ee90db11b13d4ba9a73b9047f4fb968d000][撤销修改]]
+* HEAD
+  git 用 *HEAD* 表示最新版本，上一个版本是 *HEAD^* (或 HEAD~1)，上上一个版本是
+  *HEAD^^* (或 HEAD~2).
+* 查看历史命令
+  $ git reflog
+* 有用的别名
+  $ git config --global alias.lg "log --color --graph
+  --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold
+  blue)<%an>%Creset' --abbrev-commit"
+* 我的 workflow
+  每个分支一次只处理一件事情.
+  
+  分支策略:
+  + master
+    与远程主 repo 保持一致.
+  + dev
+    本地开发分支.
+    在本地没有 feature/bugfix 分支后，删除该分支，然后与 master 保持一致. 
+  + feature-*
+    从 master 分支出来，开发新的功能.
+    该 feature 测试通过后，提 pull request 到远程 repo 中，然后合并到 dev 分支中.
+    在远程 repo 接受该 feature 的 pull request 后，再删除该分支.
+  + bugfix-*
+    从 master 分支出来，修复 bug.
+	该 bugfix 测试通过后，提 pull request 到远程 repo 中，然后合并到 dev 分支中. 
+	在远程 repo 接受该 bugfix 的 pull request 后，再删除该分支.

@@ -483,3 +483,19 @@
   With JavaScript, the global scope is the complete JavaScript environment.
   In HTML, the global scope is the *window* object: All global variables belong
   to the *window* object.
+
+  Local variables are deleted when the function is completed.
+  Global variables are deleted when you close the page.
+
+  Function arguments work as local variables inside functions.
+* events
+  HTML events are "things" that happen to HTML elements.
+  When JavaScript is used in HTML pages, JavaScript can "react" on these events.
+
+  An HTML event can be something the browser does, or something a user does.
+  
+  HTML allows event handler attributes, with JavaScript code, to be added to
+  HTML elements, e.g.:
+  <button onclick='getElementById("demo").innerHTML=Date'>The time is?</button>
+  <button onclick="this.innerHTML=Date()">The time is?</button>
+  <button onclick="displayDate()">The time is?</button>
