@@ -417,6 +417,9 @@
   themselves. This is so that you do not need to quote them to use them as
   constants in a program. An attempt to change their values results in a
   /setting-constant/ error.
+
+  Function *booleanp* return *non-nil* if object is one of the two canonical
+  boolean values: *t* or *nil*
 * Function
 ** function description
    In a function description, the name of the function being described appears
