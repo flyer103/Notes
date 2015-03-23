@@ -504,3 +504,6 @@
    代码参考线. 
 ** auto-complete
    自动补全.
+* helm-mode
+** semantic-mode
+   分析当前文件语义: C-c h i

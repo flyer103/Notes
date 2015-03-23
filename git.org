@@ -428,6 +428,12 @@
 * HEAD
   git 用 *HEAD* 表示最新版本，上一个版本是 *HEAD^* (或 HEAD~1)，上上一个版本是
   *HEAD^^* (或 HEAD~2).
+  更严谨的解释是，*HEAD* 指当前指向的 commit，若当前指向的不是最新的 commit，则
+  被称为 *detached HEAD*.
+
+  Ref:
+  + [[http://stackoverflow.com/questions/2304087/what-is-head-in-git][What is HEAD in Git?]]
+  + [[http://stackoverflow.com/questions/964876/head-and-orig-head-in-git/967611][HEAD and ORIG_HEAD in Git]]
 * 查看历史命令
   $ git reflog
 * 有用的别名
