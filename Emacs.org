@@ -507,3 +507,15 @@
 * helm-mode
 ** semantic-mode
    分析当前文件语义: C-c h i
+* neotree
+  在 neotree buffer 中，快捷操作: 
+
+  + n next line ， p previous line。
+  + SPC or RET or TAB Open current item if it is a file. Fold/Unfold current item if it is a directory.
+  + g Refresh
+  + A Maximize/Minimize the NeoTree Window
+  + H Toggle display hidden files
+  + C-c C-n Create a file or create a directory if filename ends with a ‘/’
+  + C-c C-d Delete a file or a directory.
+  + C-c C-r Rename a file or a directory.
+  + C-c C-c Change the root directory.

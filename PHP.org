@@ -14,3 +14,9 @@
 * trait
   类似于 python 中的 mix-in，是一些方法和变量的集合，可为不同的 class 提供相同的
   方法和变量，有利于复用. 
+* Note
+** curl 异常
+   curl 在出错时不会报出异常.
+
+   Referer:
+   + [[http://stackoverflow.com/questions/11297320/using-a-try-catch-with-curl-in-php][Using a try/catch with cURL in PHP]]
