@@ -305,7 +305,15 @@
      [[http://stackoverflow.com/questions/6591213/how-to-rename-local-branch][How to rename local branch?]]
 ** 远程分支重命名
    Ref:
-   + [[http://stackoverflow.com/questions/1526794/rename-master-branch-for-both-local-and-remote-git-repositories][Rename master branch for both local and remote Git repositories]]
+   +
+     [[http://stackoverflow.com/questions/1526794/rename-master-branch-for-both-local-and-remote-git-repositories][Rename master branch for both local and remote Git repositories]]
+** pull 不在本地的远程分支
+   $ git fetch origin  # 把远程仓库所有分支全部拉下来
+   $ git checkout -b 新分支名  origin/目标分支名 
+   
+   Ref:
+   + [[http://stackoverflow.com/questions/16473805/git-pull-origin-branch-overwrites-master][Git pull origin <branch> overwrites master?]]
+   + [[http://stackoverflow.com/questions/1072261/push-and-pull-branches-in-git][Push and Pull Branches In Git]]
 * 链接
   git 简易指南
   http://rogerdudler.github.com/git-guide/index.zh.html
@@ -472,3 +480,5 @@
     从 master 分支出来，修复 bug.
 	该 bugfix 测试通过后，提 pull request 到远程 repo 中，然后合并到 dev 分支中. 
 	在远程 repo 接受该 bugfix 的 pull request 后，再删除该分支.
+* fetch 和 pull 的区别
+  pull 相当于 fetch + merge.

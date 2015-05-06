@@ -29,3 +29,14 @@
   + *HTML* to define the content of web pages
   + *CSS* to speify the layout of web pages
   + *JavaScript* to program the behavior of web pages
+* post 相关
+
+  Ref:
+  + [[http://www.w3schools.com/tags/att_form_enctype.asp][HTML <form> enctype Attribute]]
+  + [[http://stackoverflow.com/questions/4526273/what-does-enctype-multipart-form-data-mean][What does enctype='multipart/form-data' mean?]]
+  + [[https://www.ietf.org/rfc/rfc2388.txt][rfc2388]]
+  + [[http://www.huyng.com/posts/under-the-hood-an-http-request-with-multipartform-data/][Under the hood: An HTTP request with multipart/form-data]]
+  + [[https://www.imququ.com/post/four-ways-to-post-data-in-http.html][四种常见的 POST 提交数据方式]]
+  + [[http://en.wikipedia.org/wiki/Internet_media_type][Internet media type]]
+  + [[http://www.w3.org/TR/XMLHttpRequest/][XMLHttpRequest Level 1]]
+  + [[http://stackoverflow.com/questions/19004783/reading-json-post-using-php][Reading JSON POST using PHP]]

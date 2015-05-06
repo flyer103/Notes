@@ -14,6 +14,15 @@
 * trait
   类似于 python 中的 mix-in，是一些方法和变量的集合，可为不同的 class 提供相同的
   方法和变量，有利于复用. 
+* $_POST
+  只能处理 content-type 的类型为:
+  + application/x-www-form-urlencoded
+  + multipart/form-data
+
+  不能处理 "application/json" 类型。
+
+  Ref:
+  + [[http://php.net/manual/en/reserved.variables.post.php][$_POST]]
 * Note
 ** curl 异常
    curl 在出错时不会报出异常.
