@@ -2258,3 +2258,11 @@
 
   a = 'flyer'
   s = list(map(lambda c: c, a))
+* 函数强制使用 kwargs 的参数
+  在函数参数列表中，'*' 后的 args 参数是必须使用的 kwargs 参数，如:
+
+  def test(*, name):
+      print('name: {0}'.format(name))
+
+  def your_name(hello, *, name):
+      print('name: {0}'.format(name))
