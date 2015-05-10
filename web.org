@@ -40,3 +40,12 @@
   + [[http://en.wikipedia.org/wiki/Internet_media_type][Internet media type]]
   + [[http://www.w3.org/TR/XMLHttpRequest/][XMLHttpRequest Level 1]]
   + [[http://stackoverflow.com/questions/19004783/reading-json-post-using-php][Reading JSON POST using PHP]]
+  + [[http://stackoverflow.com/questions/14551194/how-are-parameters-sent-in-an-http-post-request#answer-26717908][How are parameters sent in an HTTP POST request?]]
+* get 参数长度相关
+  
+  Ref:
+  + [[http://stackoverflow.com/questions/7724270/max-size-of-url-parameters-in-get][Max size of URL parameters in _GET]]
+  + [[http://stackoverflow.com/questions/2659952/maximum-length-of-http-get-request][maximum length of HTTP GET request?]]
+  + [[http://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers][What is the maximum length of a URL in different browsers?]]
+  + [[http://stackoverflow.com/questions/3091485/what-is-the-limit-on-querystring-get-url-parameters][What is the limit on QueryString / GET / URL parameters]]
+  + [[http://stackoverflow.com/questions/266322/is-there-a-limit-to-the-length-of-a-get-request][Is there a limit to the length of a GET request?]]
