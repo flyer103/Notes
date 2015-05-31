@@ -1966,6 +1966,12 @@
 * pip
 ** 查看所有已经安装的包
    $ pip freeze
+** 更新所有包
+   $ pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip
+   install -U
+
+   Ref:
+   + [[http://stackoverflow.com/questions/2720014/upgrading-all-packages-with-pip][Upgrading all packages with pip]]
 * pymysql
 ** 连接器逻辑
    在建立连接时会判断是否连接成功，故不用在建立连接后通过 ping() 之类的方法来判

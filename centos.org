@@ -6,7 +6,10 @@
   下载 python3 源码，解压后:
   $ ./configure --prefix=/usr/local --enable-shared --with-threads
   $ sudo make altinstall
-  $ add python3.4.conf item to /etc/ld.so.conf.d/ with line "/usr/local/lib"
+  在 /etc/ld.so.conf.d/ 中添加一个名为 "python3.4.conf" 的文件，内容只有一行，如
+  下:
+  /usr/local/lib
+
   $ sudo ldconfig
 
   $ cd /usr/bin
