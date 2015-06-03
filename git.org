@@ -482,3 +482,10 @@
 	在远程 repo 接受该 bugfix 的 pull request 后，再删除该分支.
 * fetch 和 pull 的区别
   pull 相当于 fetch + merge.
+* git pull 后恢复到上次的状态
+  git pull 做了两个操作: git fetch 和 git merge。所以，需要回退的操作是 git
+  merge.
+  先通过下面的命令找到想要回退的状态:
+  $ git reflog
+  然后通过如下命令进行回退:
+  $ git reset --hard 目标状态
