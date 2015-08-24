@@ -4,3 +4,8 @@
 
   Ref:
   + [[https://pika.readthedocs.org/en/0.9.13/faq.html][Is Pika thread safe?]]
+* mac
+  To have launchd start rabbitmq at login:
+  $ ln -sfv /usr/local/opt/rabbitmq/*.plist ~/Library/LaunchAgents
+  
+  Management Plugin enabled by default at http://localhost:15672
