@@ -51,3 +51,16 @@
 * 通过 brew 安装 R
   $ brew tap homebrew/science
   $ brew install r
+* influxdb
+  登录时启动 influxdb:
+  $ ln -sfv /usr/local/opt/influxdb/*.plist ~/Library/LaunchAgents
+
+  运行 influxdb:
+  $ launchctl load ~/Library/LaunchAgents/homebrew.mxcl.influxdb.plist
+  或
+  $ influxd -config /usr/local/etc/influxdb.conf
+* 输入 unicode 字符
+  在 "系统设置" 的输入源中选择 "Unicode 十六进制输入"，使用该输入法时，按住
+  Option 键，同时输入对应 unicode point 即可。
+
+  对 unicode point，可参考 [[https://en.wikipedia.org/wiki/List_of_Unicode_characters][wiki]]
