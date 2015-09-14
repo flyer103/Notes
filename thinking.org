@@ -1,0 +1,12 @@
+* SMART 原则
+  属于 *目标管理* 的一种方法, 目标管理的任务是有效进行成员的组织与目标的制定和控
+  制以达到更好的工作绩效:
+  + Specific (明确)
+  + Measurable (可衡量)
+  + Attainable (可达成)
+  + Relevent (相关)
+  + Time-bound (时限)
+  + Evaluate (评估)
+  + Reevaluate (再评估)
+
+  变体 SMARTER, "E" 表示 "Evaluated" (被评估的), "R" 表示 "Reviewed" (被检验的).
