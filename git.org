@@ -341,6 +341,9 @@
 
   显示 git 管理的文件:
   $ git ls-files
+
+  查看所有的别名:
+  $ git config --get-regexp alias
 * BEST PRACTICE
 ** 初始化工程前
    先建立好 README、.gitignore 文件后再 *git init* ，这样可以免去一些不必要的操

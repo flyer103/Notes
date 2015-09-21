@@ -1160,3 +1160,6 @@
   # umount -km 设备路径 
 * 去掉文件的 BOM 头
   $ awk 'NR==1{sub(/^\xef\xbb\xbf/,"")}{print}' INFILE > OUTFILE
+* top
+  排序:
+  进入 top 后，按下 "shift-f" 选择如何排序. 
