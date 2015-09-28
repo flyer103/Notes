@@ -492,3 +492,5 @@
   $ git reflog
   然后通过如下命令进行回退:
   $ git reset --hard 目标状态
+* 显示所有 alias
+  $ git config --get-regexp alias

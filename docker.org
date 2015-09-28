@@ -1,0 +1,15 @@
+* 提示没有 /PATH/TO/HOME/.docker/machine/machines/default/ca.pem 文件
+  $ docker-machine regenerate-certs default
+  $ docker-machine restart default
+
+  Ref:
+  + [[http://stackoverflow.com/questions/32240742/after-installing-docker-docker-machine-env-default-fails-because-ca-pem-is-not][After installing Docker, docker-machine env default fails because ca.pem is
+    not found]]
+* 仓库管理
+  docker hub 类似于 lib 仓库，集中管理和分享 images.
+* container 和 image
+  A *container* is a stripped-to-basics version of a Linux OS.
+  An *image* is software you load into a container.
+* dockerfile
+  A Dockerfile describes the software that is "baked" into an image, and it can
+  tell the software what environment to use or what commands to run.
