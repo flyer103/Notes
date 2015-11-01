@@ -9,7 +9,7 @@
   在 /etc/ld.so.conf.d/ 中添加一个名为 "python3.4.conf" 的文件，内容只有一行，如
   下:
   /usr/local/lib
-
+  
   $ sudo ldconfig
 
   $ cd /usr/bin
@@ -76,3 +76,6 @@
 
   # chkconfig --add 脚本名
   # chkconfig 脚本名 on
+* 添加用户
+  $ sudo adduser -m -s SHELL路径 用户名
+  $ sudo passwd 用户名

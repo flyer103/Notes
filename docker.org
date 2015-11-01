@@ -13,3 +13,12 @@
 * dockerfile
   A Dockerfile describes the software that is "baked" into an image, and it can
   tell the software what environment to use or what commands to run.
+* 常用的命令
+  # 进入到某个运行中的 container 中
+  $ docker exec -it CONTAINER_ID bash
+
+  # 从 container 复制文件到本地
+  $ docker cp CONTAINER_ID:/PATH/TO/FILE /PATH/TO/LOCAL/HOST
+
+  # 从本地复制文件到 contaienr
+  $ docker cp /PATH/TO/LOCAL/HOST CONTAINER_ID:/PATH/TO/FILE

@@ -1044,6 +1044,12 @@
 
    kill session:
    $ tmux kill-session -t 名称
+** persistent session
+   装完 tmux-resurrect 后，可执行下面两种命令:
+   # 保存当前的 session
+   prefix + C-s 
+   # 恢复保存的 session
+   prefix + C-r
 * 在远程机器中上传和下载文件
   一般可通过 scp 来实现，但在公司中，可能不能使用这条命令。
   Windows 下可通过 secureCRT 的 rz 和 sz 命令实现文件的上传和下载功能。
@@ -1163,3 +1169,76 @@
 * top
   排序:
   进入 top 后，按下 "shift-f" 选择如何排序. 
+* 修改 shell
+  $ chsh -s SHELL路径
+* 获取 linux 系统安装时间
+  # passwd -S bin
+* 几个时间概念
+  + mtime
+    文件上次修改时间
+  + atime
+    文件上次被读取或访问时间
+  + ctime
+    文件上次状态变化时间
+* find
+** 基础
+   Find command used to search and locate list of files and directories based on
+   conditions you specify for files that match the arguments.
+   即 *find* 命令用来根据指定的参数查找 *文件* 或 *目录*.
+** 常用命令例子
+   $ find . -name data
+   $ find /home/flyer -name data
+   $ find /home/flyer -iname data
+   $ find . -type d -name data
+   $ find . -type f -name handle.py
+   $ find . -type f -name "handle_*.py"
+   $ find . -type f -perm 0777
+   $ find . -type f ! -perm 0777
+   $ find . -perm 2644
+   $ find . -perm 1551
+   $ find . -perm /u=s
+   $ find . -perm /g+s
+   $ find . -perm /u=r
+   $ find . -perm /a=x
+   $ find . -type f -perm 0777 -exec chmod 644 {} \;
+   $ find . -type f -perm 0777 -exec chmod 755 {} \;
+   $ find . -type f -name "handle.py" -exec rm -f {} \;
+   $ find . -type f -name "*.txt" -exec rm -f {}\;
+   $ find . -type f -empty
+   $ find . -type f -name ".*"
+   $ find . -user flyer -name handle.py
+   $ find . -user flyer
+   $ find . -group developer
+   $ find . -user flyer -iname "*.txt"
+   $ find . -mtime 50  # 找到前第 50 修改的数据
+   $ find . -mtime +50  # 找到 50 天前修改的数据
+   $ find . -mtime +50 -mtime -100  # 找到前 50~100 天之间被修改的数据
+   $ find . -cmin -60  # 找到 60 分钟前被修改的数据
+   $ find . -size 50M
+   $ find . -size +50M -size -100M
+   $ find . -size +100M -exec rm -rf {} \;
+   $ find . -type f -name "*.mp3" -size +10M -exec rm -rf {} \;
+   $ find . -maxdepth 2
+   $ find . -maxdepth 3 -mindepth 5
+   $ find . -maxdepth 1 -not -iname "handle_*.py"
+   $ find . -inum 文件或目录的iNode号 -exec mv {} new-test-file-name \;
+
+   # 查找 5 个最大的文件
+   $ find . -type f -exec ls -s {} \; | sort -n -r | head -5
+   # 查找 5 个最小的文件
+   $ find . -type f -exec ls -s {} \; | sort -n | head -5
+** 几个数字的表示
+   在使用与「时间」、「大小」有关的参数时，值可用 3 种形式表示:
+   + N
+     正好等于该值
+   + +N
+     大于该值
+   + -N
+     小于该值
+** 深度
+   指定的目录深度为 1，依次往后推其他深度。
+** exec 后的几个符号
+   -exec 后第一个参数为命令，之后的参数直到「;」 之前都是该命令的参数。
+   参数中「{}」 都会用当前的文件名替换。
+   为了防止参数和符号被 shell 转义，可用「\」 处理，如标志参数结尾的「；」，前面
+   必须加上「\」 用来防止被 shell 转义。

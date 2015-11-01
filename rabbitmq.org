@@ -9,3 +9,6 @@
   $ ln -sfv /usr/local/opt/rabbitmq/*.plist ~/Library/LaunchAgents
   
   Management Plugin enabled by default at http://localhost:15672
+* 常用的命令
+  # 显示当前所有的 queue
+  $ rabbitmqctl list_queues
