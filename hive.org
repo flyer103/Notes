@@ -1,0 +1,3 @@
+* 常见操作
+** string 转换为 int
+   cast(str_column as int)
