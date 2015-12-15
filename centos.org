@@ -79,3 +79,9 @@
 * 添加用户
   $ sudo adduser -m -s SHELL路径 用户名
   $ sudo passwd 用户名
+* 启动 docker
+  可能会与 host 的 IP 冲突，修改 /etc/sysconfig/docker 文件：
+  other_args="--bip=不冲突的IP/不冲突的子网"  
+  # 如 other_args="--bip=192.168.15.0/24"
+  然后
+  # service docker start

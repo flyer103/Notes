@@ -22,3 +22,6 @@
 
   # 从本地复制文件到 contaienr
   $ docker cp /PATH/TO/LOCAL/HOST CONTAINER_ID:/PATH/TO/FILE
+
+  # 删除所有的 containers
+  $ docker rm `docker ps --no-trunc -aq`

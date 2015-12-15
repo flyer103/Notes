@@ -1048,6 +1048,10 @@
    prefix + C-s 
    # 恢复保存的 session
    prefix + C-r
+** 禁止自动修改名称
+   在 ~/.bashrc 或 ~/.zshc 中修改:
+
+   DISABLE_AUTO_TITLE=true
 * 在远程机器中上传和下载文件
   一般可通过 scp 来实现，但在公司中，可能不能使用这条命令。
   Windows 下可通过 secureCRT 的 rz 和 sz 命令实现文件的上传和下载功能。
@@ -1287,3 +1291,5 @@
    按 o 切换是否固定只显示当前的连接
    按 f 可以编辑过滤代码
    按 q 退出监控
+* tar 重命名文件
+  $ tar xf TAR文件 -C 目标目录 --stripcomponents 1
