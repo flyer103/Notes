@@ -84,3 +84,16 @@
    types can execute.
 ** 参数传递
    Everything in Go is passed by value.
+* testing
+** 测试范围
+   # Run all tests in current directory and all of its subdirectories:
+   $ go test ./...
+   
+   # Run all tests with import path prefixed with foo/
+   $ go test foo/...
+
+   # Run all tests import path prefixed with foo
+   $ go test foo...
+
+   # Run all tests in your $GOPATH
+   $ go test ...
