@@ -1970,7 +1970,10 @@
    $ pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 sudo pip install -U
 
    Ref:
-   + [[http://stackoverflow.com/questions/2720014/upgrading-all-packages-with-pip][Upgrading all packages with pip]]
+   +
+     [[http://stackoverflow.com/questions/2720014/upgrading-all-packages-with-pip][Upgrading all packages with pip]]
+** 改变安装目录
+   $ pip install --target=目标目录 报名
 * pymysql
 ** 连接器逻辑
    在建立连接时会判断是否连接成功，故不用在建立连接后通过 ping() 之类的方法来判
@@ -2271,3 +2274,11 @@
 
   def your_name(hello, *, name):
       print('name: {0}'.format(name))
+* 函数中的 global
+  函数可以直接访问到外部的变量，但若不加 global 关键字，可认为访问的是这个变量的
+  一个 copy，对它的变更仅在函数内部有效。若想全局修改，则需要在函数内部访问该变
+  量前，加上 global 关键字.
+
+  Ref:
+  + [[http://stackoverflow.com/questions/423379/using-global-variables-in-a-function-other-than-the-one-that-created-them][Using global variables in a function other than the one that created them]]
+  + [[http://stackoverflow.com/questions/10588317/python-function-global-variables][Python function global variables?]]
