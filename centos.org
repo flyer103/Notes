@@ -85,3 +85,5 @@
   # 如 other_args="--bip=192.168.15.0/24"
   然后
   # service docker start
+* service 启动脚本的位置
+  /etc/init.d/
