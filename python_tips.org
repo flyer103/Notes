@@ -2282,3 +2282,5 @@
   Ref:
   + [[http://stackoverflow.com/questions/423379/using-global-variables-in-a-function-other-than-the-one-that-created-them][Using global variables in a function other than the one that created them]]
   + [[http://stackoverflow.com/questions/10588317/python-function-global-variables][Python function global variables?]]
+* 忽略警告
+  $ python -W ignore PYTHON文件
