@@ -494,3 +494,8 @@
   $ git reset --hard 目标状态
 * 显示所有 alias
   $ git config --get-regexp alias
+* 开启 two-factor authentication 后命令行无密码访问项目
+  先在 [[https://github.com/settings/applications][github applications]] 中申请一个 application 的 token，然后修改项目的
+  .git/config 文件中 url 部分，改为如下类似下述形式:
+
+  url = https://GITHUB用户名:申请的TOKEN@github.com/flyer103/Notes

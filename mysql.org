@@ -155,3 +155,11 @@
   > REPAIR TABLE 表名
 
   参考: [[http://stackoverflow.com/questions/11073982/recovering-from-mysql-error-144-via-phpmyadmin][Recovering from MySQL Error 144 via phpMyAdmin]]
+* 查看配置信息 & 配置文件位置
+  $ mysql --verbose --help
+
+  在 MAC 上，配置文件优先级为:
+  + /etc/my.cnf 
+  + /etc/mysql/my.cnf 
+  + /usr/local/etc/my.cnf 
+  + ~/.my.cnf
