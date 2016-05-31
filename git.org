@@ -499,3 +499,9 @@
   .git/config 文件中 url 部分，改为如下类似下述形式:
 
   url = https://GITHUB用户名:申请的TOKEN@github.com/flyer103/Notes
+* 不同 commit 间的 diff
+  展示当前 commit 和上个 commit 之间的 diff:
+  $ git diff COMMIT^ COMMIT
+
+  展示当前 commit 和下个 commit 之间的 diff:
+  $ git diff COMMIT^!

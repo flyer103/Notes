@@ -74,3 +74,16 @@
   
   导入:
   $ mongorestore 备份目录名 
+* 命令行执行 mongo shell 命令
+  $ mongo --eval "命令"
+
+  Ref:
+  +
+    [[http://stackoverflow.com/questions/4837673/how-to-execute-mongo-commands-through-shell-scripts][stackoverflow:How to execute mongo commands through shell scripts?]]
+* 连接数
+  mongod:
+  + 可在启动时通过 --maxConns 参数限制最大连接数
+  + 可能还需要配置操作系统的 ulimit
+
+  mongo:
+  + 可通过 db.serverStatus() 命令查看连接数，在 connections 字段中

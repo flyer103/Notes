@@ -1293,3 +1293,8 @@
    按 q 退出监控
 * tar 重命名文件
   $ tar xf TAR文件 -C 目标目录 --stripcomponents 1
+* 格式化 json 文件
+  可简单地使用 python 来实现:
+  $ python3 -m json.tool JSON文件
+* 查看已使用的 file handler 数
+  $ lsof | wc -l
