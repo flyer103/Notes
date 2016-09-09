@@ -1902,7 +1902,7 @@
    参考 [[http://stackoverflow.com/questions/9637838/convert-string-date-to-timestamp-in-python][Convert string date to timestamp in Python]] :
    
    import time
-   import date
+   import datetime
 
    thedate = '2014-05-11 01'
    int(time.mktime(datetime.datetime.strptime(thedate, "%Y-%m-%d %H").timetuple()))

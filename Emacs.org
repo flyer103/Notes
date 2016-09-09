@@ -529,3 +529,5 @@
   + C-c C-d Delete a file or a directory.
   + C-c C-r Rename a file or a directory.
   + C-c C-c Change the root directory.
+* diff 不同分支
+  $ git diff branch1 branch2
