@@ -505,3 +505,10 @@
 
   展示当前 commit 和下个 commit 之间的 diff:
   $ git diff COMMIT^!
+* 查看某个文件的变更
+  $ git log -p 文件名
+* 只查看某个文件的历史
+  $ git log -p 文件名
+
+  Ref:
+  + [[View the change history of a file using Git versioning][http://stackoverflow.com/questions/278192/view-the-change-history-of-a-file-using-git-versioning]]

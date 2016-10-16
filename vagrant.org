@@ -4,4 +4,5 @@
   3、On the host: $ vagrant reload
  
   Ref:
-  + [[http://stackoverflow.com/questions/31616383/vagrant-mount-error-after-installing-docker][Vagrant mount error after installing Docker]]
+  +
+    [[http://stackoverflow.com/questions/31616383/vagrant-mount-error-after-installing-docker][Vagrant mount error after installing Docker]]
