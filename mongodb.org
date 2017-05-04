@@ -87,3 +87,6 @@
 
   mongo:
   + 可通过 db.serverStatus() 命令查看连接数，在 connections 字段中
+* 恢复数据
+** 从 json 恢复数据
+   $ mongoimport --db DB名称 --collection COLLECTION名称 --file JSON文件

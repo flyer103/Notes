@@ -1901,6 +1901,7 @@
 ** 字符串转时间戳
    参考 [[http://stackoverflow.com/questions/9637838/convert-string-date-to-timestamp-in-python][Convert string date to timestamp in Python]] :
    
+
    import time
    import datetime
 
@@ -1912,6 +1913,12 @@
    import datetime
   
    print(datetime.datetime.fromtimestamp(时间戳或整型时间).strftime('%Y-%m-%d %H:%M:%S'))
+** 纳秒转字符串
+   import datetime
+
+   print(datetime.datetime.fromtimestamp(纳秒 / 1e9).strftime('%Y-%m-%d %H:%M:%S'))
+
+   参考：[[http://stackoverflow.com/questions/15649942/python-convert-epoch-time-with-nanoseconds-to-human-readable][Python - Convert epoch time with nanoseconds to human-readable?]]
 ** 获取 '今天日期' 字符串
    str(datetime.date.today)
    结果如 '2014-08-04'

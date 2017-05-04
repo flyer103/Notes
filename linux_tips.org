@@ -818,6 +818,9 @@
 * 121、ssh 免密码
   $ ssh-keygen -t rsa
   把生成的 id_rsa.pub 中的内容复制到目标机器的 ~/.ssh/authorized_keys 文件下即可.
+  
+  有种简单的方法一次拷入 ssh pub key:
+  $ cat .ssh/id_rsa.pub | ssh b@B 'cat >> .ssh/authorized_keys'
 * 122、ssh localhost 提示连接错误
   如果出现 
   ssh: connect to host localhost port 22: Connection refused
@@ -1298,3 +1301,25 @@
   $ python3 -m json.tool JSON文件
 * 查看已使用的 file handler 数
   $ lsof | wc -l
+* ssh 无密码登录
+  $ ssh-keygen -t rsa
+  $ cat ~/.ssh/id_rsa.pub | ssh username@hostname "cat >> .ssh/authorized_keys"
+* 修改 fd 数量
+  临时修改 (只对当前 shell 有效): 
+  $ ulimit -n 数量
+
+  永久修改 (对 linux)：
+  修改 /etc/limits.conf 或 /etc/security/limits.conf (对不同的 linux 发行版文件
+  位置可能不同)，添加类似如下的语句:
+
+  root hard nofile 65535
+  root soft nofile 65535
+  * hard nofile 65535
+  * soft nofile 65535
+
+  然后退出登录后再进入就可看到修改生效.
+
+  Ref:
+  * [[http://stackoverflow.com/questions/34588/how-do-i-change-the-number-of-open-files-limit-in-linux][How do I change the number of open files limit in Linux?]]
+  * [[https://easyengine.io/tutorials/linux/increase-open-files-limit/][Increase "Open Files Limit"]]
+  * [[http://geekswing.com/geek/quickie-tutorial-ulimit-soft-limits-hard-limits-soft-stack-hard-stack/][Quickie tutorial: ulimit, soft limits, hard limits, soft stack, hard stack]]

@@ -163,3 +163,5 @@
   + /etc/mysql/my.cnf 
   + /usr/local/etc/my.cnf 
   + ~/.my.cnf
+* 命令行通过 sql 文件执行 sql 命令
+  $ mysql -u USER -pPASSWD DATABASW_NAME < SQL_FILE
